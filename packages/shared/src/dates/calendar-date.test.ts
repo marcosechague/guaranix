@@ -5,7 +5,9 @@ import {
   daysBetween,
   inclusiveDayCount,
   rangesOverlap,
+  startOfWeek,
   weekdayOf,
+  zonedInstant,
 } from './calendar-date';
 
 describe('calendar dates', () => {
@@ -35,5 +37,24 @@ describe('calendar dates', () => {
     const november = { startsOn: '2026-11-01', endsOn: '2026-11-30' };
     expect(rangesOverlap(november, { startsOn: '2026-11-30', endsOn: '2026-12-29' })).toBe(true);
     expect(rangesOverlap(november, { startsOn: '2026-12-01', endsOn: '2026-12-30' })).toBe(false);
+  });
+
+  it('turns box-local wall-clock times into instants', () => {
+    expect(zonedInstant('2026-11-27', '06:00', 'America/Asuncion').toISOString()).toBe(
+      '2026-11-27T09:00:00.000Z',
+    );
+    expect(zonedInstant('2026-11-27', '20:00', 'UTC').toISOString()).toBe(
+      '2026-11-27T20:00:00.000Z',
+    );
+    // Across a DST change (São Paulo had DST until 2019).
+    expect(zonedInstant('2019-01-15', '07:00', 'America/Sao_Paulo').toISOString()).toBe(
+      '2019-01-15T09:00:00.000Z',
+    );
+  });
+
+  it('starts weeks on Monday', () => {
+    expect(startOfWeek('2026-11-27')).toBe('2026-11-23');
+    expect(startOfWeek('2026-11-23')).toBe('2026-11-23');
+    expect(startOfWeek('2026-11-29')).toBe('2026-11-23');
   });
 });

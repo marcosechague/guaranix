@@ -2,11 +2,10 @@ import { and, desc, eq, inArray } from 'drizzle-orm';
 import { charges, memberPlans, planPauses } from '@guaranix/db/schema';
 import { addDays, inclusiveDayCount, rangesOverlap } from '@guaranix/shared';
 import type { AssignMemberPlanInput } from '@guaranix/shared/schemas';
-import type { BoxRole } from '@guaranix/shared/domain';
 import { recordAudit } from './audit';
 import { boxToday } from './box-calendar';
-import { FRONT_DESK_ROLES, type ServiceContext } from './context';
-import { conflict, forbidden, notFound, unprocessable } from './errors';
+import { FRONT_DESK_ROLES, assertRole, type ServiceContext } from './context';
+import { conflict, notFound, unprocessable } from './errors';
 import { getMember } from './members';
 import { memberPlanStateOn, type MemberPlanState } from './member-plan-state';
 import { getPlan } from './plans';
@@ -17,10 +16,6 @@ export type MemberPlanView = MemberPlanRow & { state: MemberPlanState; pauses: P
 
 const LIVE_STATUSES = ['active', 'paused'] as const;
 
-function assertFrontDesk(role: BoxRole) {
-  if (!(FRONT_DESK_ROLES as readonly BoxRole[]).includes(role)) throw forbidden();
-}
-
 /**
  * Sells a plan to a member. Price and limits are copied from the plan so later
  * price changes don't touch this sale, and an open charge is created for the
@@ -30,7 +25,7 @@ export async function assignMemberPlan(
   context: ServiceContext,
   input: AssignMemberPlanInput,
 ): Promise<MemberPlanRow> {
-  assertFrontDesk(context.auth.role);
+  assertRole(context.auth.role, FRONT_DESK_ROLES);
   const member = await getMember(context, input.memberId);
   if (member.status !== 'active') throw unprocessable('member_inactive');
   const plan = await getPlan(context, input.planId);
@@ -143,7 +138,7 @@ export async function pauseMemberPlan(
   memberPlanId: string,
   input: PauseInput,
 ): Promise<{ pause: PlanPauseRow; memberPlan: MemberPlanRow }> {
-  assertFrontDesk(context.auth.role);
+  assertRole(context.auth.role, FRONT_DESK_ROLES);
   const memberPlan = await getMemberPlan(context, memberPlanId);
   if (memberPlan.status !== 'active') throw unprocessable('member_plan_not_active');
   if (input.endsOn < input.startsOn) throw unprocessable('pause_dates_invalid');
@@ -190,7 +185,7 @@ export async function removePause(
   context: ServiceContext,
   pauseId: string,
 ): Promise<MemberPlanRow> {
-  assertFrontDesk(context.auth.role);
+  assertRole(context.auth.role, FRONT_DESK_ROLES);
   const [pause] = await context.transaction
     .select()
     .from(planPauses)
@@ -219,7 +214,7 @@ export async function cancelMemberPlan(
   context: ServiceContext,
   memberPlanId: string,
 ): Promise<MemberPlanRow> {
-  assertFrontDesk(context.auth.role);
+  assertRole(context.auth.role, FRONT_DESK_ROLES);
   const memberPlan = await getMemberPlan(context, memberPlanId);
   if (memberPlan.status === 'cancelled') return memberPlan;
   const [updated] = await context.transaction
