@@ -28,3 +28,13 @@ La API de la Fase 0 necesita mucha lógica de negocio (planes, créditos, reserv
 - **Ventana de reserva** solo para alumnos; el staff puede anotar a alguien fuera de ella (pero nunca en una clase empezada o llena).
 - **Concurrencia.** Reservar bloquea la fila de la clase (`FOR UPDATE`) y el descuento de créditos usa `classes_remaining > 0` en la misma sentencia, así dos reservas simultáneas no se llevan el mismo lugar ni el mismo crédito.
 - **Límite semanal** de lunes a domingo, en la hora del box.
+
+## Cobros, deudores y dashboard
+
+- **Recepción registra pagos ya confirmados** (efectivo, transferencia o QR). El alumno solo puede informar una transferencia o un QR **con comprobante**, que queda `pending_review` hasta que recepción lo confirma o rechaza. Los coaches no tocan dinero.
+- **Un cargo se paga en partes.** Pasa a `paid` cuando los pagos confirmados cubren el monto. No se acepta un pago que, sumado a lo confirmado y lo pendiente, supere lo que se debe.
+- **Sin pagos dobles.** El mismo número de operación (método + referencia) no se carga dos veces, salvo que el anterior haya sido rechazado. Cada pago se revisa una sola vez.
+- **Anular un cargo** es solo para dueño o admin, y solo si no tiene pagos confirmados.
+- **Deudores** = cargos abiertos vencidos (antes de hoy en la hora del box), netos de pagos parciales, agrupados por alumno y ordenados por monto.
+- **Dashboard** (dueño y admin) para un rango de fechas del box: cobrado (pagos confirmados), comprobantes pendientes, deuda total y vencida, alumnos activos hoy (plan vigente o pausado), altas y bajas del rango, y ocupación de las clases ya dictadas.
+- Todo movimiento de dinero se audita.

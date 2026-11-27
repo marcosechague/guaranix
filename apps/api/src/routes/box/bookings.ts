@@ -3,6 +3,7 @@ import { createBoxRouter } from '../../middleware/box-scope';
 import { idParam, parseBody, respond } from '../../lib/service-route';
 import { bookClass, cancelBooking, listOwnBookings } from '../../services/bookings';
 import { listMemberPlans } from '../../services/member-plans';
+import { ownAccount } from '../../services/charges';
 import { getOwnMember } from '../../services/members';
 import { listOwnPersonalRecords } from '../../services/workout-results';
 import { ANY_ROLE, MEMBERS_ONLY } from './roles';
@@ -50,6 +51,10 @@ me.get('/bookings', MEMBERS_ONLY, (context) =>
 
 me.get('/records', MEMBERS_ONLY, (context) =>
   respond(context, async (service) => ({ records: await listOwnPersonalRecords(service) })),
+);
+
+me.get('/account', MEMBERS_ONLY, (context) =>
+  respond(context, async (service) => ownAccount(service)),
 );
 
 export const meRoutes = me.router;

@@ -171,6 +171,16 @@
     "workout_exists": "Ya hay un WOD para ese programa y ese día.",
     "workout_not_found": "No encontramos ese WOD.",
     "workout_has_results": "Este WOD ya tiene resultados cargados, así que no se puede cambiar su estructura ni borrar.",
-    "workout_move_not_allowed": "No se puede mover un WOD a otro día o programa. Creá uno nuevo."
+    "workout_move_not_allowed": "No se puede mover un WOD a otro día o programa. Creá uno nuevo.",
+    "cash_requires_staff": "Los pagos en efectivo los registra recepción.",
+    "charge_has_payments": "Este cargo ya tiene pagos confirmados y no se puede anular.",
+    "charge_not_found": "No encontramos ese cargo.",
+    "charge_not_open": "Este cargo ya está pagado o anulado.",
+    "payment_already_reviewed": "Este pago ya fue revisado.",
+    "payment_duplicate": "Ese comprobante ya fue cargado.",
+    "payment_exceeds_charge": "El monto es mayor a lo que se debe.",
+    "payment_not_found": "No encontramos ese pago.",
+    "payment_requires_front_desk": "Los pagos los registra recepción o la administración.",
+    "receipt_required": "Adjuntá el comprobante de la transferencia o del QR."
   }
 }

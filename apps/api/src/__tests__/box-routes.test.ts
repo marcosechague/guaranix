@@ -267,3 +267,54 @@ describe('WODs and results, end to end', () => {
     expect(board.entries).toEqual([expect.objectContaining({ rounds: 18, reps: 7 })]);
   });
 });
+
+describe('payments, debtors and dashboard', () => {
+  it('a member reports a transfer, reception confirms it, the owner sees the money', async () => {
+    const { box_owner: owner, reception, planless: member, coach } = as;
+    const charge = await reception.browser.post('/box/charges', {
+      memberId: member.memberId,
+      description: 'Cuota',
+      amountGs: 250_000,
+      dueOn: addDays(today(), -2),
+    });
+    expect(charge.status).toBe(201);
+    const chargeId = (await json<{ charge: { id: string } }>(charge)).charge.id;
+
+    const debtors = await json<{ debtors: { memberId: string; owedGs: number }[] }>(
+      await reception.browser.get('/box/reports/debtors'),
+    );
+    expect(debtors.debtors.find((row) => row.memberId === member.memberId)?.owedGs).toBe(250_000);
+
+    const reported = await member.browser.post('/box/payments', {
+      memberId: member.memberId,
+      chargeId,
+      amountGs: 250_000,
+      method: 'bank_transfer',
+      paidAt: new Date().toISOString(),
+      reference: 'ROUTE-1',
+      receiptFileKey: 'receipts/route.jpg',
+    });
+    expect(reported.status).toBe(201);
+    const paymentId = (await json<{ payment: { id: string; status: string } }>(reported)).payment
+      .id;
+
+    const review = await reception.browser.post(`/box/payments/${paymentId}/review`, {
+      status: 'confirmed',
+    });
+    expect(await review.json()).toMatchObject({ payment: { status: 'confirmed' } });
+    const account = await json<{ outstandingGs: number }>(
+      await member.browser.get('/box/me/account'),
+    );
+    expect(account.outstandingGs).toBe(0);
+
+    const figures = await owner.browser.get(`/box/reports/dashboard?from=${today()}&to=${today()}`);
+    expect(figures.status).toBe(200);
+    expect(
+      (await json<{ money: { collectedGs: number } }>(figures)).money.collectedGs,
+    ).toBeGreaterThanOrEqual(250_000);
+    expect(
+      (await reception.browser.get(`/box/reports/dashboard?from=${today()}&to=${today()}`)).status,
+    ).toBe(403);
+    expect((await coach.browser.get('/box/payments')).status).toBe(403);
+  });
+});
