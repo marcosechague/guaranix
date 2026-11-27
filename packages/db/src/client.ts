@@ -5,6 +5,9 @@ import * as schema from './schema';
 /**
  * In the Worker the connection string comes from the Hyperdrive binding
  * (`env.HYPERDRIVE.connectionString`); locally it is DATABASE_URL.
+ *
+ * The returned handle runs as the connection's owner role, which bypasses
+ * Row Level Security. Request code must go through `withBoxScope`.
  */
 export function createDatabase(connectionString: string) {
   // Hyperdrive already pools connections, so each request keeps a small client.
