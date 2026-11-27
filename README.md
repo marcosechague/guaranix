@@ -25,6 +25,7 @@ pnpm install
 pnpm db:up                  # levanta Postgres 17 en Docker y espera a que esté listo
 pnpm db:check               # confirma que llegás a la base
 pnpm db:migrate             # aplica las migraciones de Drizzle
+pnpm db:seed                # crea un box demo con la plantilla paraguaya
 pnpm dev                    # levanta las 3 apps y la API en paralelo
 ```
 
@@ -40,6 +41,7 @@ Para levantar una sola app: `pnpm --filter @guaranix/member dev`.
 | `pnpm db:reset`               | Borra la base local y la vuelve a crear vacía                            |
 | `pnpm db:generate`            | Genera una migración a partir de los cambios en `packages/db/src/schema` |
 | `pnpm db:migrate`             | Aplica las migraciones pendientes                                        |
+| `pnpm db:seed`                | Carga planes de GuaraniX, un admin y un box demo con alumnos y clases    |
 | `pnpm db:studio`              | Abre Drizzle Studio para mirar los datos                                 |
 
 Si el puerto 5432 está ocupado, cambiá `POSTGRES_PORT` y el puerto de `DATABASE_URL` en `.env`.
