@@ -16,3 +16,15 @@ La API de la Fase 0 necesita mucha lógica de negocio (planes, créditos, reserv
 - **Las pausas no cambian el estado guardado.** Se guardan como rangos de fechas, corren el vencimiento la misma cantidad de días, y el estado del día (`active`, `paused`, `upcoming`, `expired`) se calcula con `memberPlanStateOn`. No hace falta un cron para empezar o terminar una pausa. Solo se puede quitar una pausa que todavía no empezó.
 - **Fechas del box.** "Hoy" es la fecha en la zona horaria del box (`boxes.timezone`), con los helpers de `packages/shared/src/dates`.
 - **Tests de servicios con PGlite** y dos boxes sembrados (A y B), con un usuario por rol. Cada servicio prueba roles, aislamiento entre boxes y las reglas de dinero y créditos.
+
+## Clases y reservas
+
+- **Clases generadas** desde los horarios semanales, en la hora local del box (`zonedInstant`). Generar dos veces el mismo rango no duplica (`schedule_id + starts_at` único). Terminar un horario no borra las clases ya generadas.
+- **Reserva en una llamada.** El alumno manda solo la clase; la API elige el plan que la paga: vigente ese día (con pausas), que cubra el programa, con créditos o cupo semanal libre. Si no hay, el error dice por qué (`no_valid_plan`, `plan_excludes_program`, `no_credits_left`, `weekly_limit_reached`).
+- **El crédito se gasta al reservar**, no al asistir, y se devuelve si cancela a tiempo. Con la clase llena entra a la lista de espera sin gastar nada; el crédito se gasta recién cuando sube.
+- **Cancelación tardía** (dentro de `late_cancel_minutes_before`): queda `late_cancelled` y, si el box lo configura, pierde el crédito y cuenta para el límite semanal. Recepción puede perdonarla.
+- **Lista de espera automática** (si el box la tiene activa): al liberarse un lugar sube el primero que todavía puede pagar la clase; el que no, sigue esperando. La función devuelve quiénes subieron, para notificarlos.
+- **Ausencias.** Si el box no cobra las ausencias, marcar `no_show` devuelve el crédito y corregirlo a `attended` lo vuelve a tomar.
+- **Ventana de reserva** solo para alumnos; el staff puede anotar a alguien fuera de ella (pero nunca en una clase empezada o llena).
+- **Concurrencia.** Reservar bloquea la fila de la clase (`FOR UPDATE`) y el descuento de créditos usa `classes_remaining > 0` en la misma sentencia, así dos reservas simultáneas no se llevan el mismo lugar ni el mismo crédito.
+- **Límite semanal** de lunes a domingo, en la hora del box.

@@ -3,17 +3,12 @@ import type { z } from 'zod';
 import { planPrograms, plans, programs } from '@guaranix/db/schema';
 import type { createPlanSchema } from '@guaranix/shared/schemas';
 import { diff, recordAudit } from './audit';
-import { forbidden, notFound, unprocessable } from './errors';
-import { MANAGER_ROLES, isStaff, type ServiceContext } from './context';
-import type { BoxRole } from '@guaranix/shared/domain';
+import { notFound, unprocessable } from './errors';
+import { MANAGER_ROLES, assertRole, isStaff, type ServiceContext } from './context';
 
 export type PlanInput = z.output<typeof createPlanSchema>;
 export type PlanRow = typeof plans.$inferSelect;
 export type PlanWithPrograms = PlanRow & { programIds: string[] };
-
-function assertManager(role: BoxRole) {
-  if (!(MANAGER_ROLES as readonly BoxRole[]).includes(role)) throw forbidden();
-}
 
 async function programIdsByPlan(context: ServiceContext): Promise<Map<string, string[]>> {
   const rows = await context.transaction.select().from(planPrograms);
@@ -62,7 +57,7 @@ export async function createPlan(
   context: ServiceContext,
   input: PlanInput,
 ): Promise<PlanWithPrograms> {
-  assertManager(context.auth.role);
+  assertRole(context.auth.role, MANAGER_ROLES);
   const { programIds, ...fields } = input;
   const [plan] = await context.transaction
     .insert(plans)
@@ -88,7 +83,7 @@ export async function updatePlan(
   planId: string,
   input: PlanInput,
 ): Promise<PlanWithPrograms> {
-  assertManager(context.auth.role);
+  assertRole(context.auth.role, MANAGER_ROLES);
   const before = await getPlan(context, planId);
   const { programIds, ...fields } = input;
   const [plan] = await context.transaction
