@@ -24,6 +24,8 @@ export interface ServiceContext {
 export const STAFF_ROLES = ['box_owner', 'box_admin', 'coach', 'reception'] as const;
 export const MANAGER_ROLES = ['box_owner', 'box_admin'] as const;
 export const FRONT_DESK_ROLES = ['box_owner', 'box_admin', 'reception'] as const;
+/** Who programs WODs. */
+export const COACHING_ROLES = ['box_owner', 'box_admin', 'coach'] as const;
 /** Staff who run a class on the floor: take attendance, see the roster. */
 export const CLASS_STAFF_ROLES = ['box_owner', 'box_admin', 'coach', 'reception'] as const;
 

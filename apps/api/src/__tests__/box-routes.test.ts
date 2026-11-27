@@ -220,3 +220,50 @@ describe('selling a plan and booking, end to end', () => {
     expect(await roster.json()).toMatchObject({ class: { id: classRow.id }, roster: [] });
   });
 });
+
+describe('WODs and results, end to end', () => {
+  it('coach publishes a WOD, the member logs a result and sees the whiteboard', async () => {
+    const { coach, member } = as;
+    const programId = await crossfitOf(harness.boxA.boxId);
+    const date = addDays(today(), 40);
+    const created = await coach.browser.post('/box/workouts', {
+      programId,
+      workoutDate: date,
+      title: 'Cindy',
+      components: [
+        {
+          position: 0,
+          kind: 'metcon',
+          description: '20 min AMRAP: 5 pull-ups, 10 push-ups, 15 squats',
+          scoreType: 'rounds_reps',
+          timerType: 'amrap',
+          timeCapSeconds: 1200,
+        },
+      ],
+    });
+    expect(created.status).toBe(201);
+    const { workout } = await json<{ workout: { id: string; components: { id: string }[] } }>(
+      created,
+    );
+    const componentId = workout.components[0]?.id ?? '';
+
+    const hidden = await json<{ workouts: unknown[] }>(
+      await member.browser.get(`/box/workouts?date=${date}`),
+    );
+    expect(hidden.workouts).toEqual([]);
+    expect((await member.browser.post('/box/workouts', {})).status).toBe(403);
+
+    await coach.browser.post(`/box/workouts/${workout.id}/publish`, {});
+    const logged = await member.browser.post('/box/results', {
+      componentId,
+      scaling: 'rx',
+      rounds: 18,
+      reps: 7,
+    });
+    expect(logged.status).toBe(201);
+    const board = await json<{ entries: { rounds: number; reps: number }[] }>(
+      await member.browser.get(`/box/components/${componentId}/leaderboard`),
+    );
+    expect(board.entries).toEqual([expect.objectContaining({ rounds: 18, reps: 7 })]);
+  });
+});

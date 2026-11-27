@@ -4,6 +4,7 @@ import { bookingRoutes, meRoutes } from './bookings';
 import { classRoutes, programRoutes, scheduleRoutes } from './classes';
 import { memberRoutes } from './members';
 import { memberPlanRoutes, planRoutes } from './plans';
+import { componentRoutes, movementRoutes, resultRoutes, workoutRoutes } from './workouts';
 
 /** Box data under `/box/...`; every router runs inside the session's box scope. */
 export function mountBoxRoutes(app: Hono<AppEnv>) {
@@ -14,5 +15,9 @@ export function mountBoxRoutes(app: Hono<AppEnv>) {
   app.route('/box/schedules', scheduleRoutes);
   app.route('/box/classes', classRoutes);
   app.route('/box/bookings', bookingRoutes);
+  app.route('/box/movements', movementRoutes);
+  app.route('/box/workouts', workoutRoutes);
+  app.route('/box/results', resultRoutes);
+  app.route('/box/components', componentRoutes);
   app.route('/box/me', meRoutes);
 }
