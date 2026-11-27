@@ -131,6 +131,8 @@ export function createBrowser(harness: Harness, origin = APP_ORIGIN) {
       request('GET', path, undefined, headers),
     post: (path: string, body?: unknown, headers?: Record<string, string>) =>
       request('POST', path, body, headers),
+    patch: (path: string, body?: unknown, headers?: Record<string, string>) =>
+      request('PATCH', path, body, headers),
     delete: (path: string, headers?: Record<string, string>) =>
       request('DELETE', path, undefined, headers),
   };

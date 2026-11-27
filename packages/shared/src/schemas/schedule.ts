@@ -85,3 +85,54 @@ export type ClassScheduleInput = z.input<typeof classScheduleSchema>;
 export type ClassSessionInput = z.input<typeof classSessionSchema>;
 export type Booking = z.infer<typeof bookingSchema>;
 export type CreateBookingInput = z.infer<typeof createBookingSchema>;
+
+export const updateProgramSchema = z
+  .object({
+    name: nameSchema,
+    description: z.string().trim().max(500).nullable(),
+    color: hexColorSchema.nullable(),
+    isActive: z.boolean(),
+  })
+  .partial();
+
+export const endScheduleSchema = z.object({ lastDate: calendarDateSchema });
+
+export const generateClassesSchema = z.object({
+  from: calendarDateSchema,
+  days: z.number().int().min(1).max(62),
+});
+
+export const listClassesQuerySchema = z.object({
+  from: calendarDateSchema,
+  to: calendarDateSchema,
+});
+
+export const updateClassSessionSchema = z
+  .object({ capacity: capacitySchema, coachUserId: idSchema.nullable() })
+  .partial();
+
+export const cancelClassSchema = z.object({
+  reason: z.string().trim().max(500).nullable().default(null),
+});
+
+/** Members send only the class; staff also say who they book for. */
+export const bookClassSchema = z.object({
+  classId: idSchema,
+  memberId: idSchema.optional(),
+});
+
+export const cancelBookingSchema = z.object({
+  /** Staff only: waive the late-cancel penalty. */
+  forgiveLateCancel: z.boolean().optional(),
+});
+
+export const attendanceSchema = z.object({
+  entries: z
+    .array(z.object({ bookingId: idSchema, status: z.enum(['attended', 'no_show']) }))
+    .min(1)
+    .max(200),
+});
+
+export type UpdateProgramInput = z.infer<typeof updateProgramSchema>;
+export type BookClassInput = z.infer<typeof bookClassSchema>;
+export type AttendanceInput = z.infer<typeof attendanceSchema>;

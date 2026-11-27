@@ -40,3 +40,12 @@ export const updateMemberSchema = createMemberSchema.partial().extend({
 export type Member = z.infer<typeof memberSchema>;
 export type CreateMemberInput = z.infer<typeof createMemberSchema>;
 export type UpdateMemberInput = z.infer<typeof updateMemberSchema>;
+
+export const listMembersQuerySchema = z.object({
+  search: z.string().trim().max(120).optional(),
+  status: z.enum(MEMBER_STATUSES).optional(),
+  limit: z.coerce.number().int().min(1).max(100).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+export type ListMembersQuery = z.infer<typeof listMembersQuerySchema>;
