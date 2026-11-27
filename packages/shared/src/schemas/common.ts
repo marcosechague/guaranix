@@ -19,7 +19,8 @@ export const phoneE164Schema = z.string().regex(/^\+[1-9]\d{7,14}$/, {
   error: 'Expected an E.164 phone number such as +595981123456',
 });
 
-export const emailSchema = z.email().trim().toLowerCase().max(254);
+// Trim before validating, so a pasted " Ana@Mail.com " is accepted and stored as ana@mail.com.
+export const emailSchema = z.string().trim().toLowerCase().max(254).pipe(z.email());
 
 /** Paraguayan cédula: digits only, no dots. */
 export const documentNumberSchema = z

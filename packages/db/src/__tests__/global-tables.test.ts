@@ -105,6 +105,19 @@ describe('platform plans', () => {
   });
 });
 
+describe('login tables', () => {
+  it.each([
+    'user_credentials',
+    'oauth_accounts',
+    'sessions',
+    'password_reset_tokens',
+    'rate_limit_counters',
+  ])('%s is unreachable from a box', async (table) => {
+    const read = asBoxA((transaction) => transaction.execute(sql.raw(`select * from ${table}`)));
+    expect(await causeOf(read)).toMatch(permissionDenied);
+  });
+});
+
 describe('row level security coverage', () => {
   it('is enabled on every table except the public platform catalog', async () => {
     const result = await withSystemScope(testDatabase.database, (transaction) =>

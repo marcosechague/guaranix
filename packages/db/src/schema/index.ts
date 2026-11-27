@@ -3,6 +3,7 @@
 export * from './enums';
 export * from './rls';
 export * from './platform';
+export * from './auth';
 export * from './people';
 export * from './plans';
 export * from './classes';

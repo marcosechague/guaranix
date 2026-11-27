@@ -1,4 +1,8 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // The auth client uses fetch; Workers and browsers both provide it.
+    "lib": ["ES2023", "DOM"]
+  },
   "include": ["src", "i18n"]
 }
