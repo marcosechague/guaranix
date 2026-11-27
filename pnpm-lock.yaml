@@ -173,28 +173,44 @@ importers:
 
   packages/db:
     dependencies:
+      '@guaranix/shared':
+        specifier: workspace:*
+        version: link:../shared
       drizzle-orm:
         specifier: ^0.45.4
-        version: 0.45.4(@cloudflare/workers-types@5.20261127.1)(postgres@4.1.1)
+        version: 0.45.4(@cloudflare/workers-types@5.20261127.1)(@electric-sql/pglite@0.6.1)(postgres@4.1.1)
       postgres:
         specifier: ^4.1.1
         version: 4.1.1
     devDependencies:
+      '@electric-sql/pglite':
+        specifier: ^0.6.1
+        version: 0.6.1
       '@types/node':
         specifier: ^26.6.11
         version: 26.6.11
       drizzle-kit:
         specifier: ^0.31.11
         version: 0.31.11
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
       typescript:
         specifier: ~6.0.3
         version: 6.0.3
+      vitest:
+        specifier: ^5.1.2
+        version: 5.1.2(@types/node@26.6.11)(vite@8.4.0(@types/node@26.6.11)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.4)(tsx@4.23.15))
 
   packages/messaging: {}
 
   packages/payments: {}
 
   packages/shared:
+    dependencies:
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       typescript:
         specifier: ~6.0.3
@@ -815,6 +831,9 @@ packages:
 
   '@drizzle-team/brocli@0.10.2':
     resolution: {integrity: sha512-z33Il7l5dKjUgGULTqBsQBQwckHh5AbIuxhdsIxDDiZAzBOrZO6q9ogcWC65kU382AfynTfgNumVcNIjuIua6w==}
+
+  '@electric-sql/pglite@0.6.1':
+    resolution: {integrity: sha512-vdKk6mgzw8uqouCyPa20eNhPafF1OI5LXTvdWBj2plJhDHT2j5ohDdVdZUClJrWwU5MZZB018z68qZec/JmjRw==}
 
   '@emnapi/runtime@1.11.3':
     resolution: {integrity: sha512-Xz4Tpyki7XyrpbUK1jR1AhdAdaXyhhY4lZ3neLodmhpuWfy2PAQN5B46sAiU4liOXGLkHypn/qU+jvfWSCYYLA==}
@@ -4465,6 +4484,8 @@ snapshots:
 
   '@drizzle-team/brocli@0.10.2': {}
 
+  '@electric-sql/pglite@0.6.1': {}
+
   '@emnapi/runtime@1.11.3':
     dependencies:
       tslib: 2.9.1
@@ -5582,9 +5603,10 @@ snapshots:
       esbuild: 0.25.12
       tsx: 4.23.15
 
-  drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261127.1)(postgres@4.1.1):
+  drizzle-orm@0.45.4(@cloudflare/workers-types@5.20261127.1)(@electric-sql/pglite@0.6.1)(postgres@4.1.1):
     optionalDependencies:
       '@cloudflare/workers-types': 5.20261127.1
+      '@electric-sql/pglite': 0.6.1
       postgres: 4.1.1
 
   dunder-proto@1.0.1:
