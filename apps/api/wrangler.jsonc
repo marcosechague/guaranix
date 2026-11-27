@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "guaranix-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-11-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "observability": { "enabled": true },
+  "vars": {
+    "APP_ENV": "development",
+  },
+  // The Hyperdrive binding to Neon is added with the first database pull request.
+  // Locally it will point at the Docker Postgres through `localConnectionString`.
+}
