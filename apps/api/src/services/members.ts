@@ -1,4 +1,4 @@
-import { and, asc, eq, ilike, or, sql, type SQL } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, or, sql, type SQL } from 'drizzle-orm';
 import { members } from '@guaranix/db/schema';
 import type { CreateMemberInput, UpdateMemberInput } from '@guaranix/shared/schemas';
 import type { MemberStatus } from '@guaranix/shared/domain';
@@ -43,6 +43,12 @@ export async function listMembers(context: ServiceContext, query: ListMembersQue
     .orderBy(asc(members.lastName), asc(members.firstName), asc(members.id))
     .limit(query.limit)
     .offset(query.offset);
+}
+
+/** Row Level Security already limits the count to the session's box. */
+export async function countMembers(context: ServiceContext): Promise<number> {
+  const [result] = await context.transaction.select({ total: count() }).from(members);
+  return result?.total ?? 0;
 }
 
 /** Staff can open any member of the box; a member only their own profile. */

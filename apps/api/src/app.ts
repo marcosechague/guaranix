@@ -8,6 +8,7 @@ import { googleAuthRoutes } from './routes/auth-google';
 import { passwordAuthRoutes } from './routes/auth-password';
 import { sessionRoutes } from './routes/auth-session';
 import { boxRoutes } from './routes/box';
+import { mountBoxRoutes } from './routes/box/index';
 import { healthRoutes } from './routes/health';
 import { createRuntimeServices } from './services/runtime';
 
@@ -47,6 +48,8 @@ export function createApp(options: AppOptions = {}) {
   app.route('/auth', passwordAuthRoutes);
   app.route('/auth', sessionRoutes);
   app.route('/auth/google', googleAuthRoutes);
+  // Before `/box`: its catch-all box scope would otherwise open a second, nested transaction.
+  mountBoxRoutes(app);
   app.route('/box', boxRoutes);
 
   app.notFound((context) => context.json({ error: 'not_found' }, 404));
