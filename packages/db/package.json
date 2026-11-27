@@ -1,0 +1,27 @@
+{
+  "name": "@guaranix/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Drizzle schema, migrations and seeds for Neon Postgres.",
+  "exports": {
+    ".": "./src/index.ts",
+    "./schema": "./src/schema/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio",
+    "db:check": "node --env-file-if-exists=../../.env scripts/check-connection.ts"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.45.4",
+    "postgres": "^4.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.11",
+    "drizzle-kit": "^0.31.11",
+    "typescript": "~6.0.3"
+  }
+}

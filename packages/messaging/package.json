@@ -1,0 +1,13 @@
+{
+  "name": "@guaranix/messaging",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Push, Telegram, WhatsApp and email behind a common interface.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

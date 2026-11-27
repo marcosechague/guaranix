@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Admin del box</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap">
+<style>
+body{margin:0;background:#0E0F11}
+a{color:#D9F24A}a:hover{color:#ECFF7A}
+</style>
+</helmet>
+<div style="min-height: 900px; background: #0E0F11; color: #F4F5F2; font-family: Inter, system-ui, sans-serif; display: flex; flex-wrap: wrap">
+<aside style="flex: 1 1 220px; max-width: 240px; background: #121316; border-right: 1px solid #2A2C30; padding: 24px 16px; display: flex; flex-direction: column; gap: 6px; box-sizing: border-box">
+<div style="display: flex; align-items: center; gap: 10px; padding: 0 8px 20px">
+<div style="width: 36px; height: 36px; border-radius: 10px; background: #D9F24A; color: #0E0F11; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700">LC</div>
+<div style="display: flex; flex-direction: column"><span style="font-weight: 700; font-size: 15px">LomaCross</span><span style="font-size: 12px; color: #A3A69E">Sede Centro ▾</span></div>
+</div>
+<sc-for list="{{nav}}" as="n" hint-placeholder-count="6">
+<button onClick="{{ n.go }}" style="{{n.style}}">{{n.label}}</button>
+</sc-for>
+</aside>
+
+<main style="flex: 999 1 640px; min-width: 0; padding: 28px 32px; display: flex; flex-direction: column; gap: 20px; box-sizing: border-box">
+<div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center">
+<div style="display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 30px; font-weight: 700">Resumen de noviembre</span>
+<span style="font-size: 14px; color: #A3A69E">Todo en guaraníes · 2 sedes · actualizado hace 2 min</span>
+</div>
+<div style="display: flex; gap: 10px">
+<button style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #2A2C30; background: transparent; color: #F4F5F2; font-weight: 600; font-family: Inter, sans-serif">Nuevo alumno</button>
+<button style="height: 44px; padding: 0 16px; border-radius: 12px; border: 0; background: #D9F24A; color: #0E0F11; font-weight: 700; font-family: Inter, sans-serif">Publicar WOD</button>
+</div>
+</div>
+
+<div style="background: #17181B; border: 1px solid #2A2C30; border-radius: 16px; padding: 14px 18px; display: flex; align-items: center; gap: 12px">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D9F24A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"></path></svg>
+<label for="ask" style="position: absolute; left: -9999px">Preguntale al asistente</label>
+<input id="ask" placeholder="Preguntale al asistente: “¿quién no viene hace 2 semanas?”" style="flex: 1; min-width: 0; height: 40px; border: 0; background: transparent; color: #F4F5F2; font-family: Inter, sans-serif; font-size: 15px">
+<span style="font-size: 12px; color: #A3A69E">También por WhatsApp</span>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px">
+<sc-for list="{{kpis}}" as="k" hint-placeholder-count="4">
+<div style="background: #17181B; border: 1px solid #2A2C30; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 6px">
+<span style="font-size: 13px; color: #A3A69E">{{k.label}}</span>
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 30px; font-weight: 700">{{k.value}}</span>
+<span style="{{k.noteStyle}}">{{k.note}}</span>
+</div>
+</sc-for>
+</div>
+
+<div style="display: flex; flex-wrap: wrap; gap: 14px">
+<section style="flex: 2 1 460px; min-width: 0; background: #17181B; border: 1px solid #2A2C30; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="font-weight: 700; font-size: 16px">Cobros del mes</span>
+<span style="font-size: 13px; color: #A3A69E">Bancard · QR · transferencia · efectivo</span>
+</div>
+<div style="overflow-x: auto">
+<table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 520px">
+<thead><tr style="color: #A3A69E; text-align: left; font-size: 12px">
+<th style="padding: 8px 0; font-weight: 600">Alumno</th><th style="padding: 8px 0; font-weight: 600">Plan</th><th style="padding: 8px 0; font-weight: 600">Medio</th><th style="padding: 8px 0; font-weight: 600">Factura</th><th style="padding: 8px 0; font-weight: 600; text-align: right">Estado</th>
+</tr></thead>
+<tbody>
+<sc-for list="{{pays}}" as="p" hint-placeholder-count="5">
+<tr style="border-top: 1px solid #2A2C30">
+<td style="padding: 11px 0; font-weight: 600">{{p.name}}</td>
+<td style="padding: 11px 0; color: #C9CCC3">{{p.plan}}</td>
+<td style="padding: 11px 0; color: #C9CCC3">{{p.method}}</td>
+<td style="padding: 11px 0; color: #C9CCC3">{{p.inv}}</td>
+<td style="padding: 11px 0; text-align: right"><span style="{{p.badge}}">{{p.status}}</span></td>
+</tr>
+</sc-for>
+</tbody>
+</table>
+</div>
+</section>
+
+<section style="flex: 1 1 300px; min-width: 0; background: #17181B; border: 1px solid #2A2C30; border-radius: 16px; padding: 18px; display: flex; flex-direction: column; gap: 12px">
+<span style="font-weight: 700; font-size: 16px">En riesgo de abandono</span>
+<span style="font-size: 13px; color: #A3A69E">La IA detecta quién bajó la asistencia</span>
+<sc-for list="{{risk}}" as="r" hint-placeholder-count="3">
+<div style="display: flex; align-items: center; gap: 10px; padding: 8px 0; border-top: 1px solid #2A2C30">
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 14px; font-weight: 600">{{r.name}}</span>
+<span style="font-size: 12px; color: #A3A69E">{{r.why}}</span>
+</div>
+<button style="height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid #2A2C30; background: transparent; color: #F4F5F2; font-size: 13px; font-weight: 600; font-family: Inter, sans-serif">WhatsApp</button>
+</div>
+</sc-for>
+</section>
+</div>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) { super(props); this.state = { tab: 'Inicio' }; }
+  renderVals() {
+    const labels = ['Inicio','Calendario','Alumnos','Cobros y facturas','WODs y pizarra','Mensajes','Reportes','Sedes','Configuración'];
+    const nav = labels.map((label) => {
+      const on = this.state.tab === label;
+      return { label, go: () => this.setState({ tab: label }),
+        style: 'height: 42px; text-align: left; padding: 0 12px; border-radius: 10px; border: 0; font-family: Inter, sans-serif; font-size: 14px; font-weight: 600; ' + (on ? 'background: #24261F; color: #D9F24A' : 'background: transparent; color: #C9CCC3') };
+    });
+    const ok = 'font-size: 13px; color: #6EE7A0';
+    const kpis = [
+      { label: 'Cobrado', value: '₲ 8,4 M', note: '+6% vs octubre', noteStyle: ok },
+      { label: 'Pendiente', value: '₲ 600.000', note: '2 alumnos · recordatorio enviado', noteStyle: 'font-size: 13px; color: #FF8A5B' },
+      { label: 'Alumnos activos', value: '31', note: '+4 altas · 0 bajas', noteStyle: ok },
+      { label: 'Ocupación', value: '72%', note: '19:00 casi llena', noteStyle: 'font-size: 13px; color: #A3A69E' }
+    ];
+    const b = (bg, c) => 'font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 99px; background: ' + bg + '; color: ' + c;
+    const pays = [
+      { name: 'Lucía Benítez', plan: 'Ilimitado', method: 'Débito Bancard', inv: 'Emitida', status: 'Pagado', badge: b('#1E3A2A', '#6EE7A0') },
+      { name: 'Juan López', plan: 'Ilimitado', method: 'QR', inv: 'Emitida', status: 'Pagado', badge: b('#1E3A2A', '#6EE7A0') },
+      { name: 'Diego López', plan: '3 x semana', method: 'Transferencia', inv: 'Emitida', status: 'Pagado', badge: b('#1E3A2A', '#6EE7A0') },
+      { name: 'Sofía Benítez', plan: 'Ilimitado', method: 'Débito Bancard', inv: 'Al cobrar', status: 'Reintento mañana', badge: b('#3A2418', '#FF8A5B') },
+      { name: 'Marcos Ruiz', plan: 'Ilimitado', method: 'Efectivo', inv: 'Al cobrar', status: 'Vencido 5 días', badge: b('#3A2418', '#FF8A5B') }
+    ];
+    const risk = [
+      { name: 'Paola Gómez', why: '10 días sin venir · antes 4 x semana' },
+      { name: 'Hugo Ortiz', why: 'Canceló 3 clases seguidas' },
+      { name: 'Ana Villalba', why: 'Bajó de 5 a 1 clase por semana' }
+    ];
+    return { nav, kpis, pays, risk };
+  }
+}
+</script>
+</body>
+</html>

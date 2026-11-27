@@ -1,0 +1,13 @@
+{
+  "name": "@guaranix/payments",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Swappable payment providers behind a common PaymentProvider interface.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}

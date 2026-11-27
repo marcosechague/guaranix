@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Inicio del alumno</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700&amp;display=swap">
+<style>
+body{margin:0}
+a{color:#D9F24A}a:hover{color:#ECFF7A}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #0E0F11; color: #F4F5F2; font-family: Inter, system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+<div style="flex: 1; padding: 28px 20px 16px; display: flex; flex-direction: column; gap: 18px; overflow: hidden">
+<div style="display: flex; align-items: center; justify-content: space-between">
+<div style="display: flex; align-items: center; gap: 12px">
+<div style="width: 44px; height: 44px; border-radius: 12px; background: {{accent}}; color: #0E0F11; display: flex; align-items: center; justify-content: center; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px">LC</div>
+<div style="display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 13px; color: #A3A69E">LomaCross</span>
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700">Hola, Daniel</span>
+</div>
+</div>
+<button aria-label="Notificaciones" style="width: 44px; height: 44px; border-radius: 22px; border: 1px solid #2A2C30; background: #17181B; color: #F4F5F2; display: flex; align-items: center; justify-content: center">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"></path></svg>
+</button>
+</div>
+
+<div style="background: #17181B; border: 1px solid #2A2C30; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 14px">
+<div style="display: flex; justify-content: space-between; align-items: center">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #A3A69E">TU PRÓXIMA CLASE</span>
+<span style="font-size: 12px; font-weight: 600; color: #0E0F11; background: {{accent}}; padding: 4px 10px; border-radius: 99px">Confirmada</span>
+</div>
+<div style="display: flex; align-items: baseline; gap: 10px">
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 44px; font-weight: 700; line-height: 1">19:00</span>
+<span style="font-size: 15px; color: #C9CCC3">Hoy · CrossFit · Coach Ale</span>
+</div>
+<div style="display: flex; align-items: center; gap: 10px">
+<div style="flex: 1; height: 6px; border-radius: 3px; background: #2A2C30; overflow: hidden"><div style="width: 70%; height: 6px; background: {{accent}}"></div></div>
+<span style="font-size: 13px; color: #C9CCC3">14 de 20</span>
+</div>
+<div style="display: flex; gap: 10px">
+<a href="Wod.dc.html" style="flex: 1; height: 44px; border-radius: 12px; background: #F4F5F2; color: #0E0F11; text-decoration: none; font-weight: 600; font-size: 15px; display: flex; align-items: center; justify-content: center">Ver el WOD</a>
+<button style="height: 44px; padding: 0 16px; border-radius: 12px; border: 1px solid #2A2C30; background: transparent; color: #F4F5F2; font-weight: 600; font-size: 15px">Cancelar</button>
+</div>
+</div>
+
+<div style="background: linear-gradient(0deg,#17181B,#17181B); border: 1px solid #2A2C30; border-radius: 20px; padding: 18px; display: flex; flex-direction: column; gap: 8px">
+<span style="font-size: 12px; font-weight: 600; letter-spacing: 0.08em; color: #A3A69E">WOD DE HOY</span>
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 24px; font-weight: 700">Asunción Heat</span>
+<span style="font-size: 15px; color: #C9CCC3; line-height: 1.5">For time · cap 15 min<br>21-15-9 Thrusters 43/30 kg + Pull-ups<br>Cierre: 400 m run</span>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px">
+<div style="background: #17181B; border: 1px solid #2A2C30; border-radius: 16px; padding: 14px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700; color: {{accent}}">12</span>
+<span style="font-size: 12px; color: #A3A69E">días de racha</span>
+</div>
+<div style="background: #17181B; border: 1px solid #2A2C30; border-radius: 16px; padding: 14px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700">3</span>
+<span style="font-size: 12px; color: #A3A69E">PRs este mes</span>
+</div>
+<div style="background: #17181B; border: 1px solid #2A2C30; border-radius: 16px; padding: 14px 12px; display: flex; flex-direction: column; gap: 4px">
+<span style="font-family: 'Space Grotesk', sans-serif; font-size: 26px; font-weight: 700">#4</span>
+<span style="font-size: 12px; color: #A3A69E">ranking box</span>
+</div>
+</div>
+
+<a href="Cuota.dc.html" style="background: #17181B; border: 1px solid #2A2C30; border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; text-decoration: none; color: #F4F5F2">
+<div style="width: 10px; height: 10px; border-radius: 5px; background: #6EE7A0"></div>
+<div style="flex: 1; display: flex; flex-direction: column; gap: 2px">
+<span style="font-size: 15px; font-weight: 600">Cuota al día</span>
+<span style="font-size: 13px; color: #A3A69E">Débito automático el 27/12 · ₲ 300.000</span>
+</div>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#A3A69E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"></path></svg>
+</a>
+</div>
+
+<nav style="height: 76px; border-top: 1px solid #2A2C30; background: #121316; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: center">
+<a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: {{accent}}; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V21H3z"></path></svg>Inicio</a>
+<a href="Reservar.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: #A3A69E; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"></rect><path d="M3 9h18M8 2v4M16 2v4"></path></svg>Reservar</a>
+<a href="Wod.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: #A3A69E; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 6v12M18 6v12M3 9v6M21 9v6M6 12h12"></path></svg>WOD</a>
+<a href="Wod.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: #A3A69E; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"></path><path d="M15 7h6v6"></path></svg>Progreso</a>
+<a href="Cuota.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 4px; text-decoration: none; color: #A3A69E; font-size: 11px; font-weight: 600"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"></path></svg>Perfil</a>
+</nav>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"color","default":"#D9F24A","options":["#D9F24A","#FF6B3D","#4DA3FF","#6EE7A0"]},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { accent: this.props.accent ?? '#D9F24A' };
+  }
+}
+</script>
+</body>
+</html>

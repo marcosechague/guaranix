@@ -1,0 +1,33 @@
+{
+  "app": {
+    "name": "GuaraniX"
+  },
+  "common": {
+    "loading": "Cargando…",
+    "retry": "Reintentar"
+  },
+  "member": {
+    "home": {
+      "greeting": "Hola, {name}",
+      "nextClass": "Tu próxima clase",
+      "bookClass": "Reservá tu clase",
+      "emptyNextClass": "Todavía no tenés clases reservadas. Elegí un horario y reservá en dos toques."
+    }
+  },
+  "admin": {
+    "home": {
+      "title": "Panel del box",
+      "subtitle": "Acá vas a ver alumnos, clases y cobros."
+    }
+  },
+  "platform": {
+    "home": {
+      "title": "Plataforma GuaraniX",
+      "subtitle": "Administrá los boxes, planes y funciones."
+    }
+  },
+  "brodi": {
+    "name": "Brodi",
+    "greeting": "¡Vamos que se puede!"
+  }
+}

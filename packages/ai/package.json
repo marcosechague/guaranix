@@ -1,0 +1,13 @@
+{
+  "name": "@guaranix/ai",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Brodi assistant: tools, prompts and usage limits.",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
