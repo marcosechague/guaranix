@@ -20,7 +20,8 @@
     "db:check": "pnpm --filter @guaranix/db db:check",
     "db:generate": "pnpm --filter @guaranix/db db:generate",
     "db:migrate": "pnpm --filter @guaranix/db db:migrate",
-    "db:studio": "pnpm --filter @guaranix/db db:studio"
+    "db:studio": "pnpm --filter @guaranix/db db:studio",
+    "db:seed": "pnpm --filter @guaranix/db db:seed"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

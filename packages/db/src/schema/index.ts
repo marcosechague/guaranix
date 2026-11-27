@@ -1,3 +1,11 @@
-// Tables are added here, one file per entity, starting with the data-model pull request.
-// Every table holding a box's data must include a `box_id` column (see CLAUDE.md, Seguridad).
-export {};
+// One file per domain. Every table holding a box's data has `box_id`, a
+// `tenant_isolation` RLS policy and composite foreign keys (see CLAUDE.md, Seguridad).
+export * from './enums';
+export * from './rls';
+export * from './platform';
+export * from './people';
+export * from './plans';
+export * from './classes';
+export * from './workouts';
+export * from './billing';
+export * from './audit';

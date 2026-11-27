@@ -1,1 +1,27 @@
-{ "version": "7", "dialect": "postgresql", "entries": [] }
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1795820042917,
+      "tag": "0000_app_role",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795820052207,
+      "tag": "0001_phase_0_schema",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1795820052893,
+      "tag": "0002_app_role_grants",
+      "breakpoints": true
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+import { eq, sql } from 'drizzle-orm';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { auditLogs, boxes, platformPlans, users } from '../schema';
+import { withBoxScope, withSystemScope } from '../scope';
+import { seedDemoBox, seedPlatform } from '../seed';
+import { createTestDatabase, rowsOf } from '../testing/test-database';
+
+let testDatabase: Awaited<ReturnType<typeof createTestDatabase>>;
+let boxA: Awaited<ReturnType<typeof seedDemoBox>>;
+let boxB: Awaited<ReturnType<typeof seedDemoBox>>;
+
+beforeAll(async () => {
+  testDatabase = await createTestDatabase();
+  await seedPlatform(testDatabase.database);
+  boxA = await seedDemoBox(testDatabase.database, { slug: 'box-a', days: 1 });
+  boxB = await seedDemoBox(testDatabase.database, { slug: 'box-b', days: 1 });
+});
+
+afterAll(async () => {
+  await testDatabase.close();
+});
+
+const asBoxA = <T>(work: Parameters<typeof withBoxScope<T>>[2]) =>
+  withBoxScope(testDatabase.database, { boxId: boxA.boxId, userId: boxA.ownerId }, work);
+
+const permissionDenied = /permission denied/;
+const causeOf = (promise: Promise<unknown>) =>
+  promise.then(
+    () => 'resolved',
+    (error: { cause?: unknown }) => String(error.cause ?? error),
+  );
+
+describe('boxes', () => {
+  it('a box sees only itself', async () => {
+    const rows = await asBoxA((transaction) => transaction.select({ id: boxes.id }).from(boxes));
+    expect(rows).toEqual([{ id: boxA.boxId }]);
+  });
+
+  it('a box can edit its profile but not its status or plan', async () => {
+    await asBoxA((transaction) =>
+      transaction.update(boxes).set({ city: 'Luque' }).where(eq(boxes.id, boxA.boxId)),
+    );
+    const status = asBoxA((transaction) =>
+      transaction.update(boxes).set({ status: 'active' }).where(eq(boxes.id, boxA.boxId)),
+    );
+    expect(await causeOf(status)).toMatch(permissionDenied);
+  });
+});
+
+describe('users', () => {
+  it('a box sees only the people linked to it', async () => {
+    const rows = await asBoxA((transaction) => transaction.select({ id: users.id }).from(users));
+    expect(rows.map((row) => row.id).sort()).toEqual([boxA.ownerId, boxA.coachId].sort());
+    expect(rows.map((row) => row.id)).not.toContain(boxB.ownerId);
+  });
+
+  it('nobody can make themselves platform admin from a box', async () => {
+    const escalation = asBoxA((transaction) =>
+      transaction.update(users).set({ isPlatformAdmin: true }).where(eq(users.id, boxA.ownerId)),
+    );
+    expect(await causeOf(escalation)).toMatch(permissionDenied);
+  });
+
+  it('a user can rename only themselves', async () => {
+    const renamed = await asBoxA((transaction) =>
+      transaction
+        .update(users)
+        .set({ fullName: 'Coach Renombrado' })
+        .where(eq(users.id, boxA.coachId))
+        .returning(),
+    );
+    expect(renamed).toEqual([]);
+  });
+});
+
+describe('audit log', () => {
+  it('is append-only for boxes', async () => {
+    const update = asBoxA((transaction) => transaction.update(auditLogs).set({ action: 'x.y' }));
+    const remove = asBoxA((transaction) => transaction.delete(auditLogs));
+    expect(await causeOf(update)).toMatch(permissionDenied);
+    expect(await causeOf(remove)).toMatch(permissionDenied);
+  });
+
+  it('does not accept entries for another box', async () => {
+    const forged = asBoxA((transaction) =>
+      transaction.insert(auditLogs).values({ boxId: boxB.boxId, action: 'x.y', entityType: 'x' }),
+    );
+    expect(await causeOf(forged)).toMatch(/row-level security/);
+  });
+});
+
+describe('platform plans', () => {
+  it('are readable but not writable from a box', async () => {
+    const plans = await asBoxA((transaction) => transaction.select().from(platformPlans));
+    expect(plans.length).toBeGreaterThan(0);
+    const insert = asBoxA((transaction) =>
+      transaction.insert(platformPlans).values({
+        code: 'free',
+        name: 'Gratis',
+        monthlyPriceGs: 0,
+        extraLocationMonthlyPriceGs: 0,
+      }),
+    );
+    expect(await causeOf(insert)).toMatch(permissionDenied);
+  });
+});
+
+describe('row level security coverage', () => {
+  it('is enabled on every table except the public platform catalog', async () => {
+    const result = await withSystemScope(testDatabase.database, (transaction) =>
+      transaction.execute(sql`
+        select c.relname as table_name, c.relrowsecurity as rls,
+          (select count(*)::int from pg_policies p where p.tablename = c.relname) as policies
+        from pg_class c join pg_namespace n on n.oid = c.relnamespace
+        where n.nspname = 'public' and c.relkind = 'r'`),
+    );
+    const unprotected = rowsOf<{ table_name: string; rls: boolean; policies: number }>(result)
+      .filter((row) => !row.rls || row.policies === 0)
+      .map((row) => row.table_name);
+    expect(unprotected).toEqual(['platform_plans']);
+  });
+});
