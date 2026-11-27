@@ -92,6 +92,8 @@ export const users = pgTable(
     phone: text(),
     fullName: text().notNull(),
     isPlatformAdmin: boolean().notNull().default(false),
+    /** Set when the person proves they own the email (reset link or Google). */
+    emailVerifiedAt: timestamp({ withTimezone: true }),
     lastLoginAt: timestamp({ withTimezone: true }),
     ...timestamps(),
   },

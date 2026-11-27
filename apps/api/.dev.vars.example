@@ -1,0 +1,18 @@
+# Copy to `.dev.vars` (git-ignored) for `wrangler dev`. Never put real production values here.
+
+# Same database as the root .env (change the port if you moved Postgres, e.g. 54329).
+DATABASE_URL=postgres://guaranix:guaranix@localhost:5432/guaranix
+
+# Any long random string locally. In Cloudflare: `wrangler secret put AUTH_SECRET`
+# with `openssl rand -base64 48`. Changing it invalidates every password.
+AUTH_SECRET=dev-only-secret-change-me-0123456789abcdefghijklmnop
+
+# Optional in development. Leave them out and login works with email and
+# password only: no captcha, no Google button, reset emails printed to the terminal.
+# Cloudflare's Turnstile test keys (always pass) if you want to see the widget:
+# TURNSTILE_SITE_KEY=1x00000000000000000000AA
+# TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# GOOGLE_CLIENT_ID=
+# GOOGLE_CLIENT_SECRET=
+# RESEND_API_KEY=
+# EMAIL_FROM=GuaraniX <no-responder@tu-dominio>

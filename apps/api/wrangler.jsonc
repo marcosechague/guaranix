@@ -7,7 +7,11 @@
   "observability": { "enabled": true },
   "vars": {
     "APP_ENV": "development",
+    "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:5174,http://localhost:5175",
+    "PUBLIC_API_URL": "http://localhost:8787",
   },
-  // The Hyperdrive binding to Neon is added with the first database pull request.
-  // Locally it will point at the Docker Postgres through `localConnectionString`.
+  // Secrets never go here. Locally they live in `.dev.vars` (see `.dev.vars.example`);
+  // in Cloudflare, `wrangler secret put AUTH_SECRET` and so on.
+  // The Hyperdrive binding to Neon is added with the first deploy; until then
+  // the Worker reads DATABASE_URL from `.dev.vars`.
 }

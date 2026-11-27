@@ -12,23 +12,23 @@ GuaraniX es un SaaS para boxes de CrossFit, centros de entrenamiento funcional y
 
 ## Stack
 
-| Capa               | Tecnología                                                                                              |
-| ------------------ | ------------------------------------------------------------------------------------------------------- |
-| Monorepo           | pnpm workspaces + Turborepo                                                                             |
-| Frontend           | React + TypeScript + Vite, como **PWA** (después empaquetada con Capacitor para App Store y Play Store) |
-| Estilos            | Tailwind CSS con tokens de diseño propios (ver "Diseño")                                                |
-| Componentes        | Librería propia en `packages/ui`, construida sobre Radix UI primitives                                  |
-| Animaciones        | Motion (framer-motion) — solo animaciones cortas y livianas                                             |
-| Estado servidor    | TanStack Query                                                                                          |
-| Formularios        | React Hook Form + Zod                                                                                   |
-| API                | Cloudflare Workers + Hono + TypeScript                                                                  |
-| Base de datos      | Neon Postgres + Drizzle ORM, conectada vía Cloudflare Hyperdrive                                        |
-| Validación         | Zod, con esquemas compartidos entre frontend y API (`packages/shared`)                                  |
-| Tareas programadas | Cloudflare Cron Triggers (cobros, recordatorios, vencimientos)                                          |
-| Colas              | Cloudflare Queues (envío de WhatsApp/Telegram/push, emisión de facturas)                                |
-| Archivos           | Cloudflare R2                                                                                           |
-| Auth               | Login sin contraseña: código de 6 dígitos por email o WhatsApp. Sesiones con cookies `HttpOnly`         |
-| Tests              | Vitest (unitarios), Playwright (end-to-end de flujos críticos)                                          |
+| Capa               | Tecnología                                                                                                                                          |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Monorepo           | pnpm workspaces + Turborepo                                                                                                                         |
+| Frontend           | React + TypeScript + Vite, como **PWA** (después empaquetada con Capacitor para App Store y Play Store)                                             |
+| Estilos            | Tailwind CSS con tokens de diseño propios (ver "Diseño")                                                                                            |
+| Componentes        | Librería propia en `packages/ui`, construida sobre Radix UI primitives                                                                              |
+| Animaciones        | Motion (framer-motion) — solo animaciones cortas y livianas                                                                                         |
+| Estado servidor    | TanStack Query                                                                                                                                      |
+| Formularios        | React Hook Form + Zod                                                                                                                               |
+| API                | Cloudflare Workers + Hono + TypeScript                                                                                                              |
+| Base de datos      | Neon Postgres + Drizzle ORM, conectada vía Cloudflare Hyperdrive                                                                                    |
+| Validación         | Zod, con esquemas compartidos entre frontend y API (`packages/shared`)                                                                              |
+| Tareas programadas | Cloudflare Cron Triggers (cobros, recordatorios, vencimientos)                                                                                      |
+| Colas              | Cloudflare Queues (envío de WhatsApp/Telegram/push, emisión de facturas)                                                                            |
+| Archivos           | Cloudflare R2                                                                                                                                       |
+| Auth               | Email y contraseña o Google, con Turnstile y "Olvidé mi contraseña" por email (Resend). Sesiones con cookies `HttpOnly` (ver `docs/decisions/0003`) |
+| Tests              | Vitest (unitarios), Playwright (end-to-end de flujos críticos)                                                                                      |
 
 ### Estructura del repo
 
@@ -121,7 +121,7 @@ Las pantallas de referencia están en `docs/design/` (ver su `README.md`).
 Manejamos datos personales y dinero de terceros. La seguridad no es opcional.
 
 - **Multi-tenant estricto**: toda tabla de datos de un centro tiene `box_id`. Toda consulta filtra por el `box_id` de la sesión. Agregá tests que prueben que un box **no puede** ver datos de otro.
-- **Autorización por rol** en cada endpoint: `platform_admin`, `box_owner`, `box_admin`, `coach`, `reception`, `member`. Por defecto, denegar.
+- **Autorización por rol** en cada endpoint: `platform_admin`, `box_owner`, `box_admin`, `coach`, `reception`, `member`. Por defecto, denegar. Toda ruta privada pasa por `authGate` (`apps/api/src/middleware/auth-gate.ts`); las rutas de un box se arman con `createBoxRouter()`, que exige los roles permitidos y corre el pedido dentro de `withBoxScope` con el `box_id` de la sesión.
 - **Validar toda entrada** con Zod en la API, aunque el frontend ya valide.
 - **Nunca guardar datos de tarjeta.** Solo tokens del proveedor de pagos.
 - **Webhooks de pagos**: verificar firma, ser idempotentes (no cobrar ni marcar pagado dos veces), registrar cada evento.

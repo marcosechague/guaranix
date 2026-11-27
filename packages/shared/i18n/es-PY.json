@@ -4,7 +4,8 @@
   },
   "common": {
     "loading": "Cargando…",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "or": "o"
   },
   "member": {
     "home": {
@@ -29,5 +30,94 @@
   "brodi": {
     "name": "Brodi",
     "greeting": "¡Vamos que se puede!"
+  },
+  "auth": {
+    "login": {
+      "title": "Ingresá a tu cuenta",
+      "email": "Email",
+      "password": "Contraseña",
+      "submit": "Ingresar",
+      "forgot": "Olvidé mi contraseña",
+      "noAccount": "¿No tenés cuenta?",
+      "signupLink": "Creá una",
+      "subtitleWithGoogle": "Usá tu email y contraseña, o tu cuenta de Google.",
+      "subtitle": "Usá tu email y contraseña."
+    },
+    "google": {
+      "continue": "Continuar con Google",
+      "link": "Vincular Google",
+      "unlink": "Desvincular Google",
+      "linked": "Tu cuenta de Google está vinculada.",
+      "notLinked": "Todavía no vinculaste Google."
+    },
+    "signup": {
+      "title": "Creá tu cuenta",
+      "fullName": "Nombre y apellido",
+      "submit": "Crear cuenta",
+      "hasAccount": "¿Ya tenés cuenta?",
+      "loginLink": "Ingresá",
+      "passwordHint": "Mínimo 8 caracteres. Una frase larga es más segura que una contraseña rara."
+    },
+    "forgot": {
+      "title": "Recuperá tu contraseña",
+      "subtitle": "Te mandamos un link a tu email para crear una nueva.",
+      "submit": "Mandame el link",
+      "sent": "Si hay una cuenta con ese email, te llega un link en unos minutos. Revisá también spam.",
+      "back": "Volver a ingresar"
+    },
+    "reset": {
+      "title": "Creá una contraseña nueva",
+      "password": "Contraseña nueva",
+      "submit": "Guardar e ingresar"
+    },
+    "account": {
+      "title": "Seguridad de tu cuenta",
+      "passwordSet": "Tenés una contraseña.",
+      "passwordMissing": "Entraste con Google. Podés crear una contraseña para ingresar también con tu email.",
+      "currentPassword": "Contraseña actual",
+      "newPassword": "Contraseña nueva",
+      "changePassword": "Cambiar contraseña",
+      "createPassword": "Crear contraseña",
+      "saved": "Listo, guardamos los cambios.",
+      "logout": "Cerrar sesión"
+    },
+    "noBox": {
+      "title": "Todavía no estás en ningún box",
+      "subtitle": "Pedile a tu box que te agregue con este email: {email}"
+    },
+    "noStaffAccess": {
+      "title": "No tenés acceso al panel",
+      "subtitle": "El panel es para dueños, administradores, coaches y recepción. Si trabajás en el box, pedile al dueño que te dé un rol."
+    },
+    "captcha": {
+      "label": "Verificación de seguridad"
+    },
+    "errors": {
+      "invalid_credentials": "El email o la contraseña no coinciden.",
+      "email_taken": "Ya hay una cuenta con ese email. Ingresá o recuperá tu contraseña.",
+      "captcha_failed": "No pudimos verificar que sos una persona. Probá de nuevo.",
+      "rate_limited": "Hiciste muchos intentos. Esperá unos minutos y probá de nuevo.",
+      "invalid_reset_token": "El link venció o ya se usó. Pedí uno nuevo.",
+      "current_password_required": "Escribí tu contraseña actual.",
+      "google_already_linked": "Esa cuenta de Google ya está vinculada a otro usuario.",
+      "google_not_configured": "El ingreso con Google todavía no está disponible.",
+      "google_failed": "No pudimos ingresar con Google. Probá de nuevo.",
+      "last_sign_in_method": "Creá una contraseña antes de desvincular Google, así no te quedás sin forma de ingresar.",
+      "not_a_member": "No pertenecés a ese box.",
+      "unauthenticated": "Tu sesión terminó. Ingresá de nuevo.",
+      "forbidden": "No tenés permiso para hacer esto.",
+      "csrf_failed": "La página quedó desactualizada. Recargala y probá de nuevo.",
+      "validation_failed": "Revisá los datos e intentá de nuevo.",
+      "internal_error": "Algo salió mal de nuestro lado. Probá de nuevo en un rato."
+    },
+    "email": {
+      "resetSubject": "Creá tu nueva contraseña de GuaraniX",
+      "resetBody": "Hola, {name}.\n\nPara crear una contraseña nueva entrá a este link:\n{link}\n\nEl link vence en {minutes} minutos y sirve una sola vez. Si no lo pediste vos, ignorá este email: tu contraseña sigue igual.\n\nGuaraniX"
+    },
+    "validation": {
+      "email": "Escribí un email válido.",
+      "passwordLength": "La contraseña tiene que tener entre 8 y 128 caracteres.",
+      "required": "Completá este campo."
+    }
   }
 }

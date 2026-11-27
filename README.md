@@ -26,12 +26,31 @@ pnpm db:up                  # levanta Postgres 17 en Docker y espera a que esté
 pnpm db:check               # confirma que llegás a la base
 pnpm db:migrate             # aplica las migraciones de Drizzle
 pnpm db:seed                # crea un box demo con la plantilla paraguaya
+cp apps/api/.dev.vars.example apps/api/.dev.vars   # variables de la API (ajustá el puerto de la base)
 pnpm dev                    # levanta las 3 apps y la API en paralelo
 ```
 
 Después abrí http://localhost:5173 (alumno), http://localhost:5174 (box), http://localhost:5175 (plataforma) y http://localhost:8787/health (API).
 
 Para levantar una sola app: `pnpm --filter @guaranix/member dev`.
+
+### Login
+
+En desarrollo el login anda sin cuentas externas: sin captcha, sin botón de Google, y los emails de "Olvidé mi contraseña" se imprimen en la terminal de la API (`[dev email] ...`) con el link para abrir. Los usuarios del seed no tienen contraseña: entrá a http://localhost:5174, tocá "Olvidé mi contraseña" con `owner@box-demo-asuncion.local` y abrí el link de la terminal. O creá una cuenta nueva desde "Creá una".
+
+Para probar Turnstile, descomentá las claves de prueba en `apps/api/.dev.vars`. Para Google, seguí los pasos de abajo.
+
+#### Configurar Google (una vez)
+
+1. En [Google Cloud Console](https://console.cloud.google.com/), creá un proyecto (por ejemplo "GuaraniX").
+2. **APIs y servicios → Pantalla de consentimiento de OAuth**: tipo "Externo", nombre GuaraniX, email de soporte, y los alcances `openid`, `email` y `profile`. Mientras esté en modo prueba, agregá tu email como usuario de prueba.
+3. **Credenciales → Crear credenciales → ID de cliente de OAuth**, tipo "Aplicación web".
+4. **URIs de redireccionamiento autorizados**: `http://localhost:8787/auth/google/callback` para desarrollo y `https://<dominio-de-la-api>/auth/google/callback` para producción.
+5. Copiá el ID y el secreto a `apps/api/.dev.vars` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`). En Cloudflare: `wrangler secret put GOOGLE_CLIENT_ID` y `wrangler secret put GOOGLE_CLIENT_SECRET`.
+
+#### Producción
+
+En staging y producción la API no arranca si falta alguna de estas: `AUTH_SECRET`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `RESEND_API_KEY` y `EMAIL_FROM` (un remitente verificado en Resend). Además, `ALLOWED_ORIGINS` con los dominios de las apps y `PUBLIC_API_URL` con el de la API. Detalles en `docs/decisions/0003-login-y-sesiones.md`.
 
 ### Base de datos
 

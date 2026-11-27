@@ -10,10 +10,16 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "hono": "^4.13.23"
+    "@guaranix/db": "workspace:*",
+    "@guaranix/messaging": "workspace:*",
+    "@guaranix/shared": "workspace:*",
+    "drizzle-orm": "^0.45.4",
+    "hono": "^4.13.23",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261127.1",
+    "@types/node": "^26.6.11",
     "typescript": "~6.0.3",
     "vitest": "^5.1.2",
     "wrangler": "^4.169.0"

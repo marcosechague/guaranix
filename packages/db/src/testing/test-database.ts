@@ -1,10 +1,11 @@
 import { PGlite } from '@electric-sql/pglite';
 import { drizzle } from 'drizzle-orm/pglite';
 import { migrate } from 'drizzle-orm/pglite/migrator';
+import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import * as schema from '../schema';
 
-const migrationsFolder = fileURLToPath(new URL('../../migrations', import.meta.url));
+const migrationsFolder = resolve(dirname(fileURLToPath(import.meta.url)), '../../migrations');
 
 /** In-memory Postgres with every migration applied, so tests need no Docker. */
 export async function createTestDatabase() {
@@ -14,7 +15,4 @@ export async function createTestDatabase() {
   return { database, close: () => client.close() };
 }
 
-/** `execute` returns `{ rows }` on PGlite but an array on postgres-js; tests only use PGlite. */
-export function rowsOf<Row>(result: unknown): Row[] {
-  return (result as { rows: Row[] }).rows;
-}
+export { rowsOf } from '../rows';

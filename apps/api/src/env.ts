@@ -1,7 +1,58 @@
+import type { SchemaDatabase } from '@guaranix/db';
+import type { EmailSender } from '@guaranix/messaging';
+import type { CaptchaVerifier } from './integrations/captcha';
+import type { GoogleOAuth } from './integrations/google-oauth';
+
+export type AppEnvironment = 'development' | 'staging' | 'production';
+
 export interface Bindings {
-  APP_ENV: 'development' | 'staging' | 'production';
+  APP_ENV: AppEnvironment;
+  /** Comma-separated origins of the web apps, e.g. `http://localhost:5173,http://localhost:5174`. */
+  ALLOWED_ORIGINS: string;
+  /** Public URL of this API, used for the Google redirect URI. */
+  PUBLIC_API_URL: string;
+  /** Neon through Hyperdrive in Cloudflare. */
+  HYPERDRIVE?: Hyperdrive;
+  /** Local Postgres, from `.dev.vars`. Ignored when HYPERDRIVE is bound. */
+  DATABASE_URL?: string;
+  /** Secret (`wrangler secret put`) for the password pepper, CSRF tokens and rate-limit keys. */
+  AUTH_SECRET: string;
+  // Integrations below are optional in development (login works without them)
+  // and required everywhere else: see `readIntegrationConfig`.
+  /** Public key the apps render the Turnstile widget with. */
+  TURNSTILE_SITE_KEY?: string;
+  TURNSTILE_SECRET_KEY?: string;
+  GOOGLE_CLIENT_ID?: string;
+  GOOGLE_CLIENT_SECRET?: string;
+  RESEND_API_KEY?: string;
+  /** Verified Resend sender, e.g. `GuaraniX <no-responder@guaranix.com.py>`. */
+  EMAIL_FROM?: string;
+}
+
+/** External integrations, swapped for fakes in tests. */
+export interface Services {
+  database(): SchemaDatabase;
+  emailSender: EmailSender;
+  /** Null when captcha is off (development without Turnstile keys). */
+  captcha: CaptchaVerifier | null;
+  /** Null when Google sign-in is off (development without Google keys). */
+  google: GoogleOAuth | null;
+}
+
+export interface AuthenticatedSession {
+  id: string;
+  token: string;
+  userId: string;
+  activeBoxId: string | null;
+  isPlatformAdmin: boolean;
+}
+
+export interface Variables {
+  services: Services;
+  session: AuthenticatedSession | null;
 }
 
 export interface AppEnv {
   Bindings: Bindings;
+  Variables: Variables;
 }
