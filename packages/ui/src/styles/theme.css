@@ -6,6 +6,7 @@
  * Color values must match `src/tokens/colors.ts` (enforced by colors.test.ts).
  */
 @source '../components';
+@source '../auth';
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 

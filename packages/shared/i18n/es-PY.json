@@ -34,13 +34,14 @@
   "auth": {
     "login": {
       "title": "Ingresá a tu cuenta",
-      "subtitle": "Usá tu email y contraseña, o tu cuenta de Google.",
       "email": "Email",
       "password": "Contraseña",
       "submit": "Ingresar",
       "forgot": "Olvidé mi contraseña",
       "noAccount": "¿No tenés cuenta?",
-      "signupLink": "Creá una"
+      "signupLink": "Creá una",
+      "subtitleWithGoogle": "Usá tu email y contraseña, o tu cuenta de Google.",
+      "subtitle": "Usá tu email y contraseña."
     },
     "google": {
       "continue": "Continuar con Google",
