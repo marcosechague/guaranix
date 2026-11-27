@@ -60,7 +60,11 @@ export function AuthGate({ children }: AuthGateProps) {
     );
   }
   if (session === undefined) return <GateSkeleton />;
-  if (session) return children(session);
+  if (session) {
+    // After logging out, start again at login, not at the form used to get in.
+    if (screen !== 'login') setScreen('login');
+    return children(session);
+  }
   if (screen === 'signup') return <SignupForm onLogin={() => setScreen('login')} />;
   if (screen === 'forgot') return <ForgotPasswordForm onBack={() => setScreen('login')} />;
   return (
