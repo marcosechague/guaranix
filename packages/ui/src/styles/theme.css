@@ -1,0 +1,123 @@
+/*
+ * GuaraniX design tokens for Tailwind CSS v4.
+ * Usage in an app stylesheet:
+ *   @import 'tailwindcss';
+ *   @import '@guaranix/ui/theme.css';
+ * Color values must match `src/tokens/colors.ts` (enforced by colors.test.ts).
+ */
+@source '../components';
+
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
+
+:root,
+[data-theme='dark'] {
+  color-scheme: dark;
+  --gx-color-background: #0e0f11;
+  --gx-color-surface: #17181b;
+  --gx-color-surface-sunken: #121316;
+  --gx-color-border: #2a2c30;
+  --gx-color-divider: #2a2c30;
+  --gx-color-text: #f4f5f2;
+  --gx-color-text-soft: #c9ccc3;
+  --gx-color-text-secondary: #a3a69e;
+  --gx-color-accent: #d9f24a;
+  --gx-color-accent-hover: #ecff7a;
+  --gx-color-accent-text: #d9f24a;
+  --gx-color-on-accent: #0e0f11;
+  --gx-color-accent-soft: #24261f;
+  --gx-color-success: #6ee7a0;
+  --gx-color-success-soft: #1e3a2a;
+  --gx-color-warning: #ff8a5b;
+  --gx-color-warning-soft: #3a2418;
+}
+
+[data-theme='light'] {
+  color-scheme: light;
+  --gx-color-background: #f4f5f2;
+  --gx-color-surface: #ffffff;
+  --gx-color-surface-sunken: #e8eae3;
+  --gx-color-border: #dee0d8;
+  --gx-color-divider: #e8eae3;
+  --gx-color-text: #141513;
+  --gx-color-text-soft: #44473f;
+  --gx-color-text-secondary: #5c5f57;
+  --gx-color-accent: #d9f24a;
+  --gx-color-accent-hover: #ecff7a;
+  --gx-color-accent-text: #3a4a00;
+  --gx-color-on-accent: #0e0f11;
+  --gx-color-accent-soft: #eef0e0;
+  --gx-color-success: #2f6b3f;
+  --gx-color-success-soft: #e3f2df;
+  --gx-color-warning: #8a2e0e;
+  --gx-color-warning-soft: #fbe6dc;
+}
+
+/* `inline` keeps utilities pointing at the runtime variables, so a box can override its accent. */
+@theme inline {
+  --color-*: initial;
+  --color-transparent: transparent;
+  --color-current: currentColor;
+  --color-background: var(--gx-color-background);
+  --color-surface: var(--gx-color-surface);
+  --color-surface-sunken: var(--gx-color-surface-sunken);
+  --color-border: var(--gx-color-border);
+  --color-divider: var(--gx-color-divider);
+  --color-text: var(--gx-color-text);
+  --color-text-soft: var(--gx-color-text-soft);
+  --color-text-secondary: var(--gx-color-text-secondary);
+  --color-accent: var(--gx-color-accent);
+  --color-accent-hover: var(--gx-color-accent-hover);
+  --color-accent-text: var(--gx-color-accent-text);
+  --color-on-accent: var(--gx-color-on-accent);
+  --color-accent-soft: var(--gx-color-accent-soft);
+  --color-success: var(--gx-color-success);
+  --color-success-soft: var(--gx-color-success-soft);
+  --color-warning: var(--gx-color-warning);
+  --color-warning-soft: var(--gx-color-warning-soft);
+}
+
+@theme {
+  --font-*: initial;
+  --font-display: 'Space Grotesk Variable', 'Space Grotesk', system-ui, sans-serif;
+  --font-sans: 'Inter Variable', Inter, system-ui, sans-serif;
+
+  --radius-*: initial;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-pill: 9999px;
+
+  --spacing-touch: 44px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --duration-fast: 150ms;
+  --duration-base: 200ms;
+  --duration-slow: 250ms;
+}
+
+@layer base {
+  html {
+    background-color: var(--gx-color-background);
+    color: var(--gx-color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--gx-color-accent);
+    outline-offset: 2px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

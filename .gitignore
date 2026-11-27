@@ -11,3 +11,4 @@ dev-dist/
 .DS_Store
 playwright-report/
 test-results/
+!.env.example
