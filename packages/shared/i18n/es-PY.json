@@ -159,6 +159,18 @@
     "no_valid_plan": "No tenés un plan vigente para ese día. Pasá por recepción o renová tu plan.",
     "plan_excludes_program": "Tu plan no incluye este programa.",
     "no_credits_left": "No te quedan clases en tu plan.",
-    "weekly_limit_reached": "Ya usaste todas las clases de esta semana."
+    "weekly_limit_reached": "Ya usaste todas las clases de esta semana.",
+    "cannot_bump_own_result": "No podés darte un fist bump a vos mismo.",
+    "component_not_found": "No encontramos esa parte del WOD.",
+    "component_not_scored": "Esta parte del WOD no lleva resultado.",
+    "component_positions_repeated": "Hay dos partes del WOD en el mismo lugar.",
+    "movement_name_taken": "Ya hay un movimiento con ese nombre.",
+    "movement_not_found": "No encontramos ese movimiento.",
+    "result_not_found": "No encontramos ese resultado.",
+    "score_incomplete": "Completá tu resultado: faltan datos para este tipo de puntuación.",
+    "workout_exists": "Ya hay un WOD para ese programa y ese día.",
+    "workout_not_found": "No encontramos ese WOD.",
+    "workout_has_results": "Este WOD ya tiene resultados cargados, así que no se puede cambiar su estructura ni borrar.",
+    "workout_move_not_allowed": "No se puede mover un WOD a otro día o programa. Creá uno nuevo."
   }
 }

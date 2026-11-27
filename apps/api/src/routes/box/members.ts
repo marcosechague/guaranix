@@ -14,6 +14,7 @@ import {
   listMembers,
   updateMember,
 } from '../../services/members';
+import { listPersonalRecords } from '../../services/workout-results';
 import { FRONT_DESK, STAFF } from './roles';
 
 const routes = createBoxRouter();
@@ -68,6 +69,12 @@ routes.post('/:memberId/plans', FRONT_DESK, (context) =>
     },
     201,
   ),
+);
+
+routes.get('/:memberId/records', STAFF, (context) =>
+  respond(context, async (service) => ({
+    records: await listPersonalRecords(service, idParam(context, 'memberId', 'member')),
+  })),
 );
 
 export const memberRoutes = routes.router;

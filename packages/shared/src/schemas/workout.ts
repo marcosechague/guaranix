@@ -123,3 +123,13 @@ export type MovementInput = z.infer<typeof movementSchema>;
 export type WorkoutComponentInput = z.input<typeof workoutComponentSchema>;
 export type CreateWorkoutInput = z.input<typeof createWorkoutSchema>;
 export type PersonalRecordInput = z.input<typeof personalRecordSchema>;
+
+/** Members log their own score; staff also say for whom. */
+export const logResultSchema = workoutResultSchema.extend({ memberId: idSchema.optional() });
+
+export const listWorkoutsQuerySchema = z.object({
+  date: calendarDateSchema,
+  programId: idSchema.optional(),
+});
+
+export type LogResultInput = z.output<typeof logResultSchema>;

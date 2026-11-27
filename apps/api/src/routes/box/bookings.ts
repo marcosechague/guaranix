@@ -4,6 +4,7 @@ import { idParam, parseBody, respond } from '../../lib/service-route';
 import { bookClass, cancelBooking, listOwnBookings } from '../../services/bookings';
 import { listMemberPlans } from '../../services/member-plans';
 import { getOwnMember } from '../../services/members';
+import { listOwnPersonalRecords } from '../../services/workout-results';
 import { ANY_ROLE, MEMBERS_ONLY } from './roles';
 
 const bookings = createBoxRouter();
@@ -45,6 +46,10 @@ me.get('/bookings', MEMBERS_ONLY, (context) =>
   respond(context, async (service) => ({
     bookings: await listOwnBookings(service, service.now),
   })),
+);
+
+me.get('/records', MEMBERS_ONLY, (context) =>
+  respond(context, async (service) => ({ records: await listOwnPersonalRecords(service) })),
 );
 
 export const meRoutes = me.router;
