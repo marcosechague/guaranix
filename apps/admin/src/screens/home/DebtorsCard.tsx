@@ -43,7 +43,7 @@ export function DebtorsCard({ onCollect, limit = 5 }: DebtorsCardProps) {
               >
                 <Avatar firstName={debtor.firstName} lastName={debtor.lastName} size="sm" />
                 <span className="flex min-w-0 flex-1 flex-col">
-                  <span className="truncate font-semibold">
+                  <span className="line-clamp-2 font-semibold">
                     {debtor.firstName} {debtor.lastName}
                   </span>
                   <span className="text-xs text-text-secondary">

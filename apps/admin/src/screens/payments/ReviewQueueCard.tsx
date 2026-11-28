@@ -47,8 +47,8 @@ export function ReviewQueueCard() {
               >
                 <span className="flex min-w-0 flex-1 items-center gap-3">
                   <Avatar firstName={payment.firstName} lastName={payment.lastName} size="sm" />
-                  <span className="flex min-w-0 flex-col">
-                    <span className="truncate font-semibold">{name}</span>
+                  <span className="flex min-w-0 flex-1 flex-col">
+                    <span className="line-clamp-2 font-semibold">{name}</span>
                     <span className="flex flex-wrap items-center gap-2 text-xs text-text-secondary">
                       <PaymentMethodBadge method={payment.method} />
                       {payment.reference
@@ -57,9 +57,9 @@ export function ReviewQueueCard() {
                       <span>{formatShortDate(dateOfInstant(timeZone, payment.paidAt))}</span>
                     </span>
                   </span>
-                </span>
-                <span className="font-display text-lg font-bold tabular-nums">
-                  {formatGuarani(payment.amountGs)}
+                  <span className="shrink-0 font-display text-lg font-bold tabular-nums">
+                    {formatGuarani(payment.amountGs)}
+                  </span>
                 </span>
                 <span className="flex gap-2">
                   <Button

@@ -24,7 +24,7 @@ export function RecentPaymentsCard({ payments }: RecentPaymentsCardProps) {
             <li key={payment.id} className="flex items-center gap-3 py-2.5 first:pt-0 last:pb-0">
               <Avatar firstName={payment.firstName} lastName={payment.lastName} size="sm" />
               <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate font-medium">
+                <span className="line-clamp-2 font-medium">
                   {payment.firstName} {payment.lastName}
                 </span>
                 <span className="text-xs text-text-secondary">
@@ -34,7 +34,7 @@ export function RecentPaymentsCard({ payments }: RecentPaymentsCardProps) {
               <span className="hidden sm:block">
                 <PaymentMethodBadge method={payment.method} />
               </span>
-              <span className="w-28 text-right font-semibold tabular-nums">
+              <span className="shrink-0 text-right font-semibold tabular-nums sm:w-28">
                 {formatGuarani(payment.amountGs)}
               </span>
             </li>
