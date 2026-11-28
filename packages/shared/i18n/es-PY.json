@@ -110,7 +110,10 @@
       "planMissing": "No tenés un plan activo",
       "planMeta": "{plan} · vence el {date}",
       "planMissingMeta": "Pasá por recepción o hablá con el box.",
-      "openPlan": "Ver tu plan"
+      "openPlan": "Ver tu plan",
+      "owes": "Tenés {amount} para pagar",
+      "owesMeta": "Tocá para informar tu pago",
+      "openFees": "Ver mi cuota"
     },
     "nav": {
       "label": "Secciones",
@@ -197,7 +200,8 @@
       "pauses": "Pausas",
       "pauseRange": "{from} al {to}",
       "upcomingPlans": "Próximos planes",
-      "validityLabel": "Vigencia"
+      "validityLabel": "Vigencia",
+      "seeFees": "Ver mi cuota y pagos"
     },
     "timer": {
       "open": "Abrir timer",
@@ -266,6 +270,46 @@
       "greeting": "Hola {name}, este es el link para pagar tu cuota.",
       "payWithCard": "Pagar con tarjeta",
       "paid": "Listo, esta cuota está pagada. ¡Gracias!"
+    },
+    "fees": {
+      "title": "Mi cuota",
+      "subtitle": "Tu plan, lo que debés y tus pagos",
+      "toPay": "Para pagar",
+      "toPayMeta": "{description} · vence el {date}",
+      "overdueMeta": "{description} · venció el {date}",
+      "report": "Informar un pago",
+      "reportHint": "Pagá por transferencia o QR y subí el comprobante. Recepción lo confirma.",
+      "allPaid": "Estás al día",
+      "allPaidMeta": "No tenés cuotas pendientes.",
+      "nextDue": "Próxima cuota: {amount} el {date}.",
+      "inReviewTitle": "Recibimos tu comprobante",
+      "inReviewMeta": "{amount} en revisión. Te avisamos cuando recepción lo confirme.",
+      "inReviewExtra": "Además, {amount} en revisión.",
+      "chargesTitle": "Tus cuotas",
+      "noCharges": "Todavía no tenés cuotas.",
+      "paymentsTitle": "Tus pagos",
+      "noPayments": "Cuando pagues, tus pagos aparecen acá.",
+      "states": {
+        "paid": "Pagada",
+        "in_review": "En revisión",
+        "overdue": "Vencida",
+        "due": "Vence el {date}"
+      },
+      "dueOn": "Vence el {date}",
+      "sheetTitle": "Informar un pago",
+      "sheetDescription": "Recepción revisa el comprobante y confirma tu pago.",
+      "charge": "Qué pagás",
+      "chargeOption": "{description} · {amount}",
+      "noCharge": "Pago a cuenta",
+      "amount": "Monto (₲)",
+      "method": "Cómo pagaste",
+      "reference": "N.º de operación (opcional)",
+      "receipt": "Comprobante",
+      "receiptPrompt": "Captura o foto del comprobante",
+      "receiptHint": "JPG, PNG, WebP o PDF, hasta 5 MB.",
+      "notes": "Nota para recepción (opcional)",
+      "send": "Enviar",
+      "sent": "Listo. Recepción va a revisar tu comprobante."
     }
   },
   "admin": {
@@ -475,7 +519,7 @@
     },
     "settings": {
       "title": "Ajustes del box",
-      "subtitle": "Reglas de reserva y cupos por horario",
+      "subtitle": "Reglas de reserva, cupos y datos de cobro",
       "bookingTitle": "Reservas y cancelaciones",
       "bookingHint": "Estas reglas valen para todos los alumnos del box.",
       "opensHours": "Se puede reservar desde (horas antes)",
@@ -497,6 +541,24 @@
       "spots": "{count} lugares",
       "durationMinutes": "{count} min",
       "readOnly": "Solo el dueño o un administrador pueden cambiar estos ajustes.",
+      "paymentTitle": "Datos de cobro",
+      "paymentHint": "Tus alumnos los ven al informar un pago, con botones para copiar.",
+      "bankName": "Banco",
+      "accountNumber": "Número de cuenta",
+      "alias": "Alias de transferencia",
+      "aliasHint": "Celular, cédula, RUC o email registrado en el banco.",
+      "holderName": "Titular de la cuenta",
+      "holderDocument": "RUC o cédula del titular",
+      "holderDocumentHint": "RUC con dígito (80012345-6) o cédula sin puntos.",
+      "paymentNote": "Indicaciones (opcional)",
+      "paymentNotePlaceholder": "Ej.: poné tu nombre en el concepto de la transferencia.",
+      "qr": "QR de cobro",
+      "qrPrompt": "Imagen del QR de tu banco o billetera",
+      "qrHint": "JPG, PNG o WebP, hasta 2 MB.",
+      "qrRemove": "Quitar el QR",
+      "qrSaved": "QR actualizado.",
+      "qrRemoved": "QR quitado.",
+      "qrEmpty": "Todavía no subiste un QR.",
       "cards": {
         "title": "Cobro con tarjeta",
         "hint": "Conectá la cuenta de tu comercio en Bancard. La plata va directo a tu cuenta; GuaraniX no la toca.",
@@ -550,12 +612,6 @@
       "rejected": "Pago rechazado.",
       "recentTitle": "Pagos del mes",
       "noPayments": "Todavía no hay pagos este mes.",
-      "methods": {
-        "cash": "Efectivo",
-        "bank_transfer": "Transferencia",
-        "qr": "QR",
-        "card": "Tarjeta"
-      },
       "reference": "N.º de operación",
       "referenceShort": "Op. {reference}",
       "member": "Alumno",
@@ -987,10 +1043,12 @@
     "features": {
       "names": {
         "ai_import": "Importación con IA",
+        "whatsapp": "WhatsApp",
         "card_payments": "Cobro con tarjeta"
       },
       "descriptions": {
         "ai_import": "Lee fotos, PDF y planillas desordenadas y propone alumnos, planes y saldos para revisar.",
+        "whatsapp": "Recordatorios de cuota por WhatsApp a los alumnos. El límite es de mensajes por mes.",
         "card_payments": "Débito automático de cuotas con la cuenta del box en Bancard, reintentos y link de pago si falla."
       },
       "title": "Funciones",
@@ -1218,6 +1276,10 @@
     "receipt_too_large": "El comprobante pesa más de 5 MB. Sacale una captura o una foto más liviana.",
     "receipt_type": "El comprobante tiene que ser una foto (JPG, PNG o WebP) o un PDF.",
     "receipt_not_found": "No encontramos ese comprobante. Volvé a subirlo.",
+    "payment_qr_empty": "El archivo está vacío. Probá con otra imagen del QR.",
+    "payment_qr_too_large": "La imagen del QR pesa más de 2 MB. Subí una captura más liviana.",
+    "payment_qr_type": "El QR tiene que ser una imagen JPG, PNG o WebP.",
+    "payment_qr_not_found": "Este box todavía no subió su QR.",
     "internal_error": "Algo salió mal. Probá de nuevo en un rato.",
     "platform_plan_not_found": "No encontramos ese plan de GuaraniX.",
     "platform_plan_code_taken": "Ya hay un plan con ese código.",
@@ -1321,6 +1383,34 @@
     "duration": "{days} días",
     "creditsLeft": "Te quedan {count} clases",
     "perMonth": "por {days} días"
+  },
+  "payments": {
+    "details": {
+      "title": "Datos para pagar",
+      "bankName": "Banco",
+      "accountNumber": "Número de cuenta",
+      "alias": "Alias",
+      "holderName": "Titular",
+      "holderDocument": "RUC o cédula del titular",
+      "copy": "Copiar {label}",
+      "copied": "Copiado",
+      "qrAlt": "Código QR para pagar al box",
+      "saveQr": "Guardar el QR",
+      "noTransfer": "El box todavía no cargó su cuenta. Consultá en recepción.",
+      "noQr": "El box todavía no subió su QR. Consultá en recepción o pagá por transferencia."
+    },
+    "methods": {
+      "cash": "Efectivo",
+      "bank_transfer": "Transferencia",
+      "qr": "QR",
+      "card": "Tarjeta"
+    },
+    "statuses": {
+      "confirmed": "Confirmado",
+      "pending_review": "En revisión",
+      "rejected": "Rechazado",
+      "refunded": "Reembolsado"
+    }
   },
   "onboarding": {
     "issues": {
@@ -1450,6 +1540,91 @@
       "plan": "{name}",
       "program": "Programa {name}",
       "general": "General"
+    }
+  },
+  "notifications": {
+    "booking_confirmed": {
+      "title": "Reserva confirmada",
+      "body": "Te reservamos {program} del {day} a las {time}."
+    },
+    "waitlist_promoted": {
+      "title": "Tenés lugar en la clase",
+      "body": "Se liberó un lugar en {program} del {day} a las {time} y ya es tuyo."
+    },
+    "class_cancelled": {
+      "title": "Clase cancelada",
+      "body": "Se canceló {program} del {day} a las {time}. Si usaste un crédito, ya te lo devolvimos.",
+      "bodyWithReason": "Se canceló {program} del {day} a las {time} ({reason}). Si usaste un crédito, ya te lo devolvimos."
+    },
+    "workout_published": {
+      "title": "WOD del {day}",
+      "body": "{program}: {title}",
+      "bodyWithoutTitle": "Ya podés ver el WOD de {program}."
+    },
+    "membership_due": {
+      "title": "Tu cuota vence pronto",
+      "body": "{description} en {box}: {amount}, vence el {date}.",
+      "bodyToday": "{description} en {box}: {amount}, vence hoy."
+    },
+    "membership_overdue": {
+      "title": "Tenés una cuota vencida",
+      "body": "{description} en {box}: {amount}, venció el {date}. Pagala desde la app o en recepción."
+    },
+    "card_payment_failed": {
+      "title": "No pudimos cobrar tu cuota",
+      "body": "{description} en {box}: {amount}. Tu tarjeta no pasó; probamos de nuevo en unos días o podés pagarla desde la app.",
+      "bodyFinal": "{description} en {box}: {amount}. Tu tarjeta no pasó y ya no vamos a reintentar. Pagala desde la app o en recepción."
+    },
+    "staff_class_cancelled": {
+      "title": "Clase cancelada en {box}",
+      "body": "{program} del {day} a las {time}. Se cancelaron {count} reservas.",
+      "bodyOne": "{program} del {day} a las {time}. Se canceló 1 reserva.",
+      "bodyNone": "{program} del {day} a las {time}. No tenía reservas."
+    },
+    "staff_overdue_digest": {
+      "title": "Cuotas vencidas en {box}",
+      "body": "{count} alumnos deben {amount} en cuotas vencidas.",
+      "bodyOne": "1 alumno debe {amount} en cuotas vencidas."
+    },
+    "telegram": {
+      "linked": "Listo, vas a recibir los avisos de GuaraniX en este chat.",
+      "invalidCode": "Ese enlace ya no sirve. Generá uno nuevo desde el panel, en Ajustes > Notificaciones.",
+      "help": "Para recibir avisos, abrí el enlace que te da el panel en Ajustes > Notificaciones."
+    },
+    "settings": {
+      "title": "Notificaciones",
+      "subtitle": "Elegí qué avisos recibís y por dónde.",
+      "topics": {
+        "bookings": "Reservas y clases",
+        "workouts": "WOD publicado",
+        "billing": "Cuotas por vencer y vencidas",
+        "staff": "Clases canceladas y cuotas vencidas"
+      },
+      "channels": {
+        "push": "En la app",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      },
+      "push": {
+        "enable": "Activar notificaciones",
+        "enabled": "Activadas en este dispositivo",
+        "disable": "Desactivar en este dispositivo",
+        "denied": "Bloqueaste las notificaciones para GuaraniX. Activalas desde los ajustes del navegador.",
+        "unsupported": "Este navegador no permite notificaciones. En iPhone, agregá GuaraniX a la pantalla de inicio y abrila desde ahí.",
+        "unavailable": "Las notificaciones todavía no están configuradas."
+      },
+      "telegram": {
+        "connect": "Conectar Telegram",
+        "connected": "Conectado como {username}",
+        "connectedNoUsername": "Conectado",
+        "disconnect": "Desconectar",
+        "hint": "Abrí el enlace en tu celular, tocá Iniciar y listo. El enlace vence en 15 minutos.",
+        "open": "Abrir Telegram",
+        "unavailable": "El bot de Telegram todavía no está configurado."
+      },
+      "whatsappHint": "Los recordatorios por WhatsApp llegan al número que tiene cargado el box, si tu box los tiene activados.",
+      "saved": "Guardado",
+      "loadError": "No pudimos cargar tus notificaciones."
     }
   },
   "cardPayments": {

@@ -1,9 +1,12 @@
 import { t } from '@guaranix/shared';
 import { ChevronRight, CreditCard } from 'lucide-react';
 import { Link } from 'react-router';
+import { useOwnCards } from '../../api/cards';
 
-/** Entry to "Mi tarjeta" from the member's profile and fee screens. */
+/** Entry to "Mi tarjeta" from Mi cuota, only in boxes that take cards. */
 export function CardEntryLink() {
+  const cards = useOwnCards();
+  if (!cards.data?.available) return null;
   return (
     <Link
       to="/cuota/tarjeta"

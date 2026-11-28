@@ -11,6 +11,7 @@ import { createTurnstileVerifier } from '../integrations/captcha';
 import { createR2FileStorage } from '../integrations/file-storage';
 import { createGoogleOAuth } from '../integrations/google-oauth';
 import { createLoggingPaymentNotifier } from './payment-notifier';
+import { createNotificationServices } from './notifications/runtime';
 
 const REQUIRED_OUTSIDE_DEVELOPMENT = [
   'AUTH_SECRET',
@@ -71,6 +72,7 @@ export function createRuntimeServices(env: Bindings): {
     aiProviderFactory: createAiProvider,
     paymentProviderFactory: createPaymentProvider,
     paymentNotifier: createLoggingPaymentNotifier(),
+    notifications: createNotificationServices(env),
   };
   return {
     services,

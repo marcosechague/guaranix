@@ -1,6 +1,7 @@
 import type { Booking, Leaderboard, ScoreValues, WorkoutResult } from '@guaranix/shared/api';
 import type { Scaling } from '@guaranix/shared/domain';
-import { useApi } from '@guaranix/ui/data';
+import type { RecordPaymentInput } from '@guaranix/shared/schemas';
+import { recordPaymentWithReceipt, useApi } from '@guaranix/ui/data';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './keys';
 
@@ -84,5 +85,16 @@ export function useFistBump(componentId: string) {
       if (context?.previous) queryClient.setQueryData(key, context.previous);
     },
     onSettled: () => queryClient.invalidateQueries({ queryKey: key }),
+  });
+}
+
+/** A member reports a transfer or QR with its receipt; it waits for the front desk to confirm it. */
+export function useReportPayment() {
+  const api = useApi();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ input, receipt }: { input: RecordPaymentInput; receipt: File }) =>
+      recordPaymentWithReceipt(api, input, receipt),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.myAccount }),
   });
 }

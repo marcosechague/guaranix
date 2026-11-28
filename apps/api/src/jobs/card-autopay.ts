@@ -13,7 +13,7 @@ import {
   savedCards,
 } from '@guaranix/db/schema';
 import { type ChargeOutcome, type PaymentProvider, PaymentProviderError } from '@guaranix/payments';
-import { calendarDateIn } from '@guaranix/shared';
+import { calendarDateIn, formatGuarani } from '@guaranix/shared';
 import { and, eq, gte, inArray, isNull, lte, sql } from 'drizzle-orm';
 import { renewAutopayPlans } from '../services/autopay-renewals';
 import {
@@ -31,7 +31,10 @@ import {
 } from '../services/card-payment-runtime';
 import { isUniqueViolation } from '../services/errors';
 import { createPaymentLink, outstandingOf } from '../services/payment-links';
-import type { PaymentNotifier } from '../services/payment-notifier';
+import { insertNotification } from '../services/notifications/record';
+import { queueOutbox } from '../services/notifications/outbox';
+import type { NotificationQueue } from '../services/notifications/queue';
+import type { PaymentFailedNotice, PaymentNotifier } from '../services/payment-notifier';
 
 /** An autopay call that never answered: after this, ask the processor what happened. */
 const AUTOPAY_STALE_MS = 10 * 60 * 1000;
@@ -63,10 +66,15 @@ interface DueCharge {
   customerRef: string;
 }
 
-interface Run {
+/** Where a failed charge is told: the member's push (outbox) and the notifier's log. */
+export interface AutopayOutlets {
+  queue: NotificationQueue;
+  notifier: PaymentNotifier;
+}
+
+interface Run extends AutopayOutlets {
   database: SchemaDatabase;
   runtime: PaymentRuntime;
-  notifier: PaymentNotifier;
   now: Date;
   result: AutopayResult;
 }
@@ -175,7 +183,24 @@ async function failureNotice(
     now: run.now,
     createdByUserId: null,
   });
-  return {
+  const finalAttempt = attempt.nextRetryOn === null;
+  // The link token is a secret, so the push only opens Mi cuota; it never carries the link.
+  const notificationId = await insertNotification(
+    transaction,
+    { boxId: target.boxId, actorUserId: null, now: run.now },
+    {
+      kind: 'card_payment_failed',
+      key: `${charge.id}:${attempt.attemptNumber}`,
+      audience: { type: 'members', memberIds: [charge.memberId] },
+      params: {
+        description: charge.description,
+        amount: formatGuarani(outstandingGs),
+        finalAttempt: finalAttempt ? 1 : null,
+        tag: `charge-${charge.id}`,
+      },
+    },
+  );
+  const notice: PaymentFailedNotice = {
     boxId: target.boxId,
     memberId: charge.memberId,
     chargeId: charge.id,
@@ -185,8 +210,9 @@ async function failureNotice(
     linkExpiresAt: link.expiresAt,
     whatsappUrl: link.whatsappUrl,
     attemptNumber: attempt.attemptNumber,
-    finalAttempt: attempt.nextRetryOn === null,
+    finalAttempt,
   };
+  return { notice, notificationId };
 }
 
 /**
@@ -254,7 +280,7 @@ async function chargeOnce(
   }
 
   const answer = outcome;
-  const notice = await inBox(run, target.boxId, async (transaction) => {
+  const failure = await inBox(run, target.boxId, async (transaction) => {
     const scope = { transaction, boxId: target.boxId, now: run.now, today };
     await logPaymentEvent(transaction, {
       boxId: target.boxId,
@@ -290,7 +316,10 @@ async function chargeOnce(
     if (!current || (current.attemptNumber !== 1 && current.nextRetryOn !== null)) return null;
     return failureNotice(run, target, current, transaction);
   });
-  if (notice) await run.notifier.paymentFailed(notice);
+  if (failure) {
+    if (failure.notificationId) await queueOutbox(run.queue, [failure.notificationId]);
+    await run.notifier.paymentFailed(failure.notice);
+  }
 }
 
 async function autopayBox(run: Run, target: BoxTarget) {
@@ -331,7 +360,7 @@ async function autopayBox(run: Run, target: BoxTarget) {
 export async function runCardAutopay(
   database: SchemaDatabase,
   runtime: PaymentRuntime,
-  notifier: PaymentNotifier,
+  outlets: AutopayOutlets,
   now: Date,
 ): Promise<AutopayResult> {
   // Unscoped only to list which boxes to visit; the work itself runs under RLS.
@@ -357,7 +386,7 @@ export async function runCardAutopay(
     unanswered: 0,
     failedBoxIds: [],
   };
-  const run: Run = { database, runtime, notifier, now, result };
+  const run: Run = { ...outlets, database, runtime, now, result };
   for (const target of targets) {
     try {
       await autopayBox(run, target);

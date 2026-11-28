@@ -14,3 +14,4 @@ export * from './workouts';
 export * from './billing';
 export * from './card-payments';
 export * from './audit';
+export * from './notifications';

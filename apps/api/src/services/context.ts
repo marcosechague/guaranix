@@ -20,6 +20,12 @@ export interface ServiceContext {
   transaction: ScopedTransaction;
   auth: ServiceAuth;
   now: Date;
+  /**
+   * Notifications recorded during this request. The router queues them only
+   * after the transaction commits, so a rolled-back change never notifies.
+   * Absent in jobs and tests that queue on their own.
+   */
+  outbox?: string[];
 }
 
 /** Roles that run the box. Members only ever see and change their own data. */

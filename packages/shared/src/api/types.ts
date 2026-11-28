@@ -271,6 +271,13 @@ export interface Payment {
   notes: string | null;
 }
 
+/** A member's own fees and payments (`GET /box/me/account`). */
+export interface OwnAccount {
+  charges: Charge[];
+  payments: Omit<Payment, 'firstName' | 'lastName'>[];
+  outstandingGs: number;
+}
+
 /** The box's own processor account, as the panel sees it: never the private key. */
 export interface PaymentAccountView {
   provider: PaymentProviderName;

@@ -66,3 +66,12 @@ export const RECEIPT_CONTENT_TYPES = [
 export type ReceiptContentType = (typeof RECEIPT_CONTENT_TYPES)[number];
 /** 5 MB: a phone photo fits; anything bigger is not a receipt. */
 export const RECEIPT_MAX_BYTES = 5 * 1024 * 1024;
+
+/** The API's receipt limits, checked in the browser before uploading; returns an error code. */
+export function receiptFileProblem(file: {
+  type: string;
+  size: number;
+}): 'receipt_type' | 'receipt_too_large' | null {
+  if (!(RECEIPT_CONTENT_TYPES as readonly string[]).includes(file.type)) return 'receipt_type';
+  return file.size > RECEIPT_MAX_BYTES ? 'receipt_too_large' : null;
+}

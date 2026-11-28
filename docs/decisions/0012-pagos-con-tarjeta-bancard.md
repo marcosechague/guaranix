@@ -1,4 +1,4 @@
-# 0011 — Pagos con tarjeta (Bancard) y débito automático
+# 0012 — Pagos con tarjeta (Bancard) y débito automático
 
 ## Contexto
 
@@ -26,13 +26,13 @@ Con la caída de ueno Bank y uPay quedó claro que no podemos depender de un sol
 - La tarjeta queda `pending` hasta que la API confirma con el procesador que existe. Una tarjeta nueva reemplaza a la anterior.
 - Solo se cobran automáticamente los cargos que vencen desde el día del consentimiento; las deudas viejas van por link o recepción.
 
-### Cobro automático (cron diario, 12:00 UTC = 9:00 en Asunción)
+### Cobro automático (cron diario, 12:30 UTC = 9:30 en Asunción)
 
 1. **Renovación**: el día antes de que termine un plan mensual o semanal de un alumno con tarjeta activa y sin deudas vencidas, se renueva al precio actual y se abre el cargo. Queda auditado.
 2. **Conciliación**: un intento sin respuesta (10 min autopay, 1 h link) se consulta con el procesador.
 3. **Cobro** de los cargos que vencen hoy o antes.
 
-- Reintentos: 4 intentos en total, a los días 1, 3 y 7 después del primero. Aviso al alumno en el primer rechazo y en el último. Un error de claves no avisa al alumno (es del box).
+- Reintentos: 4 intentos en total, a los días 1, 3 y 7 después del primero. Aviso al alumno en el primer rechazo y en el último: push `card_payment_failed` por el outbox de notificaciones (`0011-notificaciones`), que abre Mi cuota y nunca lleva el link (es un secreto). Un error de claves no avisa al alumno (es del box).
 - Dos fases: primero se guarda el intento con su número de pedido, después se llama al procesador fuera de la transacción y al final se aplica el resultado. Así un corte nunca cobra dos veces: el intento queda y se concilia.
 - No se cobra automáticamente si hay un pago por link pendiente o aprobado para ese cargo.
 
@@ -65,6 +65,6 @@ Confirmado con el SDK público de Bancard (vPOS 0.3): `single_buy`, `single_buy/
 
 ## Pendiente
 
-- Mandar los avisos por WhatsApp o push: hoy `PaymentNotifier` solo deja registro.
+- Aviso por WhatsApp con el link de pago: necesita una plantilla nueva aprobada por Meta. Mientras tanto, recepción lo manda con el botón de WhatsApp (`wa.me`).
 - Probar contra el sandbox de Bancard cuando estén las claves.
 - Segundo procesador (ej. Dinelco).

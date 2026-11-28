@@ -24,6 +24,8 @@ const PUBLIC_ROUTE_FILES = [
   'apps/api/src/routes/health.ts',
   // Processor webhooks (signed) and payment links (secret token in the URL, rate limited).
   'apps/api/src/routes/payments-public.ts',
+  // Called by Telegram's servers; authenticated by the webhook secret header.
+  'apps/api/src/routes/telegram-webhook.ts',
 ];
 // Code allowed to read the request directly: the Zod helpers, and the Google callback's OAuth params.
 const RAW_INPUT_FILES = [
@@ -51,6 +53,14 @@ const SYSTEM_SCOPE_FILES = [
   // says which box, and everything after that runs inside the box's scope.
   'apps/api/src/services/payment-webhooks.ts',
   'apps/api/src/services/payment-links.ts',
+  // Notification queue consumer and crons: push subscriptions, Telegram links and
+  // preferences belong to a person, not a box. Every query names the box or user.
+  'apps/api/src/services/notifications/expand.ts',
+  'apps/api/src/services/notifications/deliver.ts',
+  'apps/api/src/services/notifications/targets.ts',
+  'apps/api/src/services/notifications/telegram-webhook.ts',
+  'apps/api/src/jobs/notification-sweeper.ts',
+  'apps/api/src/jobs/notifying-boxes.ts',
 ];
 
 export default tseslint.config(

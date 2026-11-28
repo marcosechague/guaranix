@@ -4,7 +4,13 @@ import {
   type AiProviderError,
   createMockProvider,
 } from '@guaranix/ai';
-import { createMemoryEmailSender } from '@guaranix/messaging';
+import {
+  createMemoryChannel,
+  createMemoryEmailSender,
+  type PushAddress,
+  type TelegramAddress,
+  type WhatsAppAddress,
+} from '@guaranix/messaging';
 import {
   createMockPaymentProvider,
   type MockBehaviour,
@@ -17,6 +23,7 @@ import type { Bindings, Services } from '../env';
 import { createMemoryFileStorage } from '../integrations/file-storage';
 import type { GoogleIdentity, GoogleOAuth } from '../integrations/google-oauth';
 import { createMemoryPaymentNotifier } from '../services/payment-notifier';
+import { createMemoryQueue, type NotificationServices } from '../services/notifications/queue';
 
 export const APP_ORIGIN = 'http://localhost:5173';
 
@@ -85,6 +92,24 @@ export async function createHarness() {
     },
   };
 
+  const notificationQueue = createMemoryQueue();
+  const channels = {
+    push: createMemoryChannel<PushAddress>('push'),
+    telegram: createMemoryChannel<TelegramAddress>('telegram'),
+    whatsapp: createMemoryChannel<WhatsAppAddress>('whatsapp'),
+  };
+  const notifications: NotificationServices = {
+    queue: notificationQueue,
+    channels,
+    config: {
+      vapidPublicKey: 'BPublicKeyForTests',
+      telegramBotUsername: 'GuaranixTestBot',
+      telegramWebhookSecret: 'telegram-webhook-secret',
+      whatsappTemplateLanguage: 'es',
+      adminAppUrl: 'https://panel.example.com',
+    },
+  };
+
   const services: Services = {
     database: () => testDatabase.database,
     emailSender: emails,
@@ -107,6 +132,7 @@ export async function createHarness() {
         { name: config.provider, model: config.model },
       );
     },
+    notifications,
   };
   const app = createApp({ services: () => services });
 
@@ -122,6 +148,9 @@ export async function createHarness() {
     captcha,
     ai,
     payments,
+    notificationQueue,
+    channels,
+    notifications,
     close: testDatabase.close,
   };
 }

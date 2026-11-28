@@ -72,6 +72,15 @@ export const boxes = pgTable(
     lateCancelConsumesCredit: boolean().notNull().default(true),
     noShowConsumesCredit: boolean().notNull().default(true),
     waitlistAutoPromote: boolean().notNull().default(true),
+    // Where members pay by transfer or QR, shown in the member app. The QR image is in R2.
+    paymentBankName: text(),
+    paymentAccountNumber: text(),
+    paymentAlias: text(),
+    paymentHolderName: text(),
+    /** RUC or cédula of the account holder. */
+    paymentHolderDocument: text(),
+    paymentQrFileKey: text(),
+    paymentNote: text(),
     ...timestamps(),
   },
   (table) => [

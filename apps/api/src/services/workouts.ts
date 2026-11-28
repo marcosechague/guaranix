@@ -2,6 +2,7 @@ import { and, asc, count, eq, inArray, isNotNull } from 'drizzle-orm';
 import type { z } from 'zod';
 import { movements, workoutComponents, workoutResults, workouts } from '@guaranix/db/schema';
 import type { createWorkoutSchema, movementSchema } from '@guaranix/shared/schemas';
+import { notifyWorkoutPublished } from './notifications/events';
 import { recordAudit } from './audit';
 import { COACHING_ROLES, assertRole, isStaff, type ServiceContext } from './context';
 import { conflict, isUniqueViolation, notFound, unprocessable } from './errors';
@@ -176,6 +177,7 @@ export async function setWorkoutPublished(
     entityType: 'workout',
     entityId: workoutId,
   });
+  if (published) await notifyWorkoutPublished(context, workoutId);
   return getWorkout(context, workoutId);
 }
 

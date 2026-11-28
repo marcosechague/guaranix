@@ -28,3 +28,17 @@ AUTH_SECRET=dev-only-secret-change-me-0123456789abcdefghijklmnop
 # Without it boxes can't connect card payments. Locally, connect the "mock" provider
 # from the box's payment settings to try the whole flow with no Bancard account.
 # PAYMENTS_SECRETS_KEY=
+# Notifications (optional, see docs/notificaciones.md). Without keys, Telegram and
+# WhatsApp messages are printed to the terminal and push stays off.
+# Push: `pnpm --filter @guaranix/messaging vapid:generate`. Cloudflare:
+# VAPID_PUBLIC_KEY in wrangler.jsonc vars, `wrangler secret put VAPID_PRIVATE_KEY`.
+# VAPID_PUBLIC_KEY=
+# VAPID_PRIVATE_KEY=
+# VAPID_SUBJECT=mailto:soporte@guaranix.com.py
+# Telegram bot from @BotFather; the webhook secret is any random string (`openssl rand -hex 32`).
+# TELEGRAM_BOT_TOKEN=
+# TELEGRAM_BOT_USERNAME=
+# TELEGRAM_WEBHOOK_SECRET=
+# WhatsApp Cloud API (Meta): system user token and the sending number's "Phone number ID".
+# WHATSAPP_ACCESS_TOKEN=
+# WHATSAPP_PHONE_NUMBER_ID=

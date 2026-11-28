@@ -4,6 +4,7 @@ CREATE TYPE "public"."payment_provider" AS ENUM('bancard', 'mock');--> statement
 CREATE TYPE "public"."payment_provider_environment" AS ENUM('sandbox', 'production');--> statement-breakpoint
 CREATE TYPE "public"."saved_card_status" AS ENUM('pending', 'active', 'removed');--> statement-breakpoint
 ALTER TYPE "public"."feature_flag" ADD VALUE 'card_payments';--> statement-breakpoint
+ALTER TYPE "public"."notification_kind" ADD VALUE 'card_payment_failed' BEFORE 'staff_class_cancelled';--> statement-breakpoint
 ALTER TYPE "public"."payment_method" ADD VALUE 'card';--> statement-breakpoint
 ALTER TYPE "public"."payment_status" ADD VALUE 'refunded';--> statement-breakpoint
 CREATE SEQUENCE "public"."provider_reference_seq" INCREMENT BY 1 MINVALUE 1 MAXVALUE 9223372036854775807 START WITH 100000 CACHE 1;--> statement-breakpoint

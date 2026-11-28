@@ -2,6 +2,7 @@ import { withBoxScope } from '@guaranix/db';
 import {
   charges,
   memberPlans,
+  notifications,
   paymentAccounts,
   paymentAttempts,
   paymentEvents,
@@ -32,7 +33,12 @@ let accountId: string;
 const DAY = 24 * 60 * 60 * 1000;
 const inDays = (days: number) => new Date(Date.now() + days * DAY);
 const run = (now = new Date()) =>
-  runCardAutopay(harness.database, runtimeOf(harness), harness.payments.notifier, now);
+  runCardAutopay(
+    harness.database,
+    runtimeOf(harness),
+    { queue: harness.notificationQueue, notifier: harness.payments.notifier },
+    now,
+  );
 
 beforeAll(async () => {
   harness = await createHarness();
@@ -168,6 +174,19 @@ describe('card autopay', () => {
     expect(attempts.at(-1)?.nextRetryOn).toBeNull();
     expect(harness.payments.notifier.sent.map((notice) => notice.attemptNumber)).toEqual([1, 4]);
     expect(harness.payments.notifier.sent.at(-1)?.finalAttempt).toBe(true);
+    // The member hears it by push too, through the outbox, without the secret link.
+    const pushes = await systemRows(harness, (transaction) =>
+      transaction
+        .select()
+        .from(notifications)
+        .where(eq(notifications.kind, 'card_payment_failed')),
+    );
+    const forCharge = pushes.filter((row) => row.idempotencyKey.includes(charge.id));
+    expect(forCharge.map((row) => row.params)).toEqual([
+      expect.objectContaining({ amount: '₲ 300.013', finalAttempt: null }),
+      expect.objectContaining({ finalAttempt: 1 }),
+    ]);
+    expect(JSON.stringify(forCharge)).not.toContain('/pagar/');
 
     await run(inDays(20));
     expect(await attemptsOf(charge.id)).toHaveLength(4);

@@ -16,9 +16,10 @@ export interface PaymentFailedNotice {
 }
 
 /**
- * Where failure notices go. The WhatsApp and push channels plug in here when
- * they exist (`packages/messaging`); until then staff send the link from the
- * panel and the member sees it in the app.
+ * Side outlet for failure notices. The member's push goes through the
+ * notifications outbox (`card_payment_failed`); this is for what can't go
+ * there, like the link itself, which is a secret and stays out of messages
+ * until a WhatsApp template for it is approved.
  */
 export interface PaymentNotifier {
   paymentFailed(notice: PaymentFailedNotice): Promise<void>;

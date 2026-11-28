@@ -2,6 +2,7 @@ import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
 import type { MemberPlan } from '@guaranix/shared/api';
 import {
   AppearanceCard,
+  Button,
   Avatar,
   Badge,
   Page,
@@ -11,10 +12,11 @@ import {
   Eyebrow,
   Skeleton,
   Columns,
+  NotificationsCard,
 } from '@guaranix/ui';
 import { AccountSecurity, useSession } from '@guaranix/ui/auth';
+import { Link } from 'react-router';
 import { useMe, useMyPlans, usePlans } from '../../api/queries';
-import { CardEntryLink } from '../card/CardEntryLink';
 import { useBoxClock } from '@guaranix/ui/data';
 
 const STATE_TONES: Record<MemberPlan['state'], BadgeTone> = {
@@ -24,6 +26,9 @@ const STATE_TONES: Record<MemberPlan['state'], BadgeTone> = {
   expired: 'outline',
   cancelled: 'outline',
 };
+
+const MEMBER_TOPICS = ['bookings', 'workouts', 'billing'] as const;
+const MEMBER_CHANNELS = ['push', 'whatsapp'] as const;
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -84,6 +89,9 @@ function PlanCard() {
           />
         ))}
       </dl>
+      <Button asChild variant="secondary">
+        <Link to="/cuota">{t('member.profile.seeFees')}</Link>
+      </Button>
     </Card>
   );
 }
@@ -111,16 +119,12 @@ export function ProfileScreen() {
         </div>
       </header>
       <Columns
-        start={
-          <>
-            <PlanCard />
-            <CardEntryLink />
-          </>
-        }
+        start={<PlanCard />}
         end={
           <>
             <AppearanceCard />
             <AccountSecurity />
+            <NotificationsCard topics={MEMBER_TOPICS} channels={MEMBER_CHANNELS} />
           </>
         }
       />

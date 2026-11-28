@@ -3,6 +3,7 @@ import type {
   Leaderboard,
   Member,
   MemberPlan,
+  OwnAccount,
   OwnBooking,
   PersonalRecord,
   Workout,
@@ -75,3 +76,11 @@ export function useLeaderboard(componentId: string | undefined) {
 }
 
 export { useMovements, usePlans, usePrograms } from '@guaranix/ui/data';
+
+export function useMyAccount() {
+  const api = useApi();
+  return useQuery({
+    queryKey: queryKeys.myAccount,
+    queryFn: () => api.get<OwnAccount>('/box/me/account'),
+  });
+}

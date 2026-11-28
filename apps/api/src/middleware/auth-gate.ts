@@ -21,10 +21,13 @@ export const PUBLIC_ROUTES = new Set([
 ]);
 
 /**
- * Server-to-server callbacks (card processors). No browser, so no Origin, no
- * cookie and no CSRF token: each one proves itself with a signature instead.
+ * Server-to-server callbacks (no browser, no Origin, no cookie). Each one
+ * proves who is calling on its own, e.g. Telegram's secret token header or a
+ * card processor's signature, checked first thing in its handler.
  */
-export const WEBHOOK_PREFIX = '/webhooks/';
+export const WEBHOOK_ROUTES = new Set(['POST /integrations/telegram/webhook']);
+/** Card processor confirmations: `/webhooks/payments/<account id>`. */
+export const WEBHOOK_PREFIX = '/webhooks/payments/';
 
 /** Pages reached from a link with a secret token (payment links). Writes still need our Origin. */
 export const PUBLIC_PREFIXES = ['/pay/'];
@@ -40,7 +43,11 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
  */
 export const authGate: MiddlewareHandler<AppEnv> = async (context, next) => {
   const method = context.req.method;
-  if (method === 'POST' && context.req.path.startsWith(WEBHOOK_PREFIX)) {
+  const path = context.req.path;
+  if (
+    WEBHOOK_ROUTES.has(`${method} ${path}`) ||
+    (method === 'POST' && path.startsWith(WEBHOOK_PREFIX))
+  ) {
     context.set('session', null);
     return next();
   }

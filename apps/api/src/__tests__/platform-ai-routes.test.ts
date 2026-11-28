@@ -138,6 +138,7 @@ describe('features per plan and per box', () => {
     };
     expect(planFeatures.features).toEqual([
       { feature: 'ai_import', enabled: true, monthlyLimit: 10 },
+      { feature: 'whatsapp', enabled: false, monthlyLimit: null },
       { feature: 'card_payments', enabled: false, monthlyLimit: null },
     ]);
 

@@ -3,6 +3,7 @@ import type { EmailSender } from '@guaranix/messaging';
 import type { PaymentProviderFactory } from './services/card-payment-runtime';
 import type { PaymentNotifier } from './services/payment-notifier';
 import type { AiProviderFactory } from './services/ai-runtime';
+import type { NotificationJob, NotificationServices } from './services/notifications/queue';
 import type { CaptchaVerifier } from './integrations/captcha';
 import type { FileStorage } from './integrations/file-storage';
 import type { GoogleOAuth } from './integrations/google-oauth';
@@ -47,6 +48,28 @@ export interface Bindings {
   PAYMENTS_SECRETS_KEY?: string;
   /** Public URL of the member app: payment links and the card form return there. */
   MEMBER_APP_URL: string;
+  // Notifications (see docs/notificaciones.md). Each channel turns on when its keys exist.
+  /** Cloudflare Queue `guaranix-notifications`; jobs wait in Postgres until it is bound. */
+  NOTIFICATIONS_QUEUE?: Queue<NotificationJob>;
+  /** VAPID pair from `pnpm --filter @guaranix/messaging vapid:generate`. The public half is a var. */
+  VAPID_PUBLIC_KEY?: string;
+  VAPID_PRIVATE_KEY?: string;
+  /** Contact push services can reach, e.g. `mailto:soporte@guaranix.com.py`. */
+  VAPID_SUBJECT?: string;
+  /** From @BotFather. */
+  TELEGRAM_BOT_TOKEN?: string;
+  /** Bot username without `@`, e.g. `GuaranixBot`. A var. */
+  TELEGRAM_BOT_USERNAME?: string;
+  /** Random string passed to `setWebhook` as `secret_token`; proves calls come from Telegram. */
+  TELEGRAM_WEBHOOK_SECRET?: string;
+  /** Permanent token of a Meta system user with `whatsapp_business_messaging`. */
+  WHATSAPP_ACCESS_TOKEN?: string;
+  /** "Phone number ID" of the sending number in WhatsApp Manager. A var. */
+  WHATSAPP_PHONE_NUMBER_ID?: string;
+  /** Language the templates were approved in; `es` by default. A var. */
+  WHATSAPP_TEMPLATE_LANGUAGE?: string;
+  /** Admin panel origin, for links in Telegram messages. A var. */
+  ADMIN_APP_URL?: string;
 }
 
 /** External integrations, swapped for fakes in tests. */
@@ -65,6 +88,8 @@ export interface Services {
   paymentProviderFactory: PaymentProviderFactory;
   /** Tells a member an automatic charge failed, with a link to pay. */
   paymentNotifier: PaymentNotifier;
+  /** Queue, channels and settings for push, Telegram and WhatsApp. */
+  notifications: NotificationServices;
 }
 
 export interface AuthenticatedSession {

@@ -5,9 +5,29 @@
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
-  // 06:00 UTC is 03:00 in Asunción: classes for the next 2 weeks, before anyone books.
-  // 12:00 UTC is 09:00 in Asunción: card autopay, when banks and members are awake.
-  "triggers": { "crons": ["0 6 * * *", "0 12 * * *"] },
+  // UTC; Asunción is UTC-3 all year. Keep in sync with CRONS in src/scheduled.ts.
+  // 06:00 → 03:00: classes for the next 2 weeks, before anyone books.
+  // 12:00 → 09:00: membership reminders and the managers' overdue summary.
+  // 12:30 → 09:30: card autopay, when banks and members are awake.
+  // 23:00 → 20:00: tomorrow's WODs loaded days ahead.
+  // Every 10 minutes: requeue notifications that fell through.
+  "triggers": { "crons": ["0 6 * * *", "0 12 * * *", "30 12 * * *", "0 23 * * *", "*/10 * * * *"] },
+  // Push, Telegram and WhatsApp go through this queue (docs/notificaciones.md).
+  // Create them once: `wrangler queues create guaranix-notifications` and
+  // `wrangler queues create guaranix-notifications-dlq`.
+  "queues": {
+    "producers": [{ "binding": "NOTIFICATIONS_QUEUE", "queue": "guaranix-notifications" }],
+    "consumers": [
+      {
+        "queue": "guaranix-notifications",
+        "max_batch_size": 10,
+        "max_batch_timeout": 5,
+        // Deliveries give up after 5 attempts on their own; this is the safety net.
+        "max_retries": 10,
+        "dead_letter_queue": "guaranix-notifications-dlq",
+      },
+    ],
+  },
   // Payment receipts. Private: only the API reads them, after checking the box and role.
   "r2_buckets": [{ "binding": "RECEIPTS", "bucket_name": "guaranix-receipts" }],
   "vars": {
@@ -15,6 +35,12 @@
     "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:5174,http://localhost:5175",
     "PUBLIC_API_URL": "http://localhost:8787",
     "MEMBER_APP_URL": "http://localhost:5173",
+    "ADMIN_APP_URL": "http://localhost:5174",
+    // Public by design; fill in per environment. Their secrets go in `.dev.vars` or `wrangler secret`.
+    "VAPID_PUBLIC_KEY": "",
+    "TELEGRAM_BOT_USERNAME": "",
+    "WHATSAPP_PHONE_NUMBER_ID": "",
+    "WHATSAPP_TEMPLATE_LANGUAGE": "es",
   },
   // Secrets never go here. Locally they live in `.dev.vars` (see `.dev.vars.example`);
   // in Cloudflare, `wrangler secret put AUTH_SECRET` and so on.

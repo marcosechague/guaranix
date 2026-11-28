@@ -11,7 +11,12 @@ type BoxContext = Context<BoxEnv>;
 const invalidInput = () => new ServiceError(400, 'invalid_input');
 
 export function serviceContext(context: BoxContext): ServiceContext {
-  return { transaction: context.var.transaction, auth: context.var.auth, now: new Date() };
+  return {
+    transaction: context.var.transaction,
+    auth: context.var.auth,
+    now: new Date(),
+    outbox: context.var.outbox,
+  };
 }
 
 /**
