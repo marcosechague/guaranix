@@ -7,6 +7,7 @@
  */
 @source '../components';
 @source '../auth';
+@source '../data';
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
@@ -109,6 +110,36 @@
   :focus-visible {
     outline: 2px solid var(--gx-color-accent);
     outline-offset: 2px;
+  }
+}
+
+/* Sheet and overlay motion (Radix sets data-state). Only transform and opacity. */
+@keyframes gx-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes gx-slide-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+@keyframes gx-slide-left {
+  from {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+}
+.gx-fade[data-state='open'] {
+  animation: gx-fade-in var(--duration-base) var(--ease-out);
+}
+.gx-sheet[data-state='open'] {
+  animation: gx-slide-up var(--duration-slow) var(--ease-out);
+}
+@media (width >= 48rem) {
+  .gx-sheet[data-state='open'] {
+    animation-name: gx-slide-left;
   }
 }
 

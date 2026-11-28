@@ -1,7 +1,7 @@
 import type { HTMLAttributes } from 'react';
 import { classNames } from '../lib/class-names';
 
-type CardElement = 'section' | 'article' | 'div';
+type CardElement = 'section' | 'article' | 'div' | 'li';
 
 export interface CardProps extends HTMLAttributes<HTMLElement> {
   as?: CardElement;
@@ -23,6 +23,19 @@ export function Card({
       className={classNames(
         'flex flex-col rounded-xl border border-border bg-surface p-5',
         spacingClasses[spacing],
+        className,
+      )}
+      {...props}
+    />
+  );
+}
+
+/** Small uppercase label that opens a card ("TU PRÓXIMA CLASE"). */
+export function Eyebrow({ className, ...props }: HTMLAttributes<HTMLHeadingElement>) {
+  return (
+    <h2
+      className={classNames(
+        'text-xs font-semibold tracking-widest text-text-secondary uppercase',
         className,
       )}
       {...props}

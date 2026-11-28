@@ -245,6 +245,7 @@ describe('results', () => {
       [slow.member.id, 0],
       [scaled.member.id, 0],
     ]);
+    expect(board.entries.map((entry) => entry.bumpedByMe)).toEqual([true, false, false]);
     expect(await slow.act((context) => toggleFistBump(context, fastResult.result.id))).toEqual({
       bumped: false,
     });

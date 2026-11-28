@@ -152,7 +152,12 @@ export async function deleteOwnResult(context: ServiceContext, resultId: string)
   if (deleted.length === 0) throw notFound('result');
 }
 
-type LeaderboardEntry = ResultRow & { firstName: string; lastName: string; fistBumps: number };
+type LeaderboardEntry = ResultRow & {
+  firstName: string;
+  lastName: string;
+  fistBumps: number;
+  bumpedByMe: boolean;
+};
 
 /** Lower is better only for times; Rx always ranks above scaled. */
 function compareScores(scoreType: ScoreType) {
@@ -190,23 +195,33 @@ export async function leaderboard(context: ServiceContext, componentId: string) 
     .innerJoin(members, eq(members.id, workoutResults.memberId))
     .where(eq(workoutResults.componentId, componentId))
     .orderBy(asc(workoutResults.createdAt));
+  const resultIds = rows.map((row) => row.result.id);
   const bumps = rows.length
     ? await context.transaction
         .select({ resultId: resultFistBumps.resultId, total: count() })
         .from(resultFistBumps)
-        .where(
-          inArray(
-            resultFistBumps.resultId,
-            rows.map((row) => row.result.id),
-          ),
-        )
+        .where(inArray(resultFistBumps.resultId, resultIds))
         .groupBy(resultFistBumps.resultId)
     : [];
+  // Lets the app paint the member's own fist bumps as given after a reload.
+  const ownBumps =
+    rows.length && !isStaff(context.auth.role)
+      ? await context.transaction
+          .select({ resultId: resultFistBumps.resultId })
+          .from(resultFistBumps)
+          .where(
+            and(
+              inArray(resultFistBumps.resultId, resultIds),
+              eq(resultFistBumps.memberId, (await getOwnMember(context)).id),
+            ),
+          )
+      : [];
   const entries = rows.map(({ result, firstName, lastName }) => ({
     ...result,
     firstName,
     lastName,
     fistBumps: bumps.find((bump) => bump.resultId === result.id)?.total ?? 0,
+    bumpedByMe: ownBumps.some((bump) => bump.resultId === result.id),
   }));
   return { component, entries: entries.sort(compareScores(component.scoreType)) };
 }

@@ -8,7 +8,8 @@
     "./i18n/es-PY.json": "./i18n/es-PY.json",
     "./domain": "./src/domain/index.ts",
     "./schemas": "./src/schemas/index.ts",
-    "./auth-client": "./src/auth/index.ts"
+    "./auth-client": "./src/auth/index.ts",
+    "./api": "./src/api/index.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -38,6 +38,8 @@ Para levantar una sola app: `pnpm --filter @guaranix/member dev`.
 
 En desarrollo el login anda sin cuentas externas: sin captcha, sin botón de Google, y los emails de "Olvidé mi contraseña" se imprimen en la terminal de la API (`[dev email] ...`) con el link para abrir. Los usuarios del seed no tienen contraseña: entrá a http://localhost:5174, tocá "Olvidé mi contraseña" con `owner@box-demo-asuncion.local` y abrí el link de la terminal. O creá una cuenta nueva desde "Creá una".
 
+El seed también crea un alumno de muestra, `alumno@box-demo-asuncion.local` (Daniel Rojas), con plan, reservas, resultados en la pizarra y PRs: activalo igual, con "Olvidé mi contraseña" desde http://localhost:5173.
+
 Para probar Turnstile, descomentá las claves de prueba en `apps/api/.dev.vars`. Para Google, seguí los pasos de abajo.
 
 #### Configurar Google (una vez)
