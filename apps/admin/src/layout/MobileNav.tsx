@@ -45,7 +45,7 @@ export function MobileTabBar() {
       aria-label={t('admin.nav.label')}
       className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-safe md:hidden"
     >
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-6">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <NavLink

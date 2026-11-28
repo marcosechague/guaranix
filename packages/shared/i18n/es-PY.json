@@ -220,7 +220,8 @@
       "wod": "WOD",
       "plans": "Planes",
       "account": "Cuenta",
-      "settings": "Ajustes"
+      "settings": "Ajustes",
+      "payments": "Cobros"
     },
     "members": {
       "title": "Alumnos",
@@ -400,6 +401,47 @@
       "spots": "{count} lugares",
       "durationMinutes": "{count} min",
       "readOnly": "Solo el dueño o un administrador pueden cambiar estos ajustes."
+    },
+    "payments": {
+      "title": "Cobros",
+      "subtitle": "Pagos, transferencias para confirmar y cuotas vencidas",
+      "register": "Registrar pago",
+      "collectedMonth": "Cobrado en {month}",
+      "paymentsCount": "{count} pagos",
+      "toReview": "Por confirmar",
+      "toReviewCount": "{count} transferencias",
+      "overdue": "Vencido",
+      "debtorsCount": "{count} alumnos",
+      "toReviewTitle": "Transferencias para confirmar",
+      "toReviewHint": "Los alumnos las informaron con comprobante. Fijate que estén en la cuenta y confirmalas.",
+      "noneToReview": "No hay transferencias esperando.",
+      "confirm": "Confirmar",
+      "reject": "Rechazar",
+      "confirmLabel": "Confirmar el pago de {name}",
+      "rejectLabel": "Rechazar el pago de {name}",
+      "confirmed": "Pago confirmado.",
+      "rejected": "Pago rechazado.",
+      "recentTitle": "Pagos del mes",
+      "noPayments": "Todavía no hay pagos este mes.",
+      "methods": {
+        "cash": "Efectivo",
+        "bank_transfer": "Transferencia",
+        "qr": "QR"
+      },
+      "reference": "N.º de operación",
+      "referenceShort": "Op. {reference}",
+      "member": "Alumno",
+      "chooseMember": "Elegí un alumno",
+      "charge": "Cuota que paga",
+      "noCharge": "Sin cuota (pago a cuenta)",
+      "chargeOption": "{description} · vence {date} · debe {amount}",
+      "amount": "Monto (₲)",
+      "method": "Medio de pago",
+      "notes": "Nota (opcional)",
+      "saved": "Pago registrado: {amount}.",
+      "collect": "Cobrar",
+      "collectLabel": "Registrar un pago de {name}",
+      "qrNote": "Los pagos por QR los informa el alumno desde la app con su comprobante."
     }
   },
   "platform": {

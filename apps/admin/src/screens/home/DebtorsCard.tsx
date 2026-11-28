@@ -5,9 +5,13 @@ import { MessageCircle } from 'lucide-react';
 import { useDebtors } from '../../api/queries';
 import { whatsappUrl } from '../../lib/whatsapp';
 
-const VISIBLE_DEBTORS = 5;
+export interface DebtorsCardProps {
+  /** On the payments screen each debtor gets a "Cobrar" button. */
+  onCollect?: (memberId: string) => void;
+  limit?: number;
+}
 
-export function DebtorsCard() {
+export function DebtorsCard({ onCollect, limit = 5 }: DebtorsCardProps) {
   const { boxName } = useBoxClock();
   const debtors = useDebtors(true);
   return (
@@ -22,7 +26,7 @@ export function DebtorsCard() {
         <p className="text-sm text-text-secondary">{t('admin.home.noDebtors')}</p>
       ) : (
         <ul className="flex flex-col divide-y divide-divider">
-          {(debtors.data ?? []).slice(0, VISIBLE_DEBTORS).map((debtor) => {
+          {(debtors.data ?? []).slice(0, limit).map((debtor) => {
             const amount = formatGuarani(debtor.owedGs);
             const link = whatsappUrl(
               debtor.phone,
@@ -46,8 +50,21 @@ export function DebtorsCard() {
                     {t('admin.home.owed', { amount, date: formatShortDate(debtor.oldestDueOn) })}
                   </span>
                 </span>
+                {onCollect ? (
+                  <Button
+                    className="px-3 text-sm"
+                    aria-label={t('admin.payments.collectLabel', { name: debtor.firstName })}
+                    onClick={() => onCollect(debtor.memberId)}
+                  >
+                    {t('admin.payments.collect')}
+                  </Button>
+                ) : null}
                 {link ? (
-                  <Button asChild variant="secondary" className="px-3 text-sm">
+                  <Button
+                    asChild
+                    variant="secondary"
+                    className={onCollect ? 'size-touch shrink-0 px-0' : 'px-3 text-sm'}
+                  >
                     <a
                       href={link}
                       target="_blank"
@@ -55,7 +72,7 @@ export function DebtorsCard() {
                       aria-label={t('admin.home.whatsappLabel', { name: debtor.firstName })}
                     >
                       <MessageCircle aria-hidden="true" size={16} />
-                      {t('admin.home.whatsapp')}
+                      {onCollect ? null : t('admin.home.whatsapp')}
                     </a>
                   </Button>
                 ) : null}
