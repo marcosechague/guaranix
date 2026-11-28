@@ -66,7 +66,7 @@ export const boxes = pgTable(
     platformPlanId: uuid().references(() => platformPlans.id),
     /** Locations beyond the first, billed at the plan's extra-location price. */
     extraLocations: integer().notNull().default(0),
-    bookingOpensHoursBefore: integer().notNull().default(168),
+    bookingOpensHoursBefore: integer().notNull().default(24),
     bookingClosesMinutesBefore: integer().notNull().default(0),
     lateCancelMinutesBefore: integer().notNull().default(120),
     lateCancelConsumesCredit: boolean().notNull().default(true),

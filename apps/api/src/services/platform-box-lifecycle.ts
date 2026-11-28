@@ -1,6 +1,6 @@
 import { boxes, users } from '@guaranix/db/schema';
 import type { BoxStatus, CreatePlatformBoxInput } from '@guaranix/shared';
-import { createPlatformBoxSchema } from '@guaranix/shared';
+import { BOX_TEMPLATES, createPlatformBoxSchema } from '@guaranix/shared';
 import { eq } from 'drizzle-orm';
 import { provisionBox } from './box-provisioning';
 import { unprocessable } from './errors';
@@ -27,7 +27,13 @@ export async function createPlatformBox(context: PlatformContext, input: CreateP
   const values = createPlatformBoxSchema.parse(input);
   await assertPlanAvailable(context, values.platformPlanId);
   const ownerUserId = await ownerAccount(context, values.ownerEmail, values.ownerName);
-  const box = await provisionBox(context.transaction, { ...values, ownerUserId }, context.now);
+  const { applyTemplate, ...boxInput } = values;
+  const setup = applyTemplate ? BOX_TEMPLATES[values.businessType] : null;
+  const box = await provisionBox(
+    context.transaction,
+    { ...boxInput, ownerUserId, setup },
+    context.now,
+  );
   await recordPlatformAudit(context, {
     action: 'box.created',
     entityType: 'box',
@@ -59,7 +65,7 @@ export async function changeBoxStatus(
   const transition = TRANSITIONS[action];
   const before = await lockBox(context, boxId);
   if (!(transition.from as readonly BoxStatus[]).includes(before.status)) {
-    throw unprocessable('box_status_unchanged');
+    throw unprocessable('boxInputstatus_unchanged');
   }
   // Removed boxes free their plan's place, so coming back must fit in it again.
   if (before.status === 'cancelled' && before.platformPlanId) {

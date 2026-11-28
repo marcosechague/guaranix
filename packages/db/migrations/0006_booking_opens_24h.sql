@@ -1,0 +1,1 @@
+ALTER TABLE "boxes" ALTER COLUMN "booking_opens_hours_before" SET DEFAULT 24;
