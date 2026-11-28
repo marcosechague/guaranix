@@ -31,5 +31,7 @@ export function createPlatformRouter() {
     get: (path: string, handler: Handler<PlatformEnv>) => router.get(path, handler),
     post: (path: string, handler: Handler<PlatformEnv>) => router.post(path, handler),
     patch: (path: string, handler: Handler<PlatformEnv>) => router.patch(path, handler),
+    put: (path: string, handler: Handler<PlatformEnv>) => router.put(path, handler),
+    delete: (path: string, handler: Handler<PlatformEnv>) => router.delete(path, handler),
   };
 }

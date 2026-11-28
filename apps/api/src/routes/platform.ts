@@ -6,16 +6,14 @@ import {
   updatePlatformBoxSchema,
   updatePlatformPlanSchema,
 } from '@guaranix/shared';
-import type { Context } from 'hono';
-import { idParam, parseBody, parseQuery, respondWith } from '../lib/service-route';
-import { createPlatformRouter, type PlatformEnv } from '../middleware/platform-scope';
+import { idParam, parseBody, parseQuery } from '../lib/service-route';
+import { createPlatformRouter } from '../middleware/platform-scope';
 import {
   type BoxStatusAction,
   changeBoxStatus,
   createPlatformBox,
 } from '../services/platform-box-lifecycle';
 import { getPlatformBox, listPlatformBoxes, updatePlatformBox } from '../services/platform-boxes';
-import type { PlatformContext } from '../services/platform-context';
 import { impersonateBox, stopImpersonating } from '../services/platform-impersonation';
 import { platformMetrics } from '../services/platform-metrics';
 import {
@@ -23,24 +21,8 @@ import {
   listPlatformPlans,
   updatePlatformPlan,
 } from '../services/platform-plans';
-
-type PlatformRequest = Context<PlatformEnv>;
-
-function platformContext(context: PlatformRequest): PlatformContext {
-  const session = context.var.session;
-  return {
-    transaction: context.var.transaction,
-    actorUserId: session.userId,
-    sessionId: session.id,
-    now: new Date(),
-  };
-}
-
-const run = (
-  context: PlatformRequest,
-  work: (service: PlatformContext) => Promise<unknown>,
-  status: 200 | 201 = 200,
-) => respondWith(context, () => work(platformContext(context)), status);
+import { registerPlatformAiRoutes } from './platform-ai';
+import { run } from './platform-run';
 
 const platform = createPlatformRouter();
 
@@ -130,5 +112,7 @@ platform.post('/impersonation/end', (context) =>
     return { ok: true };
   }),
 );
+
+registerPlatformAiRoutes(platform);
 
 export const platformRoutes = platform.router;

@@ -17,3 +17,8 @@ AUTH_SECRET=dev-only-secret-change-me-0123456789abcdefghijklmnop
 # GOOGLE_CLIENT_SECRET=
 # RESEND_API_KEY=
 # EMAIL_FROM=GuaraniX <no-responder@tu-dominio>
+
+# AI features (optional). 32 random bytes in base64 that encrypt the provider keys
+# saved from the superadmin: `openssl rand -base64 32`. In Cloudflare:
+# `wrangler secret put AI_SECRETS_KEY`. Without it AI features stay off.
+# AI_SECRETS_KEY=

@@ -1,3 +1,4 @@
+import { createAiProvider } from '@guaranix/ai';
 import { createDatabase, type Database } from '@guaranix/db';
 import {
   createConsoleEmailSender,
@@ -63,6 +64,7 @@ export function createRuntimeServices(env: Bindings): {
       env.GOOGLE_CLIENT_ID && env.GOOGLE_CLIENT_SECRET
         ? createGoogleOAuth(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET)
         : null,
+    aiProviderFactory: createAiProvider,
   };
   return {
     services,

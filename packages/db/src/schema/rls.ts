@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { pgRole } from 'drizzle-orm/pg-core';
+import { pgPolicy, pgRole } from 'drizzle-orm/pg-core';
 
 /**
  * Role every box-scoped request runs as (`SET LOCAL ROLE`, see `withBoxScope`).
@@ -13,3 +13,7 @@ export const currentBoxId = sql`nullif(current_setting('app.box_id', true), ''):
 
 /** Signed-in user of the current transaction, if any. */
 export const currentUserId = sql`nullif(current_setting('app.user_id', true), '')::uuid`;
+
+/** For tables only `withSystemScope` may touch (login data, AI keys); grants are revoked too. */
+export const denyAppRole = () =>
+  pgPolicy('deny_app_role', { for: 'all', to: appRole, using: sql`false`, withCheck: sql`false` });

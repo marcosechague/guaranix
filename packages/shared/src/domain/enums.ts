@@ -57,6 +57,11 @@ export const CHARGE_STATUSES = ['open', 'paid', 'void'] as const;
 export const PAYMENT_METHODS = ['cash', 'bank_transfer', 'qr'] as const;
 export const PAYMENT_STATUSES = ['pending_review', 'confirmed', 'rejected'] as const;
 
+/** Paid extras a GuaraniX plan includes, each overridable per box from the superadmin. */
+export const FEATURE_FLAGS = ['ai_import'] as const;
+/** AI providers behind `packages/ai`; the superadmin picks one and loads its key. */
+export const AI_PROVIDERS = ['anthropic', 'openai', 'gemini'] as const;
+
 export type PlatformRole = (typeof PLATFORM_ROLES)[number];
 export type BoxRole = (typeof BOX_ROLES)[number];
 export type Role = (typeof ROLES)[number];
@@ -75,3 +80,5 @@ export type MovementCategory = (typeof MOVEMENT_CATEGORIES)[number];
 export type ChargeStatus = (typeof CHARGE_STATUSES)[number];
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
+export type FeatureFlag = (typeof FEATURE_FLAGS)[number];
+export type AiProviderName = (typeof AI_PROVIDERS)[number];

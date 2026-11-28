@@ -16,6 +16,7 @@ import {
 import { errorText } from '@guaranix/ui/data';
 import { useState } from 'react';
 import { useSavePlan } from '../../api/queries';
+import { PlanFeaturesSection } from './PlanFeaturesSection';
 
 export interface PlanSheetProps {
   /** Null to create a new plan. */
@@ -135,6 +136,7 @@ export function PlanSheet({ plan, onClose }: PlanSheetProps) {
         />
         {save.error ? <FormMessage tone="error">{errorText(save.error)}</FormMessage> : null}
       </form>
+      {plan ? <PlanFeaturesSection planId={plan.id} /> : null}
     </Sheet>
   );
 }

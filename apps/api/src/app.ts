@@ -27,7 +27,7 @@ export function createApp(options: AppOptions = {}) {
       origin: (origin) => (allowedOrigins(context).includes(origin) ? origin : null),
       credentials: true,
       allowHeaders: ['content-type', 'x-csrf-token'],
-      allowMethods: ['GET', 'POST', 'PATCH', 'DELETE'],
+      allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
       maxAge: 600,
     })(context, next),
   );

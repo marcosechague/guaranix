@@ -55,6 +55,13 @@ Rutas del superadmin (`apps/platform`). Solo para cuentas con `users.is_platform
 | `POST /platform/boxes/:id/reactivate`          | Reactivar                                                               |
 | `POST /platform/boxes/:id/impersonate`         | "Entrar como" el box durante una hora                                   |
 | `POST /platform/impersonation/end`             | Salir del box                                                           |
+| `GET /platform/ai` · `PATCH`                   | Proveedor y modelo de IA; qué claves hay cargadas (solo su final)       |
+| `PUT /platform/ai/keys/:provider` · `DELETE`   | Cargar (se guarda cifrada) o quitar la clave de un proveedor            |
+| `POST /platform/ai/test`                       | Pedido mínimo al proveedor configurado para probar clave y modelo       |
+| `GET /platform/plans/:id/features`             | Funciones que incluye un plan de GuaraniX (`ai_import`) y su límite     |
+| `PUT /platform/plans/:id/features/:feature`    | `{ enabled, monthlyLimit }`; `null` = sin límite                        |
+| `GET /platform/boxes/:id/features`             | Lo que da su plan, la excepción del box, lo efectivo y los usos del mes |
+| `PUT /platform/boxes/:id/features/:feature`    | Excepción para el box; `null` en los dos campos vuelve a su plan        |
 
 ## Alta del box
 
