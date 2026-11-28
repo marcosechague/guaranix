@@ -58,7 +58,7 @@ for (const name of [...REQUIRED, ...OPTIONAL]) {
 const missing = REQUIRED.filter((name) => !(name in secrets));
 if (missing.length > 0) {
   console.error(
-    `Faltan en el environment de GitHub: ${missing.join(', ')} (ver docs/despliegue.md).`,
+    `Faltan en el environment de GitHub (o en .env.production): ${missing.join(', ')} (ver docs/despliegue.md).`,
   );
   process.exit(1);
 }

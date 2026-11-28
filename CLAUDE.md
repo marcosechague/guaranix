@@ -171,7 +171,7 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 ## Despliegue
 
 - Hoy solo hay **producción**, en la dirección gratis `guaranix.<subdominio>.workers.dev`. El Worker `apps/gateway` sirve las tres apps en una sola dirección (`/` alumno, `/panel/` box, `/plataforma/` superadmin) y pasa `/api/*` a la API por service binding; así comparten la cookie de sesión. La API no tiene dirección pública propia.
-- Producción sale con un tag `v*` o a mano (`.github/workflows/deploy-production.yml`); mergear a `main` no publica. Cada deploy corre migraciones, `db:bootstrap`, API, apps + gateway y una prueba de humo.
+- Producción sale con un tag `v*` o a mano (`.github/workflows/deploy-production.yml`), o desde una compu con `pnpm deploy:production` (mismos pasos, lee `.env.production`); mergear a `main` no publica. Cada deploy corre migraciones, `db:bootstrap`, API, apps + gateway y una prueba de humo.
 - Las direcciones salen de `PUBLIC_URL` (o del subdominio workers.dev) y se pasan con `--var`; nunca escribas un dominio en el código. Un link entre apps usa `import.meta.env.BASE_URL` o las URLs de `config.ts`.
 - Secretos solo en el environment `production` de GitHub; el deploy los sube con `--secrets-file`. Un secreto nuevo de la API se suma en `apps/api/src/env.ts`, `scripts/deploy/write-secrets-file.mjs` y `docs/despliegue.md`.
 - Las migraciones tienen que dejar andando la versión anterior del código (se corren antes del deploy y no se revierten).
