@@ -5,6 +5,8 @@
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  // Only the staging and production environments are meant to be deployed.
+  "workers_dev": false,
   // UTC; Asunción is UTC-3 all year. Keep in sync with CRONS in src/scheduled.ts.
   // 06:00 → 03:00: classes for the next 2 weeks, before anyone books.
   // 12:00 → 09:00: membership reminders and the managers' overdue summary.
@@ -29,7 +31,10 @@
   // Payment receipts. Private: only the API reads them, after checking the box and role.
   "r2_buckets": [{ "binding": "RECEIPTS", "bucket_name": "guaranix-receipts" }],
   "vars": {
-    "APP_ENV": "development",
+    // Fails closed: a plain `wrangler deploy` (no --env) gets production checks,
+    // Secure cookies and no console email sender. `pnpm dev` passes
+    // `--var APP_ENV:development`, and `.dev.vars` may set it too.
+    "APP_ENV": "production",
     "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:5174,http://localhost:5175",
     "PUBLIC_API_URL": "http://localhost:8787",
     "ADMIN_APP_URL": "http://localhost:5174",
