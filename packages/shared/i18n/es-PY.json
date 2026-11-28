@@ -65,6 +65,10 @@
       "4": "J",
       "5": "V",
       "6": "S"
+    },
+    "offline": {
+      "withData": "Sin conexión. Te mostramos lo guardado ({when}).",
+      "noData": "Sin conexión. Cuando vuelva, se actualiza solo."
     }
   },
   "member": {
@@ -179,6 +183,40 @@
       "pauseRange": "{from} al {to}",
       "upcomingPlans": "Próximos planes",
       "validityLabel": "Vigencia"
+    },
+    "timer": {
+      "open": "Abrir timer",
+      "close": "Cerrar timer",
+      "mute": "Silenciar",
+      "unmute": "Activar sonido",
+      "ready": "Listo para empezar",
+      "paused": "En pausa",
+      "phases": {
+        "countdown": "Preparate",
+        "work": "Trabajo",
+        "rest": "Descanso",
+        "done": "Terminó"
+      },
+      "round": "Ronda {round} de {total}",
+      "progress": "Avance del WOD",
+      "start": "Empezar",
+      "pause": "Pausar",
+      "resume": "Seguir",
+      "reset": "Reiniciar",
+      "finish": "Terminé",
+      "again": "Otra vez",
+      "rounds": "Rondas",
+      "addRound": "Tocá al terminar cada ronda",
+      "removeRound": "Restar una ronda",
+      "hint": "Arranca con 10 segundos para prepararte. La pantalla queda encendida.",
+      "yourTime": "Terminaste en {time}",
+      "capReached": "Llegaste al cap de {time}",
+      "yourRounds": "Hiciste {rounds} rondas",
+      "allRounds": "Completaste las {rounds} rondas",
+      "logResult": "Cargar resultado",
+      "notFoundTitle": "No encontramos este timer",
+      "notFoundBody": "Puede que el coach haya cambiado el WOD. Volvé al WOD de hoy y abrilo de nuevo.",
+      "backToWod": "Volver al WOD"
     }
   },
   "admin": {

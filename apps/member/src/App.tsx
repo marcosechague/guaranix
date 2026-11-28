@@ -1,8 +1,9 @@
 import { type Session, t } from '@guaranix/shared';
 import { Card, Page, PageHeader } from '@guaranix/ui';
 import { AccountSecurity, AuthGate, AuthProvider } from '@guaranix/ui/auth';
-import { ApiProvider } from '@guaranix/ui/data';
+import { ApiProvider, OfflineNotice } from '@guaranix/ui/data';
 import { RouterProvider } from 'react-router';
+import { keepOffline } from './api/keys';
 import { API_URL } from './config';
 import { router } from './router';
 
@@ -24,11 +25,12 @@ function NoBoxYet({ session }: { session: Session }) {
 
 export function App() {
   return (
-    <AuthProvider apiUrl={API_URL}>
+    <AuthProvider apiUrl={API_URL} offline>
       <AuthGate>
         {(session) =>
           session.activeBoxId ? (
-            <ApiProvider apiUrl={API_URL}>
+            <ApiProvider apiUrl={API_URL} offlineQueries={keepOffline}>
+              <OfflineNotice />
               <RouterProvider router={router} />
             </ApiProvider>
           ) : (

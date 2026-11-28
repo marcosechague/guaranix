@@ -1,6 +1,8 @@
-import { t } from '@guaranix/shared';
 import type { WorkoutComponent } from '@guaranix/shared/api';
-import { Badge, Card } from '@guaranix/ui';
+import { Badge, Button, Card } from '@guaranix/ui';
+import { Timer } from 'lucide-react';
+import { Link } from 'react-router';
+import { t, timerPlanFor } from '@guaranix/shared';
 import { timerChips } from '../../lib/workout-summary';
 
 export function ComponentCard({ component }: { component: WorkoutComponent }) {
@@ -25,6 +27,14 @@ export function ComponentCard({ component }: { component: WorkoutComponent }) {
         <h2 className="font-display text-xl font-bold">{component.title}</h2>
       ) : null}
       <p className="leading-relaxed whitespace-pre-line text-text-soft">{component.description}</p>
+      {timerPlanFor(component) ? (
+        <Button asChild variant="secondary" className="self-start">
+          <Link to={`/wod/timer/${component.id}`}>
+            <Timer aria-hidden="true" size={18} />
+            {t('member.timer.open')}
+          </Link>
+        </Button>
+      ) : null}
     </Card>
   );
 }

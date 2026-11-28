@@ -1,7 +1,8 @@
 import { formatDayMonth, t, weekdayLong } from '@guaranix/shared';
 import { Button, ChipGroup, Columns, EmptyState, Page, PageHeader, Skeleton } from '@guaranix/ui';
 import { useState } from 'react';
-import { Link } from 'react-router';
+import { Link, useLocation } from 'react-router';
+import { readTimerResult } from '../timer/timer-result';
 import { useLeaderboard, useMe, usePrograms, useWorkouts } from '../../api/queries';
 import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { mainScoredComponent } from '../../lib/workout-summary';
@@ -25,11 +26,16 @@ export function WodScreen() {
   const workouts = useWorkouts(today);
   const programs = usePrograms();
   const { data: me } = useMe();
+  const location = useLocation();
+  const [timerResult] = useState(() => readTimerResult(location.state));
   const [programId, setProgramId] = useState<string | null>(null);
-  const [componentId, setComponentId] = useState<string | null>(null);
+  const [componentId, setComponentId] = useState<string | null>(timerResult?.componentId ?? null);
 
   const list = workouts.data ?? [];
-  const workout = list.find((item) => item.programId === programId) ?? list[0];
+  const workout =
+    list.find((item) => item.programId === programId) ??
+    list.find((item) => item.components.some((part) => part.id === componentId)) ??
+    list[0];
   const scored = (workout?.components ?? []).filter((component) => component.scoreType !== 'none');
   const selected =
     scored.find((component) => component.id === componentId) ??
@@ -114,7 +120,14 @@ export function WodScreen() {
               {board.isPending ? (
                 <Skeleton className="h-56 rounded-xl" />
               ) : (
-                <ResultCard key={selected.id} component={selected} ownEntry={ownEntry} />
+                <ResultCard
+                  key={selected.id}
+                  component={selected}
+                  ownEntry={ownEntry}
+                  fromTimer={
+                    timerResult?.componentId === selected.id ? timerResult.score : undefined
+                  }
+                />
               )}
               <Whiteboard
                 componentId={selected.id}
