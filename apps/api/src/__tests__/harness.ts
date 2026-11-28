@@ -1,3 +1,9 @@
+import {
+  type AiExtractionRequest,
+  type AiProviderConfig,
+  type AiProviderError,
+  createMockProvider,
+} from '@guaranix/ai';
 import { createMemoryEmailSender } from '@guaranix/messaging';
 import { createTestDatabase, seedDemoBox, seedPlatform } from '@guaranix/db/testing';
 import type { Session } from '@guaranix/shared';
@@ -13,6 +19,8 @@ export const testEnv: Bindings = {
   PUBLIC_API_URL: 'http://localhost:8787',
   AUTH_SECRET: 'test-secret-that-is-long-enough-for-hmac-keys',
   TURNSTILE_SITE_KEY: 'site-key',
+  // 32 bytes 0..31: a fixed test master key for the AI key encryption.
+  AI_SECRETS_KEY: 'AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=',
 };
 
 export interface FakeGoogle extends GoogleOAuth {
@@ -45,6 +53,12 @@ export async function createHarness() {
   const emails = createMemoryEmailSender();
   const google = createFakeGoogle();
   const captcha = { enabled: true, passes: true };
+  const ai = {
+    /** Every provider built, with the decrypted key: tests check it matches what was saved. */
+    configs: [] as AiProviderConfig[],
+    respond: (() => ({ ok: true })) as (request: AiExtractionRequest) => unknown,
+    failWith: null as AiProviderError | null,
+  };
 
   const services: Services = {
     database: () => testDatabase.database,
@@ -54,6 +68,16 @@ export async function createHarness() {
     },
     get google() {
       return google;
+    },
+    aiProviderFactory: (config) => {
+      ai.configs.push(config);
+      return createMockProvider(
+        (request) => {
+          if (ai.failWith) throw ai.failWith;
+          return ai.respond(request);
+        },
+        { name: config.provider, model: config.model },
+      );
     },
   };
   const app = createApp({ services: () => services });
@@ -67,6 +91,7 @@ export async function createHarness() {
     emails,
     google,
     captcha,
+    ai,
     close: testDatabase.close,
   };
 }
@@ -133,6 +158,8 @@ export function createBrowser(harness: Harness, origin = APP_ORIGIN) {
       request('POST', path, body, headers),
     patch: (path: string, body?: unknown, headers?: Record<string, string>) =>
       request('PATCH', path, body, headers),
+    put: (path: string, body?: unknown, headers?: Record<string, string>) =>
+      request('PUT', path, body, headers),
     delete: (path: string, headers?: Record<string, string>) =>
       request('DELETE', path, undefined, headers),
   };

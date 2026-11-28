@@ -1,6 +1,14 @@
 import { eq, sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { auditLogs, boxes, platformPlans, users } from '../schema';
+import {
+  aiUsage,
+  auditLogs,
+  boxes,
+  boxFeatureOverrides,
+  platformPlanFeatures,
+  platformPlans,
+  users,
+} from '../schema';
 import { withBoxScope, withSystemScope } from '../scope';
 import { seedDemoBox, seedPlatform } from '../seed';
 import { createTestDatabase, rowsOf } from '../testing/test-database';
@@ -102,6 +110,50 @@ describe('platform plans', () => {
       }),
     );
     expect(await causeOf(insert)).toMatch(permissionDenied);
+  });
+});
+
+describe('AI and feature tables', () => {
+  it.each(['ai_settings', 'ai_provider_keys'])('%s is unreachable from a box', async (table) => {
+    const read = asBoxA((transaction) => transaction.execute(sql.raw(`select * from ${table}`)));
+    expect(await causeOf(read)).toMatch(permissionDenied);
+  });
+
+  it('plan features are readable but not writable from a box', async () => {
+    const [plan] = await asBoxA((transaction) => transaction.select().from(platformPlans));
+    await expect(
+      asBoxA((transaction) => transaction.select().from(platformPlanFeatures)),
+    ).resolves.toBeDefined();
+    const insert = asBoxA((transaction) =>
+      transaction
+        .insert(platformPlanFeatures)
+        .values({ platformPlanId: plan?.id ?? '', feature: 'ai_import', enabled: true }),
+    );
+    expect(await causeOf(insert)).toMatch(permissionDenied);
+  });
+
+  it('a box cannot turn a feature on for itself', async () => {
+    const insert = asBoxA((transaction) =>
+      transaction
+        .insert(boxFeatureOverrides)
+        .values({ boxId: boxA.boxId, feature: 'ai_import', enabled: true }),
+    );
+    expect(await causeOf(insert)).toMatch(permissionDenied);
+  });
+
+  it('a box records its AI usage but cannot erase it', async () => {
+    await asBoxA((transaction) =>
+      transaction.insert(aiUsage).values({
+        boxId: boxA.boxId,
+        feature: 'ai_import',
+        provider: 'anthropic',
+        model: 'claude-opus-5-5',
+      }),
+    );
+    const remove = asBoxA((transaction) => transaction.delete(aiUsage));
+    const reset = asBoxA((transaction) => transaction.update(aiUsage).set({ inputTokens: 0 }));
+    expect(await causeOf(remove)).toMatch(permissionDenied);
+    expect(await causeOf(reset)).toMatch(permissionDenied);
   });
 });
 

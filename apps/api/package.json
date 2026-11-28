@@ -11,6 +11,7 @@
     "demo:passwords": "tsx scripts/demo-passwords.ts"
   },
   "dependencies": {
+    "@guaranix/ai": "workspace:*",
     "@guaranix/db": "workspace:*",
     "@guaranix/messaging": "workspace:*",
     "@guaranix/shared": "workspace:*",

@@ -1,4 +1,4 @@
-import { platformPlans, users } from '../schema';
+import { platformPlanFeatures, platformPlans, users } from '../schema';
 import { withSystemScope, type SchemaDatabase } from '../scope';
 
 /** GuaraniX's own price list (PRD §5) and a platform admin account. */
@@ -29,6 +29,13 @@ export async function seedPlatform(database: SchemaDatabase) {
       .values({ email: 'admin@guaranix.local', fullName: 'GuaraniX Admin', isPlatformAdmin: true })
       .returning({ id: users.id });
     if (!base || !founders || !admin) throw new Error('Platform seed did not return ids');
+    // Example only: which plans include AI import, and how much, is decided in the superadmin.
+    await transaction.insert(platformPlanFeatures).values({
+      platformPlanId: founders.id,
+      feature: 'ai_import',
+      enabled: true,
+      monthlyLimit: 10,
+    });
     return { basePlanId: base.id, foundersPlanId: founders.id, platformAdminId: admin.id };
   });
 }

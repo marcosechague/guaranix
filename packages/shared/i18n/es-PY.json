@@ -480,7 +480,8 @@
       "label": "Secciones de la plataforma",
       "boxes": "Boxes",
       "plans": "Planes",
-      "logout": "Cerrar sesión"
+      "logout": "Cerrar sesión",
+      "ai": "IA"
     },
     "noAccess": {
       "title": "Esta cuenta no administra GuaraniX",
@@ -681,6 +682,76 @@
       "program_updated": "Programa editado",
       "schedule_created": "Horario nuevo",
       "schedule_ended": "Horario terminado"
+    },
+    "features": {
+      "names": {
+        "ai_import": "Importación con IA"
+      },
+      "descriptions": {
+        "ai_import": "Lee fotos, PDF y planillas desordenadas y propone alumnos, planes y saldos para revisar."
+      },
+      "title": "Funciones",
+      "planHint": "Qué incluye este plan. Los boxes del plan lo ven desde el próximo pedido.",
+      "monthlyLimit": "Usos por mes",
+      "monthlyLimitHint": "Vacío para no limitar. Se reinicia el 1.° de cada mes.",
+      "save": "Guardar funciones",
+      "saved": "Funciones guardadas",
+      "invalidLimit": "Poné un número entero, 0 o más.",
+      "boxTitle": "Funciones de este box",
+      "fromPlanOn": "Su plan la incluye: {limit}",
+      "fromPlanOff": "Su plan no la incluye",
+      "unlimited": "sin límite",
+      "perMonth": "{count} por mes",
+      "used": "Este mes: {used} de {limit}",
+      "usedUnlimited": "Este mes: {used} usos",
+      "override": "Para este box",
+      "overrides": {
+        "plan": "Como su plan",
+        "on": "Activada",
+        "off": "Desactivada"
+      },
+      "ownLimit": "Límite propio por mes",
+      "ownLimitHint": "Vacío para usar el del plan."
+    },
+    "ai": {
+      "title": "Inteligencia artificial",
+      "subtitle": "Proveedor, modelo y claves de las funciones con IA. Las claves se guardan cifradas y nunca se vuelven a mostrar.",
+      "providers": {
+        "anthropic": "Anthropic (Claude)",
+        "openai": "OpenAI",
+        "gemini": "Google Gemini"
+      },
+      "missingSecretsKey": "Falta la clave maestra AI_SECRETS_KEY en el Worker (wrangler secret put AI_SECRETS_KEY). Sin ella no se pueden guardar ni usar claves.",
+      "settings": "Proveedor y modelo",
+      "settingsHint": "Todas las funciones con IA usan este proveedor. Cambiarlo no borra las claves de los otros.",
+      "provider": "Proveedor",
+      "model": "Modelo",
+      "modelHint": "El identificador exacto del modelo en el proveedor, por ejemplo claude-opus-5-5.",
+      "modelInvalid": "Escribí el identificador del modelo, sin espacios.",
+      "notConfigured": "Todavía no elegiste proveedor: las funciones con IA están apagadas para todos los boxes.",
+      "save": "Guardar",
+      "saved": "Proveedor guardado",
+      "test": "Probar conexión",
+      "testing": "Probando…",
+      "testOk": "Conexión correcta: respondió {model}.",
+      "noKeyForProvider": "No hay clave cargada para este proveedor.",
+      "keys": "Claves de API",
+      "keysHint": "Una por proveedor. Para cambiarla, cargá una nueva: la anterior se reemplaza.",
+      "keyLoaded": "Cargada · termina en {hint}",
+      "keyMissing": "Sin clave",
+      "keyUpdated": "Actualizada el {date}",
+      "loadKey": "Cargar clave",
+      "replaceKey": "Cambiar",
+      "removeKey": "Quitar",
+      "removeKeyLabel": "Quitar la clave de {provider}",
+      "keyRemoved": "Clave quitada",
+      "keySheetTitle": "Clave de {provider}",
+      "keyField": "Clave de API",
+      "keyFieldHint": "Se guarda cifrada. Después solo vas a ver los últimos 4 caracteres.",
+      "keySave": "Guardar clave",
+      "keySaved": "Clave guardada",
+      "keyInvalid": "Pegá la clave completa, sin espacios.",
+      "cancel": "Cancelar"
     }
   },
   "brodi": {
@@ -851,7 +922,22 @@
     "import_has_errors": "Hay filas con errores. Corregilas o elegí importar solo las filas válidas.",
     "import_empty": "No hay nada para importar.",
     "data_import_not_found": "No encontramos esa importación.",
-    "import_in_progress": "Esta importación ya se está guardando. Esperá un momento y revisá el historial."
+    "import_in_progress": "Esta importación ya se está guardando. Esperá un momento y revisá el historial.",
+    "feature_not_included": "Esta función no está incluida en el plan de tu box. Escribinos para sumarla.",
+    "feature_limit_reached": "Ya usaste todos los usos de este mes. Se renuevan el 1.° del mes que viene.",
+    "feature_not_found": "Esa función no existe.",
+    "ai_not_configured": "La IA todavía no está configurada. Probá más tarde.",
+    "ai_secrets_key_missing": "Falta la clave maestra AI_SECRETS_KEY en el servidor.",
+    "ai_key_unreadable": "No se pudo leer la clave guardada. Volvé a cargarla.",
+    "ai_provider_not_found": "Ese proveedor de IA no existe.",
+    "ai_provider_key_not_found": "No hay una clave cargada para ese proveedor.",
+    "ai_key_rejected": "El proveedor rechazó la clave o el modelo. Revisá los dos.",
+    "ai_rate_limited": "El proveedor de IA está recibiendo muchos pedidos. Probá en unos minutos.",
+    "ai_unavailable": "El proveedor de IA no responde. Probá de nuevo en unos minutos.",
+    "ai_request_rejected": "El proveedor de IA no aceptó el pedido. Revisá el modelo o probá con un archivo más chico.",
+    "ai_refused": "La IA no quiso procesar este archivo. Probá con otro.",
+    "ai_answer_too_long": "El archivo tiene demasiados datos para leerlo de una vez. Dividilo en partes.",
+    "ai_invalid_answer": "La IA respondió algo que no pudimos usar. Probá de nuevo."
   },
   "workout": {
     "kinds": {
