@@ -1,13 +1,12 @@
 import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
 import type { Payment } from '@guaranix/shared/api';
-import { Avatar, Button, Card, Skeleton, useToast } from '@guaranix/ui';
+import { Avatar, Button, Card, Skeleton, useToast, PaymentMethodBadge } from '@guaranix/ui';
 import { errorText, LoadError, useBoxClock } from '@guaranix/ui/data';
 import { dateOfInstant } from '@guaranix/shared';
 import { useReviewPayment } from '../../api/mutations';
 import { usePaymentsToReview } from '../../api/queries';
 import { ReceiptText } from 'lucide-react';
 import { useState } from 'react';
-import { PaymentMethodBadge } from './PaymentMethodBadge';
 import { ReceiptSheet } from './ReceiptSheet';
 
 export function ReviewQueueCard() {

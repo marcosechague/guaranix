@@ -110,7 +110,10 @@
       "planMissing": "No tenés un plan activo",
       "planMeta": "{plan} · vence el {date}",
       "planMissingMeta": "Pasá por recepción o hablá con el box.",
-      "openPlan": "Ver tu plan"
+      "openPlan": "Ver tu plan",
+      "owes": "Tenés {amount} para pagar",
+      "owesMeta": "Tocá para informar tu pago",
+      "openFees": "Ver mi cuota"
     },
     "nav": {
       "label": "Secciones",
@@ -197,7 +200,8 @@
       "pauses": "Pausas",
       "pauseRange": "{from} al {to}",
       "upcomingPlans": "Próximos planes",
-      "validityLabel": "Vigencia"
+      "validityLabel": "Vigencia",
+      "seeFees": "Ver mi cuota y pagos"
     },
     "timer": {
       "open": "Abrir timer",
@@ -232,6 +236,46 @@
       "notFoundTitle": "No encontramos este timer",
       "notFoundBody": "Puede que el coach haya cambiado el WOD. Volvé al WOD de hoy y abrilo de nuevo.",
       "backToWod": "Volver al WOD"
+    },
+    "fees": {
+      "title": "Mi cuota",
+      "subtitle": "Tu plan, lo que debés y tus pagos",
+      "toPay": "Para pagar",
+      "toPayMeta": "{description} · vence el {date}",
+      "overdueMeta": "{description} · venció el {date}",
+      "report": "Informar un pago",
+      "reportHint": "Pagá por transferencia o QR y subí el comprobante. Recepción lo confirma.",
+      "allPaid": "Estás al día",
+      "allPaidMeta": "No tenés cuotas pendientes.",
+      "nextDue": "Próxima cuota: {amount} el {date}.",
+      "inReviewTitle": "Recibimos tu comprobante",
+      "inReviewMeta": "{amount} en revisión. Te avisamos cuando recepción lo confirme.",
+      "inReviewExtra": "Además, {amount} en revisión.",
+      "chargesTitle": "Tus cuotas",
+      "noCharges": "Todavía no tenés cuotas.",
+      "paymentsTitle": "Tus pagos",
+      "noPayments": "Cuando pagues, tus pagos aparecen acá.",
+      "states": {
+        "paid": "Pagada",
+        "in_review": "En revisión",
+        "overdue": "Vencida",
+        "due": "Vence el {date}"
+      },
+      "dueOn": "Vence el {date}",
+      "sheetTitle": "Informar un pago",
+      "sheetDescription": "Recepción revisa el comprobante y confirma tu pago.",
+      "charge": "Qué pagás",
+      "chargeOption": "{description} · {amount}",
+      "noCharge": "Pago a cuenta",
+      "amount": "Monto (₲)",
+      "method": "Cómo pagaste",
+      "reference": "N.º de operación (opcional)",
+      "receipt": "Comprobante",
+      "receiptPrompt": "Captura o foto del comprobante",
+      "receiptHint": "JPG, PNG, WebP o PDF, hasta 5 MB.",
+      "notes": "Nota para recepción (opcional)",
+      "send": "Enviar",
+      "sent": "Listo. Recepción va a revisar tu comprobante."
     }
   },
   "admin": {
@@ -485,11 +529,6 @@
       "rejected": "Pago rechazado.",
       "recentTitle": "Pagos del mes",
       "noPayments": "Todavía no hay pagos este mes.",
-      "methods": {
-        "cash": "Efectivo",
-        "bank_transfer": "Transferencia",
-        "qr": "QR"
-      },
       "reference": "N.º de operación",
       "referenceShort": "Op. {reference}",
       "member": "Alumno",
@@ -1226,6 +1265,18 @@
     "duration": "{days} días",
     "creditsLeft": "Te quedan {count} clases",
     "perMonth": "por {days} días"
+  },
+  "payments": {
+    "methods": {
+      "cash": "Efectivo",
+      "bank_transfer": "Transferencia",
+      "qr": "QR"
+    },
+    "statuses": {
+      "confirmed": "Confirmado",
+      "pending_review": "En revisión",
+      "rejected": "Rechazado"
+    }
   },
   "onboarding": {
     "issues": {

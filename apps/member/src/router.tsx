@@ -31,6 +31,10 @@ export const router = createBrowserRouter([
         }),
       },
       {
+        path: 'cuota',
+        lazy: async () => ({ Component: (await import('./screens/fees/FeesScreen')).FeesScreen }),
+      },
+      {
         path: 'perfil',
         lazy: async () => ({
           Component: (await import('./screens/profile/ProfileScreen')).ProfileScreen,

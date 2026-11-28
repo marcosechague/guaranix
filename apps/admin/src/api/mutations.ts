@@ -1,11 +1,4 @@
-import type {
-  ClassSchedule,
-  Member,
-  MemberPlan,
-  Payment,
-  Plan,
-  Workout,
-} from '@guaranix/shared/api';
+import type { ClassSchedule, Member, MemberPlan, Plan, Workout } from '@guaranix/shared/api';
 import type {
   BookingPolicy,
   CreateMemberInput,
@@ -14,7 +7,7 @@ import type {
   RecordPaymentInput,
   UpdateMemberInput,
 } from '@guaranix/shared/schemas';
-import { useApi } from '@guaranix/ui/data';
+import { recordPaymentWithReceipt, useApi } from '@guaranix/ui/data';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from './keys';
 
@@ -146,18 +139,12 @@ function invalidateMoney(queryClient: ReturnType<typeof useQueryClient>) {
   );
 }
 
-/** Uploads the receipt first, when there is one, then records the payment with its key. */
 export function useRecordPayment() {
   const api = useApi();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ input, receipt }: { input: RecordPaymentInput; receipt: File | null }) => {
-      const receiptFileKey = receipt
-        ? (await api.upload<{ fileKey: string }>('/box/receipts', receipt)).fileKey
-        : null;
-      return (await api.post<{ payment: Payment }>('/box/payments', { ...input, receiptFileKey }))
-        .payment;
-    },
+    mutationFn: ({ input, receipt }: { input: RecordPaymentInput; receipt: File | null }) =>
+      recordPaymentWithReceipt(api, input, receipt),
     onSuccess: () => invalidateMoney(queryClient),
   });
 }

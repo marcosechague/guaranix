@@ -1,5 +1,5 @@
 import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
-import { Avatar, Button, Card, Skeleton } from '@guaranix/ui';
+import { Avatar, Button, Card, Skeleton, CardList, CardListItem } from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
 import { MessageCircle } from 'lucide-react';
 import { useDebtors } from '../../api/queries';
@@ -25,7 +25,7 @@ export function DebtorsCard({ onCollect, limit = 5 }: DebtorsCardProps) {
       ) : (debtors.data ?? []).length === 0 ? (
         <p className="text-sm text-text-secondary">{t('admin.home.noDebtors')}</p>
       ) : (
-        <ul className="flex flex-col divide-y divide-divider">
+        <CardList>
           {(debtors.data ?? []).slice(0, limit).map((debtor) => {
             const amount = formatGuarani(debtor.owedGs);
             const link = whatsappUrl(
@@ -37,10 +37,7 @@ export function DebtorsCard({ onCollect, limit = 5 }: DebtorsCardProps) {
               }),
             );
             return (
-              <li
-                key={debtor.memberId}
-                className="flex items-center gap-3 py-3 first:pt-0 last:pb-0"
-              >
+              <CardListItem key={debtor.memberId}>
                 <Avatar firstName={debtor.firstName} lastName={debtor.lastName} size="sm" />
                 <span className="flex min-w-0 flex-1 flex-col">
                   <span className="line-clamp-2 font-semibold">
@@ -76,10 +73,10 @@ export function DebtorsCard({ onCollect, limit = 5 }: DebtorsCardProps) {
                     </a>
                   </Button>
                 ) : null}
-              </li>
+              </CardListItem>
             );
           })}
-        </ul>
+        </CardList>
       )}
     </Card>
   );

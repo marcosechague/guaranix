@@ -1,8 +1,7 @@
 import { dateOfInstant, formatGuarani, formatShortDate, t } from '@guaranix/shared';
 import type { Payment } from '@guaranix/shared/api';
-import { Avatar, Card, Skeleton } from '@guaranix/ui';
+import { Avatar, Card, Skeleton, PaymentMethodBadge } from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
-import { PaymentMethodBadge } from './PaymentMethodBadge';
 
 export interface RecentPaymentsCardProps {
   payments: readonly Payment[] | undefined;

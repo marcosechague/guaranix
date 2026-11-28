@@ -267,3 +267,10 @@ export interface Payment {
   receiptFileKey: string | null;
   notes: string | null;
 }
+
+/** A member's own fees and payments (`GET /box/me/account`). */
+export interface OwnAccount {
+  charges: Charge[];
+  payments: Omit<Payment, 'firstName' | 'lastName'>[];
+  outstandingGs: number;
+}
