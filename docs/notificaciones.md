@@ -2,11 +2,11 @@
 
 Push, Telegram y WhatsApp andan por separado: cada canal se prende cuando tiene sus claves. Sin claves, en desarrollo los mensajes de Telegram y WhatsApp se imprimen en la terminal de la API (`[dev telegram]`, `[dev whatsapp]`). Cómo funciona por dentro: `docs/decisions/0011-notificaciones.md`.
 
-En staging y producción todo lo de abajo se carga en el environment de GitHub (`staging` o `production`), no con `wrangler secret put`: el deploy lo sube al Worker. Dónde va cada cosa: [`docs/despliegue.md`](despliegue.md).
+En producción todo lo de abajo se carga en el environment `production` de GitHub, no con `wrangler secret put`: el deploy lo sube al Worker. Dónde va cada cosa: [`docs/despliegue.md`](despliegue.md).
 
 ## 1. Cola de Cloudflare (una vez)
 
-La crea el workflow **Cloudflare setup** junto con su cola de mensajes fallidos (`guaranix-notifications-<ambiente>` y `…-dlq`). En desarrollo, `wrangler dev` la simula.
+La crea el workflow **Cloudflare setup** junto con su cola de mensajes fallidos (`guaranix-notifications-production` y `…-dlq`). En desarrollo, `wrangler dev` la simula.
 
 `wrangler.jsonc` ya declara la cola, el consumidor y los cron (`0 12 * * *` recordatorios, `0 23 * * *` WOD de mañana, `*/10 * * * *` barrido). Sin la cola no sale nada, pero tampoco se pierde: los eventos quedan en la base y el barrido los encola cuando exista.
 
@@ -24,7 +24,7 @@ En iPhone, push solo anda con GuaraniX agregada a la pantalla de inicio (iOS 16.
 ## 3. Telegram (gratis, para dueños y coaches)
 
 1. En Telegram, hablale a **@BotFather**, `/newbot`, nombre "GuaraniX" y un usuario como `GuaranixBot`. Te da el token.
-2. En GitHub: `TELEGRAM_BOT_TOKEN` y `TELEGRAM_WEBHOOK_SECRET` (`openssl rand -hex 32`) como secretos, `TELEGRAM_BOT_USERNAME` (sin `@`) como variable. Usá un bot distinto para staging y para producción: Telegram manda los mensajes a un solo webhook por bot.
+2. En GitHub: `TELEGRAM_BOT_TOKEN` y `TELEGRAM_WEBHOOK_SECRET` (`openssl rand -hex 32`) como secretos, `TELEGRAM_BOT_USERNAME` (sin `@`) como variable. Si más adelante hay staging, usá otro bot: Telegram manda los mensajes a un solo webhook por bot.
 3. El deploy registra el webhook solo. A mano sería así (con la URL pública de la API y el mismo secreto):
    ```sh
    curl "https://api.telegram.org/bot<TOKEN>/setWebhook" \
