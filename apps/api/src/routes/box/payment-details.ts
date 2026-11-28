@@ -35,7 +35,9 @@ paymentDetails.post('/qr', MANAGERS, (context) =>
 );
 
 paymentDetails.delete('/qr', MANAGERS, (context) =>
-  respond(context, async (service) => ({ details: await removePaymentQr(service) })),
+  respond(context, async (service) => ({
+    details: await removePaymentQr(service, context.var.services.files),
+  })),
 );
 
 paymentDetails.get('/qr', ANY_ROLE, async (context) => {

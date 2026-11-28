@@ -7,6 +7,8 @@ export interface StoredFile {
 export interface FileStorage {
   put(key: string, bytes: ArrayBuffer, contentType: string): Promise<void>;
   get(key: string): Promise<StoredFile | null>;
+  /** Removing a missing key is not an error. */
+  delete(key: string): Promise<void>;
 }
 
 export function createR2FileStorage(bucket: R2Bucket): FileStorage {
@@ -22,6 +24,9 @@ export function createR2FileStorage(bucket: R2Bucket): FileStorage {
         contentType: object.httpMetadata?.contentType ?? 'application/octet-stream',
       };
     },
+    async delete(key) {
+      await bucket.delete(key);
+    },
   };
 }
 
@@ -34,6 +39,9 @@ export function createMemoryFileStorage(): FileStorage & { keys(): string[] } {
     async get(key) {
       const file = files.get(key);
       return file ? { body: file.bytes, contentType: file.contentType } : null;
+    },
+    async delete(key) {
+      files.delete(key);
     },
     keys: () => [...files.keys()],
   };
