@@ -1,11 +1,20 @@
 import type { ReactNode } from 'react';
 import { t } from '@guaranix/shared';
-import { BottomBar, BoxMark, classNames } from '@guaranix/ui';
+import {
+  BottomBar,
+  BottomBarButton,
+  BottomBarTabContent,
+  BoxMark,
+  Sheet,
+  bottomBarTabClasses,
+  classNames,
+} from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
-import { Settings, UserRound } from 'lucide-react';
-import { Link, NavLink } from 'react-router';
+import { Ellipsis, Settings, UserRound } from 'lucide-react';
+import { useState } from 'react';
+import { Link, NavLink, useLocation } from 'react-router';
 import { canManage } from '../lib/roles';
-import { BRODI_NAV_ITEM, NAV_ITEMS } from './nav-items';
+import { BRODI_NAV_ITEM, NAV_ITEMS, splitForPhone, type NavItem } from './nav-items';
 
 function TopBarLink({ to, label, children }: { to: string; label: string; children: ReactNode }) {
   return (
@@ -46,38 +55,83 @@ export function MobileTopBar() {
   );
 }
 
+function MoreSheet({
+  items,
+  open,
+  onOpenChange,
+}: {
+  items: readonly NavItem[];
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  return (
+    <Sheet
+      open={open}
+      onOpenChange={onOpenChange}
+      title={t('admin.nav.more')}
+      closeLabel={t('common.close')}
+    >
+      <ul className="flex flex-col gap-1 p-3 pb-safe">
+        {items.map(({ to, label, icon: Icon }) => (
+          <li key={to}>
+            <NavLink
+              to={to}
+              onClick={() => onOpenChange(false)}
+              className={({ isActive }) =>
+                classNames(
+                  'flex min-h-touch items-center gap-3 rounded-md px-3 font-semibold transition-press',
+                  isActive ? 'bg-accent text-on-accent' : 'text-text hover:bg-surface',
+                )
+              }
+            >
+              <Icon aria-hidden="true" size={20} strokeWidth={1.75} />
+              {label}
+            </NavLink>
+          </li>
+        ))}
+      </ul>
+    </Sheet>
+  );
+}
+
+/**
+ * Phone navigation: a fixed number of tabs plus "Más" for the rest, so the
+ * bar stays on one row however many sections the panel grows.
+ */
 export function MobileTabBar() {
+  const { tabs, more } = splitForPhone(NAV_ITEMS);
+  const { pathname } = useLocation();
+  const [moreOpen, setMoreOpen] = useState(false);
+  const inMore = more.some((item) => pathname === item.to || pathname.startsWith(`${item.to}/`));
   return (
     <BottomBar as="nav" aria-label={t('admin.nav.label')} className="md:hidden">
-      <ul className="grid grid-cols-6">
-        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
+      <ul className="grid grid-cols-5">
+        {tabs.map(({ to, label, icon }) => (
           <li key={to}>
             <NavLink
               to={to}
               end={to === '/'}
-              className={({ isActive }) =>
-                classNames(
-                  'flex min-h-16 flex-col items-center justify-center gap-1 text-micro font-semibold',
-                  isActive ? 'text-text' : 'text-text-secondary',
-                )
-              }
+              className={({ isActive }) => bottomBarTabClasses(isActive)}
             >
               {({ isActive }) => (
-                <>
-                  <span
-                    className={classNames(
-                      'flex h-7 w-12 items-center justify-center rounded-pill',
-                      isActive && 'bg-accent text-on-accent',
-                    )}
-                  >
-                    <Icon aria-hidden="true" size={19} strokeWidth={1.75} />
-                  </span>
-                  {label}
-                </>
+                <BottomBarTabContent icon={icon} label={label} active={isActive} />
               )}
             </NavLink>
           </li>
         ))}
+        {more.length > 0 ? (
+          <li>
+            <BottomBarButton
+              icon={Ellipsis}
+              label={t('admin.nav.more')}
+              active={inMore}
+              aria-haspopup="dialog"
+              aria-expanded={moreOpen}
+              onClick={() => setMoreOpen(true)}
+            />
+            <MoreSheet items={more} open={moreOpen} onOpenChange={setMoreOpen} />
+          </li>
+        ) : null}
       </ul>
     </BottomBar>
   );
