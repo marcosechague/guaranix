@@ -78,3 +78,14 @@ pnpm format      # Prettier
 ```
 
 GitHub Actions corre lint, typecheck, tests y build en cada pull request.
+
+### Tests end-to-end
+
+`e2e/` tiene los flujos críticos en Playwright contra la app real (Postgres con el seed demo, la API con `wrangler dev` y las tres apps): login, alta de un box en 5 pasos, reservar y lista de espera, cargar un resultado del WOD, informar un pago con comprobante y que recepción lo confirme, importar alumnos y "entrar como" un box en solo lectura. Corren en GitHub Actions (`.github/workflows/e2e.yml`) en cada pull request.
+
+```bash
+pnpm db:up && pnpm db:migrate && pnpm db:seed   # base con el box demo
+pnpm e2e                                          # levanta `pnpm dev` si no está corriendo
+```
+
+Los tests usan los textos de `es-PY.json` (no frases escritas a mano), así un cambio de copy no los rompe. Cada cuenta demo inicia sesión una sola vez (`e2e/support/global-setup.ts`): la API bloquea un email después de 10 intentos en 15 minutos.

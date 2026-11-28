@@ -26,6 +26,7 @@
     "check:ui": "node scripts/ui/check-reuse.mjs",
     "check:secrets": "node scripts/security/scan-secrets.mjs",
     "ui:screenshots": "node scripts/ui/screenshots.mjs",
+    "e2e": "pnpm --filter @guaranix/e2e e2e",
     "check:deploy": "node scripts/deploy/check-config.mjs"
   },
   "devDependencies": {
