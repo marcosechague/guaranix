@@ -7,6 +7,19 @@
     "retry": "Reintentar",
     "or": "o",
     "close": "Cerrar",
+    "theme": {
+      "label": "Apariencia",
+      "hint": "Elegí claro u oscuro, o dejá que siga la configuración de tu dispositivo.",
+      "system": "Automático",
+      "light": "Claro",
+      "dark": "Oscuro",
+      "toLight": "Cambiar a modo claro",
+      "toDark": "Cambiar a modo oscuro"
+    },
+    "nav": {
+      "collapse": "Achicar el menú",
+      "expand": "Agrandar el menú"
+    },
     "chooseFile": "Elegí un archivo",
     "removeFile": "Quitar el archivo",
     "cancel": "Cancelar",

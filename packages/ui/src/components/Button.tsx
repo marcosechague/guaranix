@@ -2,7 +2,8 @@ import { Slot } from '@radix-ui/react-slot';
 import type { ButtonHTMLAttributes } from 'react';
 import { classNames } from '../lib/class-names';
 
-type ButtonVariant = 'primary' | 'secondary' | 'ghost';
+/** `inverse`: strong but not the accent (text color on background), for a second main action. */
+type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'inverse' | 'danger';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
@@ -19,6 +20,8 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary: 'bg-accent text-on-accent hover:bg-accent-hover',
   secondary: 'border border-border bg-surface text-text hover:bg-surface-sunken',
   ghost: 'text-text hover:bg-surface',
+  inverse: 'bg-text text-background hover:bg-text-soft',
+  danger: 'bg-warning text-background hover:opacity-90',
 };
 
 export function Button({ variant = 'primary', asChild = false, className, ...props }: ButtonProps) {

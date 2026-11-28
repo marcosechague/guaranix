@@ -7,6 +7,14 @@
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>GuaraniX</title>
+    <script>
+      // Theme before the first paint (see THEME_STORAGE_KEY in @guaranix/ui): stored choice, else the system's.
+      try {
+        var stored = localStorage.getItem('gx-theme');
+        var dark = stored ? stored === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      } catch (error) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>

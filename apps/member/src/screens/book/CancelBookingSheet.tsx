@@ -57,11 +57,7 @@ export function CancelBookingSheet({ open, onOpenChange, target }: CancelBooking
           <Button variant="secondary" className="flex-1" onClick={() => onOpenChange(false)}>
             {t('member.book.keep')}
           </Button>
-          <Button
-            className="flex-1 bg-warning text-background hover:bg-warning"
-            disabled={cancel.isPending}
-            onClick={confirm}
-          >
+          <Button variant="danger" className="flex-1" disabled={cancel.isPending} onClick={confirm}>
             {t('member.book.confirmCancel')}
           </Button>
         </>

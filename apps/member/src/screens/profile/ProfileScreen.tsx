@@ -1,6 +1,7 @@
 import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
 import type { MemberPlan } from '@guaranix/shared/api';
 import {
+  AppearanceCard,
   Avatar,
   Badge,
   Page,
@@ -108,7 +109,15 @@ export function ProfileScreen() {
           </span>
         </div>
       </header>
-      <Columns start={<PlanCard />} end={<AccountSecurity />} />
+      <Columns
+        start={<PlanCard />}
+        end={
+          <>
+            <AppearanceCard />
+            <AccountSecurity />
+          </>
+        }
+      />
     </Page>
   );
 }

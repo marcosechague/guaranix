@@ -83,7 +83,7 @@ Cada pantalla se arma con `Page` (layout `mobile`, `panel` o `centered`), `PageH
   - Texto `#F4F5F2`, texto secundario `#A3A69E`
   - Acento lima `#D9F24A` (acción principal, estados activos)
   - Éxito `#6EE7A0`, alerta `#FF8A5B`
-  - Modo claro para paneles de escritorio (admin/platform), con los mismos tokens invertidos.
+  - Modo claro y oscuro con los mismos tokens (`data-theme` en `<html>`). La app del alumno y el panel del box siguen al sistema y cada usuario puede elegir en Perfil/Cuenta o con el botón del menú (`useTheme`, `ThemePicker`, `ThemeToggleButton` en `packages/ui`). Platform sigue en claro.
 - Tipografía: **Space Grotesk** para títulos y números grandes, **Inter** para texto.
 - Cada box puede cambiar el color de acento y subir su logo (white-label liviano).
 
