@@ -75,3 +75,6 @@ export function slugFromName(name: string): string {
     .replace(/-+$/g, '');
   return slug.length >= 3 ? slug : `box-${slug || 'nuevo'}`.slice(0, 40);
 }
+
+/** Staff send the whole policy, so the form and the stored rules never drift apart. */
+export type BookingPolicy = z.infer<typeof bookingPolicySchema>;

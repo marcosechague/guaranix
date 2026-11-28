@@ -2,7 +2,7 @@ import { t } from '@guaranix/shared';
 import { Skeleton, StatTile } from '@guaranix/ui';
 import { useMyBookings, useMyPlans, useMyRecords } from '../../api/queries';
 import { currentPlanHealth } from '../../lib/plan-status';
-import { useBoxClock } from '../../lib/use-box-clock';
+import { useBoxClock } from '@guaranix/ui/data';
 
 export function StatsRow() {
   const { today } = useBoxClock();

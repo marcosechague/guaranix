@@ -7,7 +7,7 @@ export interface SegmentedControlProps<T extends string> {
   options: readonly ChipOption<T>[];
   value: T;
   onChange: (value: T) => void;
-  className?: string;
+  className?: string | undefined;
 }
 
 /** Two or three mutually exclusive options in one pill ("Rx | Escalado"). */

@@ -53,7 +53,10 @@
       "10": "octubre",
       "11": "noviembre",
       "12": "diciembre"
-    }
+    },
+    "optional": "(opcional)",
+    "yes": "Sí",
+    "no": "No"
   },
   "member": {
     "home": {
@@ -188,7 +191,26 @@
       "programWod": "Programar WOD",
       "openWod": "Abrir el WOD",
       "newMember": "Nuevo alumno",
-      "seeSchedule": "Ver clases"
+      "seeSchedule": "Ver clases",
+      "collected": "Cobrado en {month}",
+      "outstanding": "Por cobrar",
+      "overdue": "{amount} vencido",
+      "pendingReview": "{amount} en revisión",
+      "newMembers": "{count} nuevos este mes",
+      "monthOccupancy": "Ocupación del mes",
+      "attended": "{count} asistencias",
+      "noOccupancy": "Sin clases todavía",
+      "debtors": "Cuotas vencidas",
+      "debtorsHint": "Avisales por WhatsApp con un toque.",
+      "noDebtors": "Nadie debe cuotas. Buen trabajo.",
+      "owed": "{amount} · desde el {date}",
+      "whatsapp": "WhatsApp",
+      "whatsappLabel": "Escribirle a {name} por WhatsApp",
+      "whatsappMessage": "Hola {name}, te escribimos de {box}. Tenés {amount} pendiente de tu cuota. ¡Gracias!",
+      "classesTodayHint": "{bookings} reservas · {occupancy}% de ocupación",
+      "waitlist": "{count} en espera",
+      "seeAll": "Ver todo",
+      "wodTitle": "WOD de hoy"
     },
     "nav": {
       "label": "Secciones del panel",
@@ -197,7 +219,8 @@
       "classes": "Clases",
       "wod": "WOD",
       "plans": "Planes",
-      "account": "Cuenta"
+      "account": "Cuenta",
+      "settings": "Ajustes"
     },
     "members": {
       "title": "Alumnos",
@@ -245,7 +268,13 @@
       "noRecords": "Sin PRs cargados.",
       "contact": "Contacto",
       "deactivate": "Dar de baja",
-      "activate": "Reactivar"
+      "activate": "Reactivar",
+      "plansCount": "{count} planes",
+      "noPhone": "Sin teléfono",
+      "edit": "Editar datos",
+      "saved": "Datos guardados.",
+      "statusChanged": "Estado actualizado.",
+      "planState": "Plan"
     },
     "plans": {
       "title": "Planes",
@@ -287,7 +316,16 @@
       "confirmCancel": "Suspender y avisar",
       "cancelled": "Clase suspendida.",
       "cancelledBadge": "Suspendida",
-      "capacity": "Cupo"
+      "capacity": "Cupo",
+      "bookedCount": "{taken}/{capacity}",
+      "coach": "Coach",
+      "attendanceHint": "Tocá a cada alumno para marcar si vino.",
+      "checkedIn": "Vino",
+      "missing": "Faltó",
+      "pending": "Sin marcar",
+      "waitlistTitle": "Lista de espera ({count})",
+      "day": "Día",
+      "schedules": "Horarios y cupos"
     },
     "wod": {
       "title": "WOD",
@@ -325,10 +363,43 @@
       "noMovement": "Ninguno",
       "results": "{count} resultados",
       "part": "Parte {number}",
-      "delete": "Borrar WOD"
+      "delete": "Borrar WOD",
+      "programs": "Programas",
+      "noProgram": "Sin programas",
+      "dateLabel": "Día del WOD",
+      "partsCount": "{count} partes",
+      "edit": "Editar WOD",
+      "componentsHint": "Cada parte es un bloque: entrada en calor, fuerza, metcon…",
+      "notPublished": "Los alumnos todavía no lo ven.",
+      "isPublished": "Publicado: los alumnos ya lo ven."
     },
     "account": {
       "title": "Tu cuenta"
+    },
+    "settings": {
+      "title": "Ajustes del box",
+      "subtitle": "Reglas de reserva y cupos por horario",
+      "bookingTitle": "Reservas y cancelaciones",
+      "bookingHint": "Estas reglas valen para todos los alumnos del box.",
+      "opensHours": "Se puede reservar desde (horas antes)",
+      "opensHint": "24 = desde el día anterior. 168 = una semana antes.",
+      "closesMinutes": "Se cierra la reserva (minutos antes)",
+      "closesHint": "0 = se puede reservar hasta que empieza.",
+      "lateCancelMinutes": "Cancelación tardía (minutos antes)",
+      "lateCancelHint": "Si cancelan con menos anticipación, cuenta como tardía.",
+      "lateCancelConsumes": "La cancelación tardía descuenta la clase",
+      "noShowConsumes": "Faltar sin avisar descuenta la clase",
+      "waitlistAutoPromote": "Pasar solos de la lista de espera cuando se libera un lugar",
+      "saved": "Ajustes guardados.",
+      "schedulesTitle": "Horarios y cupos",
+      "schedulesHint": "El cupo nuevo se aplica a las próximas clases de ese horario. Nadie pierde su lugar.",
+      "noSchedules": "Todavía no hay horarios cargados.",
+      "editCapacity": "Cambiar cupo",
+      "capacity": "Cupo por clase",
+      "capacitySaved": "Cupo actualizado en {count} clases.",
+      "spots": "{count} lugares",
+      "durationMinutes": "{count} min",
+      "readOnly": "Solo el dueño o un administrador pueden cambiar estos ajustes."
     },
     "imports": {
       "memberFields": {

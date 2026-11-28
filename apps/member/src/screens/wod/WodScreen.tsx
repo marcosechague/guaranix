@@ -3,8 +3,7 @@ import { Button, ChipGroup, EmptyState, Page, PageHeader, Skeleton } from '@guar
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useLeaderboard, useMe, usePrograms, useWorkouts } from '../../api/queries';
-import { LoadError } from '../../layout/LoadError';
-import { useBoxClock } from '../../lib/use-box-clock';
+import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { mainScoredComponent } from '../../lib/workout-summary';
 import { ComponentCard } from './ComponentCard';
 import { ResultCard } from './ResultCard';

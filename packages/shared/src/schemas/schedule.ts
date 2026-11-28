@@ -136,3 +136,10 @@ export const attendanceSchema = z.object({
 export type UpdateProgramInput = z.infer<typeof updateProgramSchema>;
 export type BookClassInput = z.infer<typeof bookClassSchema>;
 export type AttendanceInput = z.infer<typeof attendanceSchema>;
+
+/** Changing a weekly slot; it also applies to that slot's upcoming classes. */
+export const updateScheduleSchema = z
+  .object({ capacity: capacitySchema, coachUserId: idSchema.nullable() })
+  .partial();
+
+export type UpdateScheduleInput = z.infer<typeof updateScheduleSchema>;
