@@ -2,9 +2,12 @@
 import type {
   BookingStatus,
   BoxRole,
+  ChargeStatus,
   ClassStatus,
   MemberStatus,
   MovementCategory,
+  PaymentMethod,
+  PaymentStatus,
   PlanKind,
   Scaling,
   ScoreType,
@@ -235,4 +238,30 @@ export interface Debtor {
   owedGs: number;
   oldestDueOn: string;
   charges: number;
+}
+
+export interface Charge {
+  id: string;
+  memberId: string;
+  memberPlanId: string | null;
+  description: string;
+  amountGs: number;
+  dueOn: string;
+  status: ChargeStatus;
+  paidGs: number;
+  outstandingGs: number;
+}
+
+export interface Payment {
+  id: string;
+  memberId: string;
+  firstName: string;
+  lastName: string;
+  chargeId: string | null;
+  amountGs: number;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  paidAt: string;
+  reference: string | null;
+  notes: string | null;
 }

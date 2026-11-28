@@ -16,7 +16,8 @@ export interface PlatformContext {
 interface PlatformAuditEntry {
   action: `${string}.${string}`;
   entityType: string;
-  entityId: string;
+  /** Null for platform-wide settings that have no row id (AI provider, keys). */
+  entityId: string | null;
   /** The box affected, so its own audit trail shows what the platform did. */
   boxId: string | null;
   changes?: Record<string, unknown>;

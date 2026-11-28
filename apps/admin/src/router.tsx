@@ -26,6 +26,12 @@ export const router = createBrowserRouter([
         lazy: async () => ({ Component: (await import('./screens/wod/WodScreen')).WodScreen }),
       },
       {
+        path: 'cobros',
+        lazy: async () => ({
+          Component: (await import('./screens/payments/PaymentsScreen')).PaymentsScreen,
+        }),
+      },
+      {
         path: 'planes',
         lazy: async () => ({
           Component: (await import('./screens/plans/PlansScreen')).PlansScreen,

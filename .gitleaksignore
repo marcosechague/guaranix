@@ -1,0 +1,4 @@
+# Known false positives, by gitleaks fingerprint (commit:file:rule:line). Each one
+# must be a test value, never a real secret.
+# Test master key for AI key encryption: the bytes 0..31 in base64.
+32fb22082521a1b8a4ef23e8c0257aa0d04bdecb:apps/api/src/__tests__/harness.ts:generic-api-key:23

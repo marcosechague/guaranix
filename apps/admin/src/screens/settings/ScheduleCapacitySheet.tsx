@@ -1,6 +1,6 @@
 import { t } from '@guaranix/shared';
 import type { ClassSchedule } from '@guaranix/shared/api';
-import { Button, FormMessage, Sheet, TextField, useToast } from '@guaranix/ui';
+import { FormMessage, Sheet, SheetFormActions, TextField, useToast } from '@guaranix/ui';
 import { errorText } from '@guaranix/ui/data';
 import { useState } from 'react';
 import { useUpdateScheduleCapacity } from '../../api/mutations';
@@ -37,14 +37,12 @@ export function ScheduleCapacitySheet({ schedule, title, onClose }: ScheduleCapa
       description={t('admin.settings.schedulesHint')}
       closeLabel={t('common.close')}
       footer={
-        <>
-          <Button variant="secondary" className="flex-1" onClick={onClose}>
-            {t('common.cancel')}
-          </Button>
-          <Button className="flex-1" disabled={!valid || update.isPending} onClick={save}>
-            {update.isPending ? t('common.saving') : t('common.save')}
-          </Button>
-        </>
+        <SheetFormActions
+          onSubmit={save}
+          pending={update.isPending}
+          disabled={!valid}
+          onCancel={onClose}
+        />
       }
     >
       <div className="flex flex-col gap-4">

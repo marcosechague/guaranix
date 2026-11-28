@@ -19,4 +19,8 @@ export const queryKeys = {
   debtors: ['debtors'] as const,
   bookingPolicy: ['settings', 'booking'] as const,
   schedules: ['schedules'] as const,
+  allPayments: ['payments'] as const,
+  payments: (from: string, to: string) => ['payments', from, to] as const,
+  openCharges: (memberId: string) => ['charges', 'open', memberId] as const,
+  allCharges: ['charges'] as const,
 };

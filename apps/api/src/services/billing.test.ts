@@ -95,6 +95,13 @@ describe('manual payments', () => {
     );
     expect(reported.status).toBe('pending_review');
     expect(await statusOf(owing.charge.id)).toBe('open');
+    const queue = await world.as('reception', (context) =>
+      listPayments(context, { status: 'pending_review' }),
+    );
+    expect(queue.find((entry) => entry.id === reported.id)).toMatchObject({
+      firstName: owing.member.firstName,
+      lastName: owing.member.lastName,
+    });
     expect((await owing.act((context) => ownAccount(context))).outstandingGs).toBe(280_000);
 
     await world.as('reception', (context) => reviewPayment(context, reported.id, 'confirmed'));

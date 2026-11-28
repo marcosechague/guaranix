@@ -1,31 +1,17 @@
 import { t } from '@guaranix/shared';
 import { classNames } from '@guaranix/ui';
-import {
-  CalendarDays,
-  Dumbbell,
-  House,
-  TrendingUp,
-  UserRound,
-  type LucideIcon,
-} from 'lucide-react';
 import { NavLink } from 'react-router';
+import { NAV_ITEMS } from './nav-items';
 
-const TABS: { to: string; label: string; icon: LucideIcon }[] = [
-  { to: '/', label: t('member.nav.home'), icon: House },
-  { to: '/reservar', label: t('member.nav.book'), icon: CalendarDays },
-  { to: '/wod', label: t('member.nav.wod'), icon: Dumbbell },
-  { to: '/progreso', label: t('member.nav.progress'), icon: TrendingUp },
-  { to: '/perfil', label: t('member.nav.profile'), icon: UserRound },
-];
-
+/** Bottom tabs on phones; tablets and desktops use the side rail instead. */
 export function TabBar() {
   return (
     <nav
       aria-label={t('member.nav.label')}
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-safe backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-safe backdrop-blur md:hidden"
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
-        {TABS.map(({ to, label, icon: Icon }) => (
+        {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <NavLink
               to={to}

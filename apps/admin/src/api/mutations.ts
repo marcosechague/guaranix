@@ -1,9 +1,17 @@
-import type { ClassSchedule, Member, MemberPlan, Plan, Workout } from '@guaranix/shared/api';
+import type {
+  ClassSchedule,
+  Member,
+  MemberPlan,
+  Payment,
+  Plan,
+  Workout,
+} from '@guaranix/shared/api';
 import type {
   BookingPolicy,
   CreateMemberInput,
   CreatePlanInput,
   CreateWorkoutInput,
+  RecordPaymentInput,
   UpdateMemberInput,
 } from '@guaranix/shared/schemas';
 import { useApi } from '@guaranix/ui/data';
@@ -126,5 +134,34 @@ export function useUpdateScheduleCapacity(scheduleId: string) {
         queryClient.invalidateQueries({ queryKey: queryKeys.schedules }),
         queryClient.invalidateQueries({ queryKey: queryKeys.allClasses }),
       ]),
+  });
+}
+
+/** Money moved: refresh payments, balances, debtors and the dashboard together. */
+function invalidateMoney(queryClient: ReturnType<typeof useQueryClient>) {
+  return Promise.all(
+    [queryKeys.allPayments, queryKeys.allCharges, queryKeys.debtors, ['dashboard']].map(
+      (queryKey) => queryClient.invalidateQueries({ queryKey }),
+    ),
+  );
+}
+
+export function useRecordPayment() {
+  const api = useApi();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (input: RecordPaymentInput) =>
+      (await api.post<{ payment: Payment }>('/box/payments', input)).payment,
+    onSuccess: () => invalidateMoney(queryClient),
+  });
+}
+
+export function useReviewPayment() {
+  const api = useApi();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ paymentId, status }: { paymentId: string; status: 'confirmed' | 'rejected' }) =>
+      api.post(`/box/payments/${paymentId}/review`, { status }),
+    onSuccess: () => invalidateMoney(queryClient),
   });
 }

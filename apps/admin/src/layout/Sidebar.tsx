@@ -1,9 +1,8 @@
 import { t } from '@guaranix/shared';
-import { classNames } from '@guaranix/ui';
+import { BoxMark, classNames } from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
 import { Settings, UserRound } from 'lucide-react';
 import { NavLink } from 'react-router';
-import { BoxMark } from './BoxMark';
 import { NAV_ITEMS } from './nav-items';
 
 const linkClass = ({ isActive }: { isActive: boolean }) =>

@@ -1,12 +1,12 @@
-import { and, asc, eq, gte, isNull, lte, or } from 'drizzle-orm';
+import { and, asc, eq } from 'drizzle-orm';
 import type { z } from 'zod';
-import { boxUsers, classSchedules, classes } from '@guaranix/db/schema';
-import { addDays, weekdayOf, zonedInstant } from '@guaranix/shared';
+import { boxUsers, classSchedules } from '@guaranix/db/schema';
 import type { classScheduleSchema } from '@guaranix/shared/schemas';
 import { recordAudit } from './audit';
 import { currentBox } from './box-calendar';
 import { MANAGER_ROLES, assertRole, type ServiceContext } from './context';
 import { notFound, unprocessable } from './errors';
+import { createClassesFromSchedules } from './class-generation';
 import { getProgram } from './programs';
 
 export type ScheduleInput = z.output<typeof classScheduleSchema>;
@@ -80,59 +80,18 @@ export async function endSchedule(
   return schedule;
 }
 
-export const MAX_GENERATION_DAYS = 62;
+export { MAX_GENERATION_DAYS } from './class-generation';
 
-/**
- * Creates the concrete classes of every schedule between `from` and
- * `from + days - 1`. Safe to run again: existing classes are skipped.
- */
+/** Creates the classes of every schedule in the range; safe to run again. */
 export async function generateClasses(
   context: ServiceContext,
   range: { from: string; days: number },
 ): Promise<{ created: number }> {
   assertRole(context.auth.role, MANAGER_ROLES);
-  if (range.days < 1 || range.days > MAX_GENERATION_DAYS) {
-    throw unprocessable('generation_range_invalid');
-  }
-  const until = addDays(range.from, range.days - 1);
   const box = await currentBox(context);
-  const schedules = await context.transaction
-    .select()
-    .from(classSchedules)
-    .where(
-      and(
-        lte(classSchedules.validFrom, until),
-        or(isNull(classSchedules.validUntil), gte(classSchedules.validUntil, range.from)),
-      ),
-    );
-
-  const rows = [];
-  for (let offset = 0; offset < range.days; offset += 1) {
-    const date = addDays(range.from, offset);
-    const weekday = weekdayOf(date);
-    for (const schedule of schedules) {
-      const inRange =
-        schedule.weekday === weekday &&
-        schedule.validFrom <= date &&
-        (schedule.validUntil === null || date <= schedule.validUntil);
-      if (!inRange) continue;
-      const startsAt = zonedInstant(date, schedule.startTime, box.timezone);
-      rows.push({
-        boxId: context.auth.boxId,
-        programId: schedule.programId,
-        scheduleId: schedule.id,
-        coachUserId: schedule.coachUserId,
-        startsAt,
-        endsAt: new Date(startsAt.getTime() + schedule.durationMinutes * 60_000),
-        capacity: schedule.capacity,
-      });
-    }
-  }
-  if (rows.length === 0) return { created: 0 };
-  const created = await context.transaction
-    .insert(classes)
-    .values(rows)
-    .onConflictDoNothing({ target: [classes.scheduleId, classes.startsAt] })
-    .returning({ id: classes.id });
-  return { created: created.length };
+  return createClassesFromSchedules(
+    context.transaction,
+    { id: context.auth.boxId, timezone: box.timezone },
+    range,
+  );
 }

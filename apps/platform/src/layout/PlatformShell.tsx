@@ -1,7 +1,7 @@
 import { t } from '@guaranix/shared';
-import { Brodi, Button, classNames, ToastProvider } from '@guaranix/ui';
+import { Button, classNames, GuaranixLogo, ToastProvider } from '@guaranix/ui';
 import { useAuth } from '@guaranix/ui/auth';
-import { Building2, LogOut, Tags, type LucideIcon } from 'lucide-react';
+import { Building2, LogOut, Sparkles, Tags, type LucideIcon } from 'lucide-react';
 import { Suspense } from 'react';
 import { NavLink, Outlet, ScrollRestoration } from 'react-router';
 import { ScreenSkeleton } from './ScreenSkeleton';
@@ -9,17 +9,15 @@ import { ScreenSkeleton } from './ScreenSkeleton';
 const SECTIONS: { to: string; label: string; icon: LucideIcon }[] = [
   { to: '/', label: t('platform.nav.boxes'), icon: Building2 },
   { to: '/planes', label: t('platform.nav.plans'), icon: Tags },
+  { to: '/ia', label: t('platform.nav.ai'), icon: Sparkles },
 ];
 
 function BrandMark() {
   return (
-    <span className="flex items-center gap-2.5">
-      <span className="flex size-9 items-center justify-center overflow-hidden rounded-sm bg-accent">
-        <Brodi alt="" size={32} />
-      </span>
-      <span className="font-display text-lg font-bold">
-        {t('app.name')}{' '}
-        <span className="font-medium text-text-secondary">· {t('platform.brand')}</span>
+    <span className="flex items-baseline gap-2">
+      <GuaranixLogo />
+      <span className="font-display text-lg font-medium text-text-secondary">
+        · {t('platform.brand')}
       </span>
     </span>
   );

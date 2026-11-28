@@ -56,7 +56,7 @@ export function usePlans() {
 }
 
 /** Every platform write can move metrics, lists and plan usage: refresh them all. */
-function usePlatformMutation<Input, Result>(send: (input: Input) => Promise<Result>) {
+export function usePlatformMutation<Input, Result>(send: (input: Input) => Promise<Result>) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: send,

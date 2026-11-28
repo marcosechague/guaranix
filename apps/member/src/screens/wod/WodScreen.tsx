@@ -1,5 +1,5 @@
 import { formatDayMonth, t, weekdayLong } from '@guaranix/shared';
-import { Button, ChipGroup, EmptyState, Page, PageHeader, Skeleton } from '@guaranix/ui';
+import { Button, ChipGroup, Columns, EmptyState, Page, PageHeader, Skeleton } from '@guaranix/ui';
 import { useState } from 'react';
 import { Link } from 'react-router';
 import { useLeaderboard, useMe, usePrograms, useWorkouts } from '../../api/queries';
@@ -11,7 +11,7 @@ import { Whiteboard } from './Whiteboard';
 
 function WodSkeleton() {
   return (
-    <Page layout="mobile" className="gap-4">
+    <Page layout="mobile">
       <Skeleton className="h-3 w-40" />
       <Skeleton className="h-9 w-56" />
       <Skeleton className="h-40 rounded-xl" />
@@ -70,7 +70,7 @@ export function WodScreen() {
   const headline = mainScoredComponent(workout.components);
   const ownEntry = board.data?.entries.find((entry) => entry.memberId === me?.id);
   return (
-    <Page layout="mobile" className="gap-4">
+    <Page layout="mobile">
       <PageHeader
         size="large"
         eyebrow={t('member.wod.dateProgram', {
@@ -93,35 +93,39 @@ export function WodScreen() {
           }))}
         />
       ) : null}
-      {workout.components.map((component) => (
-        <ComponentCard key={component.id} component={component} />
-      ))}
-      {selected ? (
-        <>
-          {scored.length > 1 ? (
-            <ChipGroup
-              label={t('member.wod.whichPart')}
-              value={selected.id}
-              onChange={setComponentId}
-              options={scored.map((component) => ({
-                value: component.id,
-                label: component.title ?? t(`workout.kinds.${component.kind}`),
-              }))}
-            />
-          ) : null}
-          {board.isPending ? (
-            <Skeleton className="h-56 rounded-xl" />
-          ) : (
-            <ResultCard key={selected.id} component={selected} ownEntry={ownEntry} />
-          )}
-          <Whiteboard
-            componentId={selected.id}
-            board={board.data}
-            isPending={board.isPending}
-            ownMemberId={me?.id}
-          />
-        </>
-      ) : null}
+      <Columns
+        start={workout.components.map((component) => (
+          <ComponentCard key={component.id} component={component} />
+        ))}
+        end={
+          selected ? (
+            <>
+              {scored.length > 1 ? (
+                <ChipGroup
+                  label={t('member.wod.whichPart')}
+                  value={selected.id}
+                  onChange={setComponentId}
+                  options={scored.map((component) => ({
+                    value: component.id,
+                    label: component.title ?? t(`workout.kinds.${component.kind}`),
+                  }))}
+                />
+              ) : null}
+              {board.isPending ? (
+                <Skeleton className="h-56 rounded-xl" />
+              ) : (
+                <ResultCard key={selected.id} component={selected} ownEntry={ownEntry} />
+              )}
+              <Whiteboard
+                componentId={selected.id}
+                board={board.data}
+                isPending={board.isPending}
+                ownMemberId={me?.id}
+              />
+            </>
+          ) : undefined
+        }
+      />
     </Page>
   );
 }

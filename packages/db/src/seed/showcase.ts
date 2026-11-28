@@ -22,6 +22,7 @@ import {
   type ScopedTransaction,
 } from '../scope';
 import { localDate } from './calendar';
+import { seedShowcaseBilling } from './showcase-billing';
 
 /**
  * Extra demo data so every screen looks like a real box: two dozen members on
@@ -125,14 +126,22 @@ export async function seedShowcase(
       )
       .returning({ id: members.id });
 
-    await transaction.insert(memberPlans).values([
-      planRow(boxId, daniel.id, planFor('Ilimitado'), localDate(-12), localDate(18)),
-      ...created.map(({ id }, index) => {
-        const plan = planFor(SHOWCASE_MEMBERS[index]?.[2] ?? 'Ilimitado');
-        const start = localDate(-((index * 5) % 26));
-        return planRow(boxId, id, plan, start, localDate(plan.durationDays - ((index * 5) % 26)));
-      }),
-    ]);
+    const sold = await transaction
+      .insert(memberPlans)
+      .values([
+        planRow(boxId, daniel.id, planFor('Ilimitado'), localDate(-12), localDate(18)),
+        ...created.map(({ id }, index) => {
+          const plan = planFor(SHOWCASE_MEMBERS[index]?.[2] ?? 'Ilimitado');
+          const start = localDate(-((index * 5) % 26));
+          return planRow(boxId, id, plan, start, localDate(plan.durationDays - ((index * 5) % 26)));
+        }),
+      ])
+      .returning({
+        id: memberPlans.id,
+        memberId: memberPlans.memberId,
+        priceGs: memberPlans.priceGs,
+        startsOn: memberPlans.startsOn,
+      });
 
     const everyone = [daniel.id, ...created.map(({ id }) => id)];
     await seedBookings(transaction, boxId, daniel.id, everyone);
@@ -144,6 +153,12 @@ export async function seedShowcase(
     );
     await seedRecords(transaction, boxId, daniel.id);
     await seedTomorrowDraft(transaction, boxId, ownerId);
+    await seedShowcaseBilling(transaction, {
+      boxId,
+      staffUserId: ownerId,
+      demoMemberId: daniel.id,
+      sold,
+    });
   });
 }
 

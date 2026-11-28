@@ -1,11 +1,13 @@
 import type { BookingPolicy } from '@guaranix/shared/schemas';
 import type {
+  Charge,
   ClassListItem,
   ClassSchedule,
   ClassSession,
   DashboardReport,
   Debtor,
   Member,
+  Payment,
   MemberPlan,
   PersonalRecord,
   RosterEntry,
@@ -130,6 +132,41 @@ export function useSchedules() {
     queryKey: queryKeys.schedules,
     queryFn: async () =>
       (await api.get<{ schedules: ClassSchedule[] }>('/box/schedules')).schedules,
+  });
+}
+
+/** Payments recorded between two instants (box-local month bounds), newest first. */
+export function usePayments(from: string, to: string) {
+  const api = useApi();
+  return useQuery({
+    queryKey: queryKeys.payments(from, to),
+    queryFn: async () =>
+      (await api.get<{ payments: Payment[] }>('/box/payments', { from, to })).payments,
+  });
+}
+
+export function usePaymentsToReview() {
+  const api = useApi();
+  return useQuery({
+    queryKey: [...queryKeys.allPayments, 'pending_review'],
+    queryFn: async () =>
+      (await api.get<{ payments: Payment[] }>('/box/payments', { status: 'pending_review' }))
+        .payments,
+  });
+}
+
+export function useOpenCharges(memberId: string | null) {
+  const api = useApi();
+  return useQuery({
+    queryKey: queryKeys.openCharges(memberId ?? ''),
+    queryFn: async () =>
+      (
+        await api.get<{ charges: Charge[] }>('/box/charges', {
+          memberId: memberId ?? undefined,
+          status: 'open',
+        })
+      ).charges,
+    enabled: memberId !== null,
   });
 }
 

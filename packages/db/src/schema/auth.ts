@@ -1,23 +1,11 @@
-import { sql } from 'drizzle-orm';
-import {
-  index,
-  integer,
-  pgPolicy,
-  pgTable,
-  text,
-  timestamp,
-  unique,
-  uuid,
-} from 'drizzle-orm/pg-core';
+import { index, integer, pgTable, text, timestamp, unique, uuid } from 'drizzle-orm/pg-core';
 import { primaryId, timestamps } from './columns';
 import { boxes, users } from './platform';
-import { appRole } from './rls';
+import { denyAppRole } from './rls';
 
 // Login data is only ever touched by the auth service through `withSystemScope`.
 // Each table carries an explicit deny policy for the app role (and its grants are
 // revoked in a migration), so no box-scoped request can read a hash or a token.
-const denyAppRole = () =>
-  pgPolicy('deny_app_role', { for: 'all', to: appRole, using: sql`false`, withCheck: sql`false` });
 
 /** Password hash, kept out of `users` because box staff may read linked users. */
 export const userCredentials = pgTable(

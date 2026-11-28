@@ -1,5 +1,5 @@
 import { t } from '@guaranix/shared';
-import { Avatar, Page, PageHeader } from '@guaranix/ui';
+import { Avatar, Page, PageHeader, Columns } from '@guaranix/ui';
 import { useSession } from '@guaranix/ui/auth';
 import { Link } from 'react-router';
 import { useMe } from '../../api/queries';
@@ -16,7 +16,7 @@ export function HomeScreen() {
   const firstName = me?.firstName ?? session.user.fullName.split(' ')[0] ?? '';
   const lastName = me?.lastName ?? '';
   return (
-    <Page layout="mobile" className="gap-4">
+    <Page layout="mobile">
       <PageHeader
         eyebrow={boxName ?? t('app.name')}
         title={t('member.home.greeting', { name: firstName })}
@@ -30,10 +30,21 @@ export function HomeScreen() {
           </Link>
         }
       />
-      <NextClassCard />
-      <TodayWodCard />
-      <StatsRow />
-      <MembershipRow />
+      <Columns
+        split="wide-start"
+        start={
+          <>
+            <NextClassCard />
+            <TodayWodCard />
+          </>
+        }
+        end={
+          <>
+            <StatsRow />
+            <MembershipRow />
+          </>
+        }
+      />
     </Page>
   );
 }

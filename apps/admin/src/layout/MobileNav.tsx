@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react';
 import { t } from '@guaranix/shared';
-import { BottomBar, classNames } from '@guaranix/ui';
+import { BottomBar, BoxMark, classNames } from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
 import { Settings, UserRound } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
-import { BoxMark } from './BoxMark';
 import { NAV_ITEMS } from './nav-items';
 
 function TopBarLink({ to, label, children }: { to: string; label: string; children: ReactNode }) {
@@ -42,7 +41,7 @@ export function MobileTopBar() {
 export function MobileTabBar() {
   return (
     <BottomBar as="nav" aria-label={t('admin.nav.label')} className="md:hidden">
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-6">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <NavLink
