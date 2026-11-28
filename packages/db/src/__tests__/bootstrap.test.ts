@@ -1,5 +1,5 @@
 import { eq } from 'drizzle-orm';
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { platformPlans, users } from '../schema';
 import { withSystemScope } from '../scope';
 import { bootstrapPlatform } from '../seed';
@@ -7,11 +7,13 @@ import { createTestDatabase } from '../testing/test-database';
 
 let testDatabase: Awaited<ReturnType<typeof createTestDatabase>>;
 
-beforeEach(async () => {
+// One database for the file (each PGlite instance is slow to start), so the
+// cases run in order: first run, second run, an existing account, no email.
+beforeAll(async () => {
   testDatabase = await createTestDatabase();
 });
 
-afterEach(async () => {
+afterAll(async () => {
   await testDatabase.close();
 });
 
@@ -63,27 +65,30 @@ describe('bootstrapPlatform', () => {
 
   it('promotes an existing account instead of creating a second one', async () => {
     await readAll((tx) =>
-      tx.insert(users).values({ email: 'marcos@example.com', fullName: 'Marcos' }),
+      tx.insert(users).values({ email: 'coach@example.com', fullName: 'Coach Ana' }),
     );
 
     const result = await bootstrapPlatform(testDatabase.database, {
-      platformAdminEmail: 'marcos@example.com',
+      platformAdminEmail: 'coach@example.com',
     });
 
-    expect(result.platformAdmin).toBe('promoted');
-    const [account] = await readAll((tx) =>
-      tx.select().from(users).where(eq(users.email, 'marcos@example.com')),
+    expect(result).toEqual({ plansInserted: 0, platformAdmin: 'promoted' });
+    const accounts = await readAll((tx) =>
+      tx.select().from(users).where(eq(users.email, 'coach@example.com')),
     );
-    expect(account?.isPlatformAdmin).toBe(true);
-    expect(account?.fullName).toBe('Marcos');
+    expect(accounts).toHaveLength(1);
+    expect(accounts[0]?.isPlatformAdmin).toBe(true);
+    expect(accounts[0]?.fullName).toBe('Coach Ana');
   });
 
-  it('only seeds the plans when no admin email is given', async () => {
+  it('touches no account when no admin email is given', async () => {
+    const before = await readAll((tx) => tx.select().from(users));
+
     const result = await bootstrapPlatform(testDatabase.database, {});
 
-    expect(result).toEqual({ plansInserted: 2, platformAdmin: 'skipped' });
-    const admins = await readAll((tx) => tx.select().from(users));
-    expect(admins).toHaveLength(0);
+    expect(result).toEqual({ plansInserted: 0, platformAdmin: 'skipped' });
+    const after = await readAll((tx) => tx.select().from(users));
+    expect(after).toEqual(before);
   });
 
   it('rejects something that is not an email', async () => {
