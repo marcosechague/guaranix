@@ -124,3 +124,8 @@ export async function readUpload(
   }
   return bytes.buffer;
 }
+
+/** The body as text, for signatures computed over the exact bytes sent (processor webhooks). */
+export async function readRawText(context: Context, maxBytes: number): Promise<string> {
+  return new TextDecoder().decode(await readUpload(context, maxBytes, 'invalid_input'));
+}

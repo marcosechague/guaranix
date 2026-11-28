@@ -22,3 +22,9 @@ AUTH_SECRET=dev-only-secret-change-me-0123456789abcdefghijklmnop
 # saved from the superadmin: `openssl rand -base64 32`. In Cloudflare:
 # `wrangler secret put AI_SECRETS_KEY`. Without it AI features stay off.
 # AI_SECRETS_KEY=
+
+# Card payments (optional). Same format, a different key: it encrypts each box's
+# processor private key (Bancard). In Cloudflare: `wrangler secret put PAYMENTS_SECRETS_KEY`.
+# Without it boxes can't connect card payments. Locally, connect the "mock" provider
+# from the box's payment settings to try the whole flow with no Bancard account.
+# PAYMENTS_SECRETS_KEY=

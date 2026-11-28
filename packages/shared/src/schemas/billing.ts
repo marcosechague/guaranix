@@ -16,7 +16,8 @@ export const recordPaymentSchema = z
     memberId: idSchema,
     chargeId: idSchema.nullable().default(null),
     amountGs: positiveGuaraniAmountSchema,
-    method: z.enum(PAYMENT_METHODS),
+    // Card payments only come from the processor, never typed in by hand.
+    method: z.enum(PAYMENT_METHODS).exclude(['card']),
     paidAt: z.coerce.date(),
     /** Bank or QR operation number, when there is one. */
     reference: z.string().trim().max(120).nullable().default(null),
@@ -30,7 +31,7 @@ export const recordPaymentSchema = z
 
 export const reviewPaymentSchema = z.object({
   paymentId: idSchema,
-  status: z.enum(PAYMENT_STATUSES).exclude(['pending_review']),
+  status: z.enum(PAYMENT_STATUSES).exclude(['pending_review', 'refunded']),
 });
 
 export type ChargeInput = z.input<typeof chargeSchema>;

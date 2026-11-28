@@ -1,6 +1,7 @@
 import type { Hono } from 'hono';
 import type { AppEnv } from '../../env';
 import { chargeRoutes, paymentRoutes, reportRoutes } from './billing';
+import { cardPaymentRoutes } from './card-payments';
 import { bookingRoutes, meRoutes } from './bookings';
 import { classRoutes, programRoutes, scheduleRoutes } from './classes';
 import { aiImportRoutes } from './ai-imports';
@@ -28,6 +29,7 @@ export function mountBoxRoutes(app: Hono<AppEnv>) {
   app.route('/box/components', componentRoutes);
   app.route('/box/charges', chargeRoutes);
   app.route('/box/payments', paymentRoutes);
+  app.route('/box/card-payments', cardPaymentRoutes);
   app.route('/box/receipts', receiptRoutes);
   app.route('/box/reports', reportRoutes);
   app.route('/box/imports', importRoutes);

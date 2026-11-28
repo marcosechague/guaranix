@@ -19,6 +19,7 @@ CREATE TABLE "payment_accounts" (
 	"private_key_hint" text NOT NULL,
 	"autopay_enabled" boolean DEFAULT false NOT NULL,
 	"connected_by_user_id" uuid,
+	"disconnected_at" timestamp with time zone,
 	CONSTRAINT "payment_accounts_box_id_id_unique" UNIQUE("box_id","id"),
 	CONSTRAINT "payment_accounts_box_id_unique" UNIQUE("box_id")
 );

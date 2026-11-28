@@ -11,6 +11,7 @@ import { boxRoutes } from './routes/box';
 import { mountBoxRoutes } from './routes/box/index';
 import { healthRoutes } from './routes/health';
 import { onboardingRoutes } from './routes/onboarding';
+import { paymentLinkRoutes, paymentWebhookRoutes } from './routes/payments-public';
 import { platformRoutes } from './routes/platform';
 import { createRuntimeServices } from './services/runtime';
 
@@ -53,6 +54,8 @@ export function createApp(options: AppOptions = {}) {
   // Before `/box`: its catch-all box scope would otherwise open a second, nested transaction.
   app.route('/platform', platformRoutes);
   app.route('/onboarding', onboardingRoutes);
+  app.route('/webhooks/payments', paymentWebhookRoutes);
+  app.route('/pay', paymentLinkRoutes);
   mountBoxRoutes(app);
   app.route('/box', boxRoutes);
 

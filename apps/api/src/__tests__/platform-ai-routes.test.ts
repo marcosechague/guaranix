@@ -138,6 +138,7 @@ describe('features per plan and per box', () => {
     };
     expect(planFeatures.features).toEqual([
       { feature: 'ai_import', enabled: true, monthlyLimit: 10 },
+      { feature: 'card_payments', enabled: false, monthlyLimit: null },
     ]);
 
     const listed = (await (await admin.get(boxPath())).json()) as { features: BoxFeatureState[] };

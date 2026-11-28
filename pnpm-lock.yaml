@@ -120,6 +120,9 @@ importers:
       '@guaranix/messaging':
         specifier: workspace:*
         version: link:../../packages/messaging
+      '@guaranix/payments':
+        specifier: workspace:*
+        version: link:../../packages/payments
       '@guaranix/shared':
         specifier: workspace:*
         version: link:../../packages/shared

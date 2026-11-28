@@ -70,7 +70,7 @@ export function createMockPaymentProvider(
   return {
     name: 'mock',
     async verifyCredentials() {
-      if (config.privateKey === 'invalid') throw new PaymentProviderError('auth');
+      if (config.privateKey.startsWith('invalid')) throw new PaymentProviderError('auth');
     },
     async createCustomer({ customerRef }) {
       return { customerRef };

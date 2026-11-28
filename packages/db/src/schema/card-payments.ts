@@ -57,6 +57,11 @@ export const paymentAccounts = pgTable(
     /** The box turned automatic charges on. Members still need a saved card. */
     autopayEnabled: boolean().notNull().default(false),
     connectedByUserId: uuid().references(() => users.id),
+    /**
+     * Set when the box disconnects. The row and its sealed key stay, so late
+     * confirmations of earlier orders can still be verified and refunded.
+     */
+    disconnectedAt: timestamp({ withTimezone: true }),
   },
   (table) => [
     tenantKey('payment_accounts', table.boxId, table.id),

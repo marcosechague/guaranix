@@ -20,6 +20,15 @@ export const PUBLIC_ROUTES = new Set([
   'GET /auth/google/callback',
 ]);
 
+/**
+ * Server-to-server callbacks (card processors). No browser, so no Origin, no
+ * cookie and no CSRF token: each one proves itself with a signature instead.
+ */
+export const WEBHOOK_PREFIX = '/webhooks/';
+
+/** Pages reached from a link with a secret token (payment links). Writes still need our Origin. */
+export const PUBLIC_PREFIXES = ['/pay/'];
+
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 /**
@@ -31,6 +40,10 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
  */
 export const authGate: MiddlewareHandler<AppEnv> = async (context, next) => {
   const method = context.req.method;
+  if (method === 'POST' && context.req.path.startsWith(WEBHOOK_PREFIX)) {
+    context.set('session', null);
+    return next();
+  }
   const isWrite = !SAFE_METHODS.has(method);
   if (isWrite) {
     const origin = context.req.header('origin');
@@ -45,6 +58,7 @@ export const authGate: MiddlewareHandler<AppEnv> = async (context, next) => {
   context.set('session', session);
 
   if (PUBLIC_ROUTES.has(`${method} ${context.req.path}`)) return next();
+  if (PUBLIC_PREFIXES.some((prefix) => context.req.path.startsWith(prefix))) return next();
   if (!session) return fail(context, 401, 'unauthenticated');
   if (isWrite) {
     const expected = await csrfTokenFor(context.env.AUTH_SECRET, session.token);

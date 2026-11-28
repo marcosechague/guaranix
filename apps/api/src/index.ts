@@ -7,6 +7,6 @@ const app = createApp();
 export default {
   fetch: app.fetch,
   scheduled(controller, env, context) {
-    context.waitUntil(runScheduledJobs(env, controller.scheduledTime));
+    context.waitUntil(runScheduledJobs(env, controller.scheduledTime, controller.cron));
   },
 } satisfies ExportedHandler<Bindings>;

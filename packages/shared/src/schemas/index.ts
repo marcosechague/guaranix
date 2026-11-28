@@ -12,3 +12,4 @@ export * from './platform';
 export * from './data-import';
 export * from './features';
 export * from './ai-import';
+export * from './card-payments';
