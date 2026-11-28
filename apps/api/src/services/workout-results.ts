@@ -41,8 +41,13 @@ async function resolveMember(context: ServiceContext, memberId: string | undefin
   return getMember(context, memberId);
 }
 
-/** Fields other than the ones the score type uses are cleared, so leaderboards stay clean. */
-function scoreFor(scoreType: ScoreType, input: ScoreFields): ScoreFields {
+/**
+ * Fields other than the ones the score type uses are cleared, so leaderboards
+ * stay clean. A part based on a movement also keeps the load the member used
+ * (the guided mode's weight), which is not a personal record by itself.
+ */
+function scoreFor(component: ComponentRow, input: ScoreFields): ScoreFields {
+  const { scoreType } = component;
   const keep = (field: keyof ScoreFields) => {
     const used: Record<ScoreType, (keyof ScoreFields)[]> = {
       none: [],
@@ -54,7 +59,8 @@ function scoreFor(scoreType: ScoreType, input: ScoreFields): ScoreFields {
       calories: ['calories'],
       points: ['points'],
     };
-    return used[scoreType].includes(field) ? input[field] : null;
+    const usedLoad = field === 'loadGrams' && component.movementId !== null;
+    return used[scoreType].includes(field) || usedLoad ? input[field] : null;
   };
   return {
     timeSeconds: keep('timeSeconds'),
@@ -116,7 +122,7 @@ export async function logResult(
   }
   const member = await resolveMember(context, input.memberId);
   const values = {
-    ...scoreFor(component.scoreType, input),
+    ...scoreFor(component, input),
     scaling: input.scaling,
     notes: input.notes,
   };

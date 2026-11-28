@@ -134,6 +134,13 @@
       "when": 1795863857667,
       "tag": "0018_locations_backfill",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1795864670491,
+      "tag": "0019_guided_workout",
+      "breakpoints": true
     }
   ]
 }

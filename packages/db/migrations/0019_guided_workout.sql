@@ -1,0 +1,3 @@
+ALTER TABLE "workout_components" ADD COLUMN "guided_steps" jsonb;--> statement-breakpoint
+ALTER TABLE "workout_components" ADD COLUMN "load_percent" smallint;--> statement-breakpoint
+ALTER TABLE "workout_components" ADD CONSTRAINT "workout_components_load_percent" CHECK ("workout_components"."load_percent" is null or ("workout_components"."load_percent" between 1 and 150 and "workout_components"."movement_id" is not null));

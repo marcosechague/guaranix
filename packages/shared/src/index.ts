@@ -9,3 +9,4 @@ export * from './format/whatsapp';
 export * from './onboarding';
 export * from './imports';
 export * from './timer/workout-timer';
+export * from './guided';

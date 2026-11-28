@@ -4,6 +4,7 @@ import {
   date,
   index,
   integer,
+  jsonb,
   pgTable,
   smallint,
   text,
@@ -84,6 +85,10 @@ export const workoutComponents = pgTable(
     workSeconds: integer(),
     restSeconds: integer(),
     movementId: uuid(),
+    /** Steps of the guided mode ({ quantity, name }[]); null reads them from the description. */
+    guidedSteps: jsonb().$type<{ quantity: string; name: string }[]>(),
+    /** Suggested load as a % of the member's best on `movement_id`. */
+    loadPercent: smallint(),
   },
   (table) => [
     tenantKey('workout_components', table.boxId, table.id),
@@ -106,6 +111,10 @@ export const workoutComponents = pgTable(
         when 'tabata' then ${table.workSeconds} is not null and ${table.restSeconds} is not null and ${table.rounds} is not null
         else true
       end`,
+    ),
+    check(
+      'workout_components_load_percent',
+      sql`${table.loadPercent} is null or (${table.loadPercent} between 1 and 150 and ${table.movementId} is not null)`,
     ),
     tenantIsolationPolicy(table.boxId),
   ],

@@ -173,6 +173,8 @@ export interface WorkoutComponent {
   workSeconds: number | null;
   restSeconds: number | null;
   movementId: string | null;
+  guidedSteps: { quantity: string; name: string }[] | null;
+  loadPercent: number | null;
 }
 
 export interface Workout {
