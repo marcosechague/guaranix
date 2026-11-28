@@ -11,10 +11,17 @@ export interface ClassRowProps {
   timeZone: string;
   now: number;
   busy: boolean;
+  /** Name the location, when the list mixes several. */
+  showLocation?: boolean;
   onAction: (item: ClassListItem, action: ClassAction) => void;
 }
 
-function ActionButton({ item, now, busy, onAction }: Omit<ClassRowProps, 'timeZone'>) {
+function ActionButton({
+  item,
+  now,
+  busy,
+  onAction,
+}: Omit<ClassRowProps, 'timeZone' | 'showLocation'>) {
   const own = item.ownBooking;
   const started = Date.parse(item.startsAt) <= now;
   if (item.status === 'cancelled') {
@@ -67,7 +74,7 @@ function ActionButton({ item, now, busy, onAction }: Omit<ClassRowProps, 'timeZo
 }
 
 export function ClassRow(props: ClassRowProps) {
-  const { item, timeZone, now } = props;
+  const { item, timeZone, now, showLocation = false, ...actionProps } = props;
   const muted = item.status === 'cancelled' || Date.parse(item.startsAt) <= now;
   const full = item.spotsLeft === 0;
   return (
@@ -89,6 +96,11 @@ export function ClassRow(props: ClassRowProps) {
         <span className="flex min-w-0 items-center gap-2 font-semibold">
           <ColorDot color={item.programColor} />
           <span className="truncate">{item.programName}</span>
+          {showLocation ? (
+            <span className="truncate text-sm font-normal text-text-secondary">
+              · {item.locationName}
+            </span>
+          ) : null}
         </span>
         <div className="flex items-center gap-2">
           <ProgressBar
@@ -106,7 +118,7 @@ export function ClassRow(props: ClassRowProps) {
         </div>
       </div>
       <div className="shrink-0">
-        <ActionButton {...props} />
+        <ActionButton item={item} now={now} {...actionProps} />
       </div>
     </motion.li>
   );

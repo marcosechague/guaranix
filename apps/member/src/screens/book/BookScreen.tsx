@@ -1,6 +1,17 @@
 import { addDays, dateOfInstant, formatTimeIn, relativeDayLabel, t } from '@guaranix/shared';
 import type { ClassListItem, Plan } from '@guaranix/shared/api';
-import { ChipGroup, EmptyState, Page, PageHeader, Skeleton, useToast } from '@guaranix/ui';
+import {
+  ALL_LOCATIONS,
+  ChipGroup,
+  EmptyState,
+  LocationChips,
+  Page,
+  PageHeader,
+  Skeleton,
+  atLocation,
+  locationsIn,
+  useToast,
+} from '@guaranix/ui';
 import { LoadError, errorText, useBoxClock, useNow } from '@guaranix/ui/data';
 import { CalendarDays } from 'lucide-react';
 import { useMemo, useState } from 'react';
@@ -38,6 +49,7 @@ export function BookScreen() {
   const lastDay = days[days.length - 1] ?? today;
   const [pickedDay, setPickedDay] = useState<string | null>(null);
   const [program, setProgram] = useState<string>(ALL_PROGRAMS);
+  const [location, setLocation] = useState(ALL_LOCATIONS);
   const [cancelTarget, setCancelTarget] = useState<CancelTarget | null>(null);
   const classes = useClasses(today, lastDay);
   const now = useNow();
@@ -46,7 +58,9 @@ export function BookScreen() {
   const subtitle = usePlanSubtitle(today);
 
   // Classes that already started are noise when booking: only what's still ahead.
-  const all = (classes.data ?? []).filter((item) => Date.parse(item.startsAt) > now);
+  const upcoming = (classes.data ?? []).filter((item) => Date.parse(item.startsAt) > now);
+  const showLocation = location === ALL_LOCATIONS && locationsIn(upcoming).length > 1;
+  const all = atLocation(upcoming, location);
   const firstOpenDay = all[0] ? dateOfInstant(timeZone, all[0].startsAt) : today;
   const selectedDay = pickedDay ?? firstOpenDay;
   const programs = [...new Map(all.map((item) => [item.programId, item.programName])).entries()];
@@ -94,6 +108,13 @@ export function BookScreen() {
         onSelect={setPickedDay}
         markedDays={markedDays}
       />
+      <LocationChips
+        label={t('locations.filter')}
+        allLabel={t('locations.all')}
+        items={upcoming}
+        value={location}
+        onChange={setLocation}
+      />
       {programs.length > 1 ? (
         <ChipGroup
           label={t('member.book.programs')}
@@ -130,6 +151,7 @@ export function BookScreen() {
               item={item}
               timeZone={timeZone}
               now={now}
+              showLocation={showLocation}
               busy={book.isPending && book.variables === item.id}
               onAction={onAction}
             />

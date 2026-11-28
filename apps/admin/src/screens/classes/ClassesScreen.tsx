@@ -1,6 +1,17 @@
 import { formatDayMonth, startOfWeek, t, weekdayShort, dayOfMonth } from '@guaranix/shared';
 import type { ClassListItem } from '@guaranix/shared/api';
-import { Button, DayPicker, IconButton, Page, PageHeader, Skeleton } from '@guaranix/ui';
+import {
+  ALL_LOCATIONS,
+  Button,
+  DayPicker,
+  IconButton,
+  LocationChips,
+  Page,
+  PageHeader,
+  Skeleton,
+  atLocation,
+  locationsIn,
+} from '@guaranix/ui';
 import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { ChevronLeft, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { Link } from 'react-router';
@@ -16,10 +27,12 @@ export function ClassesScreen() {
   const [weekStart, setWeekStart] = useState(() => startOfWeek(today));
   const [selectedDay, setSelectedDay] = useState(today);
   const [openClassId, setOpenClassId] = useState<string | null>(null);
+  const [location, setLocation] = useState(ALL_LOCATIONS);
   const days = weekDays(weekStart);
   const lastDay = days[6] ?? weekStart;
   const classes = useClasses(weekStart, lastDay);
-  const byDay = groupByDay(classes.data ?? [], timeZone);
+  const byDay = groupByDay(atLocation(classes.data ?? [], location), timeZone);
+  const showLocation = location === ALL_LOCATIONS && locationsIn(classes.data ?? []).length > 1;
   const openClass: ClassListItem | null =
     classes.data?.find((item) => item.id === openClassId) ?? null;
 
@@ -60,6 +73,13 @@ export function ClassesScreen() {
           </div>
         }
       />
+      <LocationChips
+        label={t('locations.filter')}
+        allLabel={t('locations.all')}
+        items={classes.data ?? []}
+        value={location}
+        onChange={setLocation}
+      />
       <DayPicker
         className="lg:hidden"
         label={t('admin.classes.day')}
@@ -87,6 +107,7 @@ export function ClassesScreen() {
           selectedDay={selectedDay}
           byDay={byDay}
           timeZone={timeZone}
+          showLocation={showLocation}
           onOpen={setOpenClassId}
         />
       )}

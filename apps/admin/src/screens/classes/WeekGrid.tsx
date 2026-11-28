@@ -11,9 +11,19 @@ export interface WeekGridProps {
   byDay: Map<string, ClassListItem[]>;
   timeZone: string;
   onOpen: (classId: string) => void;
+  /** Name the location on each tile, when the week mixes several. */
+  showLocation?: boolean;
 }
 
-export function WeekGrid({ days, today, selectedDay, byDay, timeZone, onOpen }: WeekGridProps) {
+export function WeekGrid({
+  days,
+  today,
+  selectedDay,
+  byDay,
+  timeZone,
+  onOpen,
+  showLocation = false,
+}: WeekGridProps) {
   return (
     <div className="grid gap-3 lg:grid-cols-7">
       {days.map((day) => {
@@ -48,6 +58,7 @@ export function WeekGrid({ days, today, selectedDay, byDay, timeZone, onOpen }: 
                   key={item.id}
                   item={item}
                   timeZone={timeZone}
+                  showLocation={showLocation}
                   onOpen={() => onOpen(item.id)}
                 />
               ))

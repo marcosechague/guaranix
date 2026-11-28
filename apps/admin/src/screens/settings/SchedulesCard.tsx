@@ -1,7 +1,7 @@
 import { t, weekdayName } from '@guaranix/shared';
 import type { ClassSchedule, Program } from '@guaranix/shared/api';
 import { Card, ColorDot, IconButton, Skeleton } from '@guaranix/ui';
-import { LoadError, useBoxClock } from '@guaranix/ui/data';
+import { LoadError, useBoxClock, useLocations } from '@guaranix/ui/data';
 import { Pencil } from 'lucide-react';
 import { useState } from 'react';
 import { usePrograms, useSchedules } from '../../api/queries';
@@ -17,6 +17,12 @@ export function SchedulesCard({ editable }: { editable: boolean }) {
   const { today } = useBoxClock();
   const schedules = useSchedules();
   const programs = usePrograms();
+  const locations = useLocations();
+  // With one location, naming it on every row is noise.
+  const locationNames =
+    (locations.data?.length ?? 0) > 1
+      ? new Map((locations.data ?? []).map((location) => [location.id, location.name]))
+      : null;
   const [editing, setEditing] = useState<ClassSchedule | null>(null);
   const programById = new Map((programs.data ?? []).map((program) => [program.id, program]));
   const current = (schedules.data ?? []).filter(
@@ -64,6 +70,11 @@ export function SchedulesCard({ editable }: { editable: boolean }) {
                         <span className="flex min-w-0 flex-1 items-center gap-2 text-sm">
                           <ColorDot color={program?.color ?? null} />
                           <span className="truncate">{program?.name}</span>
+                          {locationNames ? (
+                            <span className="truncate text-text-secondary">
+                              {locationNames.get(schedule.locationId)}
+                            </span>
+                          ) : null}
                           <span className="text-text-secondary">
                             {t('admin.settings.durationMinutes', {
                               count: schedule.durationMinutes,

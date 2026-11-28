@@ -16,6 +16,7 @@ import { errorText } from '@guaranix/ui/data';
 import { Controller, useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
 import { useSavePlan } from '../../api/mutations';
+import { PlanLocationsField } from './PlanLocationsField';
 
 const formSchema = z.object({
   name: z.string().trim().min(1).max(120),
@@ -26,6 +27,7 @@ const formSchema = z.object({
   classCount: z.number().int().min(2).max(500).nullable(),
   description: z.string().max(500),
   isActive: z.boolean(),
+  locationIds: z.array(z.string()),
 });
 type FormValues = z.infer<typeof formSchema>;
 
@@ -38,7 +40,7 @@ function toInput(values: FormValues, plan: Plan | null) {
     classCount:
       values.kind === 'class_pack' ? values.classCount : values.kind === 'drop_in' ? 1 : null,
     programIds: plan?.programIds ?? [],
-    locationIds: plan?.locationIds ?? [],
+    locationIds: values.locationIds,
   });
 }
 
@@ -73,6 +75,7 @@ export function PlanFormSheet({
       classCount: plan?.classCount && plan.classCount > 1 ? plan.classCount : 10,
       description: plan?.description ?? '',
       isActive: plan?.isActive ?? true,
+      locationIds: plan?.locationIds ?? [],
     },
   });
   const kind = useWatch({ control: form.control, name: 'kind' });
@@ -147,6 +150,13 @@ export function PlanFormSheet({
             {...form.register('classCount', { setValueAs: numberOrNull })}
           />
         ) : null}
+        <Controller
+          control={form.control}
+          name="locationIds"
+          render={({ field }) => (
+            <PlanLocationsField value={field.value} onChange={field.onChange} />
+          )}
+        />
         <TextAreaField label={t('admin.plans.description')} {...form.register('description')} />
         <Controller
           control={form.control}
