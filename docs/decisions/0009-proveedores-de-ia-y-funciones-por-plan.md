@@ -18,8 +18,9 @@ La importación con IA (y después Brodi) necesita leer fotos, PDF y planillas d
 - **Límites por mes del box.** Cada pedido a un proveedor deja una fila en `ai_usage` (box, usuario, función, proveedor, modelo, tokens), que el box puede insertar pero no editar ni borrar. `assertFeatureAvailable()` cuenta las del mes calendario en la zona horaria del box y corta con `feature_limit_reached` al llegar al límite. Un uso cuenta aunque el usuario descarte el resultado: el costo ya se pagó.
 - **Primera función: `ai_import`.** El seed la incluye en el plan fundador con 10 usos por mes solo como ejemplo; qué planes la incluyen se decide en el superadmin.
 
+- **Importación con IA (`POST /box/ai-imports/extract`).** El admin sube una foto, un PDF o una planilla (que el navegador manda como texto separado por tabs; las fotos se achican a 2000 px). Al proveedor va solo el archivo, con instrucciones fijas que lo tratan como datos y piden no inventar valores; ni el nombre del archivo ni datos del box. El uso se reserva en `ai_usage` antes de llamar (así cuenta aunque falle), el pedido no deja una transacción abierta mientras el modelo trabaja, y los tokens se completan después. La respuesta se valida con Zod, se limpian las celdas vacías y nada se guarda: las filas vuelven al navegador, el admin las corrige o quita una por una y siguen por la misma vista previa e importación de `0008`, con origen `ai`. Los errores de clave o configuración se muestran al box como `ai_import_unavailable`, porque los arregla la plataforma.
+
 ## Pendiente
 
-- La importación con IA en sí (pantalla y endpoint), que usa esta capa y llena la misma vista previa de `0008`.
 - Brodi, con sus propios límites sobre `ai_usage`.
 - Mostrar el costo estimado por box a partir de los tokens guardados.

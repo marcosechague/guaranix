@@ -1,11 +1,10 @@
 import { IMPORT_SOURCES, MEMBER_IMPORT_FIELDS, PLAN_IMPORT_FIELDS, t } from '@guaranix/shared';
 import { Button, Card, FormMessage, SegmentedControl, TextField } from '@guaranix/ui';
 import { errorText } from '@guaranix/ui/data';
-import { useState } from 'react';
-import { usePreviewImport } from '../../api/imports';
 import { ColumnMappingCard } from './ColumnMappingCard';
-import { buildRequest, mappingHasName, type ImportDraft } from './import-draft';
+import { mappingHasName, type ImportDraft } from './import-draft';
 import type { ReviewState } from './ImportScreen';
+import { useReviewDraft } from './use-review-draft';
 
 export interface MappingStepProps {
   draft: ImportDraft;
@@ -18,23 +17,11 @@ export interface MappingStepProps {
 const FILE_SOURCES = IMPORT_SOURCES.filter((source) => source !== 'ai');
 
 export function MappingStep({ draft, onChange, onBack, onReviewed }: MappingStepProps) {
-  const preview = usePreviewImport();
-  const [balanceDescription, setBalanceDescription] = useState(
-    t('admin.imports.mapping.balanceDescriptionDefault'),
+  const { preview, balanceDescription, setBalanceDescription, review } = useReviewDraft(
+    draft,
+    onReviewed,
   );
   const hasName = mappingHasName(draft.memberMapping);
-
-  const review = () => {
-    const description =
-      balanceDescription.trim() || t('admin.imports.mapping.balanceDescriptionDefault');
-    const { request, lines } = buildRequest(draft, {
-      balanceDescription: description,
-      skipInvalidRows: false,
-    });
-    preview.mutate(request, {
-      onSuccess: (analysis) => onReviewed({ analysis, lines, balanceDescription: description }),
-    });
-  };
 
   return (
     <div className="flex flex-col gap-6">

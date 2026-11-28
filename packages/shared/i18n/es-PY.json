@@ -517,7 +517,8 @@
         "label": "Pasos de la importación",
         "file": "Archivo",
         "columns": "Columnas",
-        "review": "Revisión"
+        "review": "Revisión",
+        "rows": "Filas"
       },
       "upload": {
         "dropLabel": "Elegí o arrastrá el archivo",
@@ -598,7 +599,8 @@
         "nothingNew": "No hay nada nuevo para importar: todos estos alumnos, planes y saldos ya están en el box.",
         "back": "Volver a columnas",
         "noName": "Sin nombre",
-        "missingRows": "Filas que lo usan: {count}"
+        "missingRows": "Filas que lo usan: {count}",
+        "backToAi": "Volver a las filas de Brodi"
       },
       "done": {
         "title": "Listo, ya están en el box",
@@ -606,6 +608,31 @@
         "replayed": "Este archivo ya se había importado el {date}. No cargamos nada de nuevo.",
         "seeMembers": "Ver alumnos",
         "another": "Importar otro archivo"
+      },
+      "ai": {
+        "title": "Leer con Brodi",
+        "body": "¿Tenés una foto del cuaderno, un PDF o una planilla desordenada? Brodi la lee con IA y te propone los alumnos, planes y saldos. Vos revisás cada fila antes de importar.",
+        "dropLabel": "Elegí la foto o el archivo",
+        "dropHint": "Foto (JPG, PNG), PDF, Excel o CSV",
+        "reading": "Brodi está leyendo el archivo. Puede tardar un minuto…",
+        "remaining": "Te quedan {count} lecturas este mes.",
+        "unlimited": "Lecturas ilimitadas en tu plan.",
+        "limitReached": "Ya usaste las {limit} lecturas de este mes. Se renuevan el 1.° del mes que viene.",
+        "privacy": "Solo enviamos el archivo al proveedor de IA, sin otros datos del box. Nada se guarda hasta que confirmes.",
+        "tooLarge": "El archivo es muy grande para leerlo con IA. Probá con una foto o dividilo en partes.",
+        "unreadable": "No pudimos abrir el archivo. Probá con una foto JPG o PNG, un PDF o una planilla.",
+        "nothingFound": "Brodi no encontró alumnos en este archivo. Probá con una foto más clara.",
+        "reviewTitle": "Revisá lo que leyó Brodi",
+        "reviewHint": "La IA puede equivocarse. Corregí o quitá las filas que no estén bien antes de seguir.",
+        "membersTitle": "Alumnos ({count})",
+        "plansTitle": "Planes ({count})",
+        "row": "Fila {row}",
+        "edit": "Editar fila {row}",
+        "remove": "Quitar fila {row}",
+        "editTitle": "Editar fila {row}",
+        "editHint": "Dejá vacío lo que no sepas. Las fechas van como día/mes/año.",
+        "noMembersLeft": "Quitaste todas las filas. Volvé a subir el archivo para empezar de nuevo.",
+        "back": "Cambiar archivo"
       }
     }
   },
@@ -1076,7 +1103,9 @@
     "ai_request_rejected": "El proveedor de IA no aceptó el pedido. Revisá el modelo o probá con un archivo más chico.",
     "ai_refused": "La IA no quiso procesar este archivo. Probá con otro.",
     "ai_answer_too_long": "El archivo tiene demasiados datos para leerlo de una vez. Dividilo en partes.",
-    "ai_invalid_answer": "La IA respondió algo que no pudimos usar. Probá de nuevo."
+    "ai_invalid_answer": "La IA respondió algo que no pudimos usar. Probá de nuevo.",
+    "ai_import_unavailable": "La lectura con IA no está disponible en este momento. Probá más tarde o importá una planilla.",
+    "ai_file_rejected": "La IA no aceptó este archivo. Probá con una foto más clara o un archivo más chico."
   },
   "workout": {
     "kinds": {

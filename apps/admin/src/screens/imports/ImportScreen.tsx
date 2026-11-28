@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Navigate } from 'react-router';
 import type { CommitImportResult } from '../../api/imports';
 import { canManage } from '../../lib/roles';
+import { AiProposalStep } from './AiProposalStep';
 import { DoneStep } from './DoneStep';
 import type { ImportDraft } from './import-draft';
 import { MappingStep } from './MappingStep';
@@ -31,6 +32,8 @@ export function ImportScreen() {
   const { role } = useBoxClock();
   const [step, setStep] = useState<Step>({ name: 'upload' });
   if (role !== undefined && !canManage(role)) return <Navigate to="/alumnos" replace />;
+  // An AI read already knows its columns: the admin checks its rows instead of mapping.
+  const DraftStep = 'draft' in step && step.draft.source === 'ai' ? AiProposalStep : MappingStep;
 
   return (
     <Page layout="panel">
@@ -39,11 +42,15 @@ export function ImportScreen() {
         title={t('admin.imports.title')}
         subtitle={t('admin.imports.subtitle')}
       />
-      <StepIndicator current={STEP_INDEX[step.name]} done={step.name === 'done'} />
+      <StepIndicator
+        current={STEP_INDEX[step.name]}
+        done={step.name === 'done'}
+        ai={'draft' in step && step.draft.source === 'ai'}
+      />
       {step.name === 'upload' ? (
         <UploadStep onRead={(draft) => setStep({ name: 'map', draft })} />
       ) : step.name === 'map' ? (
-        <MappingStep
+        <DraftStep
           draft={step.draft}
           onChange={(draft) => setStep({ name: 'map', draft })}
           onBack={() => setStep({ name: 'upload' })}

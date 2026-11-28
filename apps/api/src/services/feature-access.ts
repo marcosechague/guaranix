@@ -108,11 +108,16 @@ export interface AiUsageEntry {
 }
 
 /** One provider call, counted against the month even if the user discards the result. */
-export async function recordAiUsage(context: ServiceContext, entry: AiUsageEntry): Promise<void> {
-  await context.transaction.insert(aiUsage).values({
-    boxId: context.auth.boxId,
-    userId: context.auth.userId,
-    ...entry,
-    createdAt: context.now,
-  });
+export async function recordAiUsage(context: ServiceContext, entry: AiUsageEntry): Promise<string> {
+  const [row] = await context.transaction
+    .insert(aiUsage)
+    .values({
+      boxId: context.auth.boxId,
+      userId: context.auth.userId,
+      ...entry,
+      createdAt: context.now,
+    })
+    .returning({ id: aiUsage.id });
+  if (!row) throw new Error('AI usage was not recorded');
+  return row.id;
 }
