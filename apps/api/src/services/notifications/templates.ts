@@ -10,10 +10,10 @@ export const WHATSAPP_TEMPLATES: Partial<
 > = {
   membership_due: {
     name: 'guaranix_cuota_por_vencer',
-    parameters: ['firstName', 'box', 'amount', 'date'],
+    parameters: ['firstName', 'amount', 'box', 'date'],
   },
   membership_overdue: {
     name: 'guaranix_cuota_vencida',
-    parameters: ['firstName', 'box', 'amount', 'date'],
+    parameters: ['firstName', 'amount', 'box', 'date'],
   },
 };

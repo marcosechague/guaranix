@@ -1410,10 +1410,10 @@
         "bookings": "Reservas y clases",
         "workouts": "WOD publicado",
         "billing": "Cuotas por vencer y vencidas",
-        "staff": "Avisos del box (clases canceladas, cuotas vencidas)"
+        "staff": "Clases canceladas y cuotas vencidas"
       },
       "channels": {
-        "push": "En este dispositivo",
+        "push": "En la app",
         "telegram": "Telegram",
         "whatsapp": "WhatsApp"
       },

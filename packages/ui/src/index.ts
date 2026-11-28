@@ -78,3 +78,4 @@ export type { ActionBarProps, BottomBarProps } from './components/ActionBar';
 export { GuaranixLogo } from './components/GuaranixLogo';
 export type { GuaranixLogoProps } from './components/GuaranixLogo';
 export * from './theme';
+export * from './notifications';

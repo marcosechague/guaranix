@@ -33,6 +33,8 @@ export default defineConfig({
       workbox: {
         // Fonts, images and the app shell are precached so the app opens offline.
         globPatterns: ['**/*.{js,css,html,png,webp,woff2}'],
+        // Push notifications: `public/push-sw.js`.
+        importScripts: ['push-sw.js'],
       },
     }),
   ],
