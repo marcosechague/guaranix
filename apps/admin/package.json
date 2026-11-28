@@ -12,8 +12,12 @@
   "dependencies": {
     "@guaranix/shared": "workspace:*",
     "@guaranix/ui": "workspace:*",
+    "@tanstack/react-query": "^5.108.4",
+    "lucide-react": "^1.82.0",
+    "motion": "^14.14.0",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "react-router": "^7.18.7"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.5",

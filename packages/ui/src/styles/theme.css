@@ -7,6 +7,7 @@
  */
 @source '../components';
 @source '../auth';
+@source '../data';
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
@@ -91,6 +92,12 @@
 
   --spacing-touch: 44px;
 
+  /* Small labels under tab icons and inside badges. */
+  --text-micro: 0.6875rem;
+  --text-micro--line-height: 1rem;
+  --text-tiny: 0.625rem;
+  --text-tiny--line-height: 0.875rem;
+
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --duration-fast: 150ms;
   --duration-base: 200ms;
@@ -109,6 +116,53 @@
   :focus-visible {
     outline: 2px solid var(--gx-color-accent);
     outline-offset: 2px;
+  }
+}
+
+/* Space for the phone tab bars plus the device's home indicator. */
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+@utility pb-tabbar {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+@utility bottom-tabbar {
+  bottom: calc(5rem + env(safe-area-inset-bottom));
+}
+/* Tap feedback: cheap properties only (CLAUDE.md, "Animaciones"). */
+@utility transition-press {
+  transition-property: transform, opacity;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
+/* Sheet and overlay motion (Radix sets data-state). Only transform and opacity. */
+@keyframes gx-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes gx-slide-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+}
+@keyframes gx-slide-left {
+  from {
+    transform: translateX(32px);
+    opacity: 0;
+  }
+}
+.gx-fade[data-state='open'] {
+  animation: gx-fade-in var(--duration-base) var(--ease-out);
+}
+.gx-sheet[data-state='open'] {
+  animation: gx-slide-up var(--duration-slow) var(--ease-out);
+}
+@media (width >= 48rem) {
+  .gx-sheet[data-state='open'] {
+    animation-name: gx-slide-left;
   }
 }
 
