@@ -8,6 +8,7 @@ import {
   pgTable,
   primaryKey,
   text,
+  unique,
   uuid,
 } from 'drizzle-orm/pg-core';
 import { dataImports } from './imports';
@@ -94,6 +95,8 @@ export const memberPlans = pgTable(
     classesRemaining: integer(),
     /** The import that created this row, if any. */
     importId: uuid(),
+    /** The period this one renews automatically (card autopay); unique, so a period renews once. */
+    renewedFromId: uuid(),
   },
   (table) => [
     tenantKey('member_plans', table.boxId, table.id),
@@ -108,6 +111,7 @@ export const memberPlans = pgTable(
       [table.boxId, table.importId],
       [dataImports.boxId, dataImports.id],
     ),
+    unique('member_plans_renewed_from_id_unique').on(table.renewedFromId),
     index('member_plans_box_id_member_id_idx').on(table.boxId, table.memberId),
     index('member_plans_box_id_ends_on_idx').on(table.boxId, table.endsOn),
     check('member_plans_dates_ordered', sql`${table.endsOn} >= ${table.startsOn}`),

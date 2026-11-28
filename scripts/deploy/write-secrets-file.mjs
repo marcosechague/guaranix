@@ -21,9 +21,10 @@ const REQUIRED = [
   'EMAIL_FROM',
 ];
 
-/** Each one turns a feature on when present (AI, push, Telegram, WhatsApp). */
+/** Each one turns a feature on when present (AI, card payments, push, Telegram, WhatsApp). */
 const OPTIONAL = [
   'AI_SECRETS_KEY',
+  'PAYMENTS_SECRETS_KEY',
   'VAPID_PUBLIC_KEY',
   'VAPID_PRIVATE_KEY',
   'VAPID_SUBJECT',

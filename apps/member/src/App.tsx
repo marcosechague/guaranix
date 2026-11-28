@@ -2,6 +2,7 @@ import { type Session, t } from '@guaranix/shared';
 import { Card, Page, PageHeader } from '@guaranix/ui';
 import { AccountSecurity, AuthGate, AuthProvider } from '@guaranix/ui/auth';
 import { ApiProvider, OfflineNotice } from '@guaranix/ui/data';
+import { lazy, Suspense } from 'react';
 import { RouterProvider } from 'react-router';
 import { keepOffline } from './api/keys';
 import { API_URL } from './config';
@@ -23,7 +24,19 @@ function NoBoxYet({ session }: { session: Session }) {
   );
 }
 
+// Payment links work without logging in: they open outside the session.
+const PayLinkScreen = lazy(async () => ({
+  default: (await import('./screens/pay/PayLinkScreen')).PayLinkScreen,
+}));
+
 export function App() {
+  if (window.location.pathname.startsWith('/pagar/')) {
+    return (
+      <Suspense fallback={null}>
+        <PayLinkScreen />
+      </Suspense>
+    );
+  }
   return (
     <AuthProvider apiUrl={API_URL} offline>
       <AuthGate>

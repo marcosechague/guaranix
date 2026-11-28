@@ -237,6 +237,40 @@
       "notFoundBody": "Puede que el coach haya cambiado el WOD. Volvé al WOD de hoy y abrilo de nuevo.",
       "backToWod": "Volver al WOD"
     },
+    "cards": {
+      "title": "Mi tarjeta",
+      "subtitle": "Pagá tu cuota sola, sin pasar por recepción",
+      "entryTitle": "Pagar con tarjeta",
+      "entryHint": "Guardá tu tarjeta y la cuota se paga sola cuando vence",
+      "unavailableTitle": "Tu box todavía no cobra con tarjeta",
+      "unavailableBody": "Mientras tanto podés pagar por transferencia, QR o en recepción.",
+      "addTitle": "Agregar tarjeta",
+      "replaceTitle": "Cambiar de tarjeta",
+      "consent": "Autorizo a mi box a cobrar mis cuotas de esta tarjeta cada vez que vencen. Puedo quitarla cuando quiera.",
+      "add": "Cargar tarjeta",
+      "safety": "Los datos de la tarjeta se cargan en el formulario seguro de Bancard. GuaraniX y tu box nunca los ven.",
+      "formHint": "Cargá los datos de tu tarjeta en el formulario de Bancard.",
+      "formFailed": "No pudimos abrir el formulario de Bancard. Revisá tu conexión y probá de nuevo.",
+      "mockHint": "Modo de prueba: no hay Bancard conectado, así que estos botones simulan la respuesta.",
+      "mockApprove": "Simular aprobación",
+      "mockDecline": "Simular rechazo",
+      "saved": "Tarjeta guardada.",
+      "masked": "{brand} •••• {last4}",
+      "expires": "Vence {date}",
+      "autopayOn": "Débito automático",
+      "autopayOff": "Sin débito automático",
+      "autopayOnHint": "Tu cuota se cobra de esta tarjeta el día que vence. Si no pasa, te mandamos un link para pagar.",
+      "autopayOffHint": "Tu box todavía no activó el débito automático. Cuando lo active, tu cuota se va a cobrar de esta tarjeta.",
+      "remove": "Quitar tarjeta",
+      "removeConfirm": "Sí, quitar la tarjeta",
+      "consentLabel": "Autorizo el débito automático"
+    },
+    "pay": {
+      "title": "Pagar cuota",
+      "greeting": "Hola {name}, este es el link para pagar tu cuota.",
+      "payWithCard": "Pagar con tarjeta",
+      "paid": "Listo, esta cuota está pagada. ¡Gracias!"
+    },
     "fees": {
       "title": "Mi cuota",
       "subtitle": "Tu plan, lo que debés y tus pagos",
@@ -524,7 +558,38 @@
       "qrRemove": "Quitar el QR",
       "qrSaved": "QR actualizado.",
       "qrRemoved": "QR quitado.",
-      "qrEmpty": "Todavía no subiste un QR."
+      "qrEmpty": "Todavía no subiste un QR.",
+      "cards": {
+        "title": "Cobro con tarjeta",
+        "hint": "Conectá la cuenta de tu comercio en Bancard. La plata va directo a tu cuenta; GuaraniX no la toca.",
+        "notIncluded": "Tu plan de GuaraniX todavía no incluye el cobro con tarjeta. Escribinos para activarlo.",
+        "ownerConnects": "Solo el dueño del box puede conectar la cuenta de cobro.",
+        "provider": "Procesador",
+        "providers": {
+          "bancard": "Bancard",
+          "mock": "Simulado (solo pruebas)"
+        },
+        "environment": "Ambiente",
+        "environments": {
+          "sandbox": "Pruebas",
+          "production": "Producción"
+        },
+        "publicKey": "Clave pública",
+        "privateKey": "Clave privada",
+        "privateKeyHint": "Se guarda cifrada y no se vuelve a mostrar.",
+        "autopay": "Débito automático",
+        "autopayHint": "Cobra las cuotas de los alumnos que guardaron su tarjeta el día que vencen, con reintentos al día 1, 3 y 7.",
+        "connect": "Conectar cuenta",
+        "checking": "Probando las claves…",
+        "connected": "Cuenta conectada.",
+        "webhook": "URL de confirmación",
+        "webhookHint": "Pasásela a Bancard para que te confirme cada pago.",
+        "copyWebhook": "Copiar la URL de confirmación",
+        "copied": "URL copiada.",
+        "replaceKeys": "Cambiar claves",
+        "disconnect": "Desconectar",
+        "disconnectConfirm": "Sí, dejar de cobrar con tarjeta"
+      }
     },
     "payments": {
       "title": "Cobros",
@@ -965,16 +1030,26 @@
       "program_created": "Programa nuevo",
       "program_updated": "Programa editado",
       "schedule_created": "Horario nuevo",
-      "schedule_ended": "Horario terminado"
+      "schedule_ended": "Horario terminado",
+      "payment_card_approved": "Pago con tarjeta",
+      "payment_refunded": "Pago devuelto",
+      "payment_account_connected": "Cuenta de cobro conectada",
+      "payment_account_updated": "Débito automático cambiado",
+      "payment_account_disconnected": "Cuenta de cobro desconectada",
+      "saved_card_added": "Tarjeta guardada",
+      "saved_card_removed": "Tarjeta quitada",
+      "member_plan_renewed": "Plan renovado solo"
     },
     "features": {
       "names": {
         "ai_import": "Importación con IA",
-        "whatsapp": "WhatsApp"
+        "whatsapp": "WhatsApp",
+        "card_payments": "Cobro con tarjeta"
       },
       "descriptions": {
         "ai_import": "Lee fotos, PDF y planillas desordenadas y propone alumnos, planes y saldos para revisar.",
-        "whatsapp": "Recordatorios de cuota por WhatsApp a los alumnos. El límite es de mensajes por mes."
+        "whatsapp": "Recordatorios de cuota por WhatsApp a los alumnos. El límite es de mensajes por mes.",
+        "card_payments": "Débito automático de cuotas con la cuenta del box en Bancard, reintentos y link de pago si falla."
       },
       "title": "Funciones",
       "planHint": "Qué incluye este plan. Los boxes del plan lo ven desde el próximo pedido.",
@@ -1235,7 +1310,27 @@
     "ai_answer_too_long": "El archivo tiene demasiados datos para leerlo de una vez. Dividilo en partes.",
     "ai_invalid_answer": "La IA respondió algo que no pudimos usar. Probá de nuevo.",
     "ai_import_unavailable": "La lectura con IA no está disponible en este momento. Probá más tarde o importá una planilla.",
-    "ai_file_rejected": "La IA no aceptó este archivo. Probá con una foto más clara o un archivo más chico."
+    "ai_file_rejected": "La IA no aceptó este archivo. Probá con una foto más clara o un archivo más chico.",
+    "payment_account_not_found": "Todavía no conectaste una cuenta para cobrar con tarjeta.",
+    "payment_attempt_not_found": "No encontramos ese intento de cobro.",
+    "saved_card_not_found": "No encontramos esa tarjeta.",
+    "payment_link_not_found": "Este link de pago no existe. Pedile uno nuevo a tu box.",
+    "payment_link_paid": "Esta cuota ya está pagada. ¡Gracias!",
+    "payment_link_void": "Esta cuota fue anulada por el box, no tenés que pagarla.",
+    "payment_link_expired": "Este link de pago venció. Pedile uno nuevo a tu box.",
+    "payments_secrets_key_missing": "Falta configurar el cifrado de pagos en el servidor. Avisale a soporte de GuaraniX.",
+    "payment_keys_unreadable": "No pudimos leer las claves guardadas. Cargalas de nuevo.",
+    "payment_keys_rejected": "El procesador rechazó las claves. Revisá que sean las de tu comercio y del ambiente correcto.",
+    "payment_provider_unavailable": "Ese procesador de pagos no está disponible.",
+    "payment_provider_down": "El procesador de pagos no responde. Probá de nuevo en unos minutos.",
+    "payment_provider_rejected": "El procesador de pagos rechazó el pedido. Probá de nuevo o avisá a soporte.",
+    "payment_attempts_pending": "Hay cobros esperando respuesta en la cuenta actual. Esperá a que terminen para cambiar de procesador.",
+    "card_payments_unavailable": "Tu box todavía no cobra con tarjeta.",
+    "card_not_saved": "La tarjeta no se guardó. Probá cargarla de nuevo.",
+    "refund_not_available": "Este pago ya no se puede devolver desde acá. Hacelo desde el portal de Bancard.",
+    "refund_card_only": "Solo los pagos con tarjeta se devuelven desde acá.",
+    "payment_not_refundable": "Este pago no se puede devolver.",
+    "payment_in_progress": "Ya hay un pago de esta cuota en curso. Esperá unos minutos y volvé a abrir el link."
   },
   "workout": {
     "kinds": {
@@ -1310,12 +1405,14 @@
     "methods": {
       "cash": "Efectivo",
       "bank_transfer": "Transferencia",
-      "qr": "QR"
+      "qr": "QR",
+      "card": "Tarjeta"
     },
     "statuses": {
       "confirmed": "Confirmado",
       "pending_review": "En revisión",
-      "rejected": "Rechazado"
+      "rejected": "Rechazado",
+      "refunded": "Reembolsado"
     }
   },
   "onboarding": {
@@ -1476,6 +1573,11 @@
       "title": "Tenés una cuota vencida",
       "body": "{description} en {box}: {amount}, venció el {date}. Pagala desde la app o en recepción."
     },
+    "card_payment_failed": {
+      "title": "No pudimos cobrar tu cuota",
+      "body": "{description} en {box}: {amount}. Tu tarjeta no pasó; probamos de nuevo en unos días o podés pagarla desde la app.",
+      "bodyFinal": "{description} en {box}: {amount}. Tu tarjeta no pasó y ya no vamos a reintentar. Pagala desde la app o en recepción."
+    },
     "staff_class_cancelled": {
       "title": "Clase cancelada en {box}",
       "body": "{program} del {day} a las {time}. Se cancelaron {count} reservas.",
@@ -1527,5 +1629,8 @@
       "saved": "Guardado",
       "loadError": "No pudimos cargar tus notificaciones."
     }
+  },
+  "cardPayments": {
+    "whatsappMessage": "Hola {name}, no pudimos cobrar {description} ({amount}) con tu tarjeta. Podés pagar acá: {url}"
   }
 }

@@ -1,5 +1,7 @@
 import type { SchemaDatabase } from '@guaranix/db';
 import type { EmailSender } from '@guaranix/messaging';
+import type { PaymentProviderFactory } from './services/card-payment-runtime';
+import type { PaymentNotifier } from './services/payment-notifier';
 import type { AiProviderFactory } from './services/ai-runtime';
 import type { NotificationJob, NotificationServices } from './services/notifications/queue';
 import type { CaptchaVerifier } from './integrations/captcha';
@@ -38,6 +40,14 @@ export interface Bindings {
    * Without it AI features stay off; changing it means loading the keys again.
    */
   AI_SECRETS_KEY?: string;
+  /**
+   * Same format as AI_SECRETS_KEY (`wrangler secret put PAYMENTS_SECRETS_KEY`).
+   * Encrypts each box's processor private key. Without it no box can connect
+   * card payments; changing it means every box loads its keys again.
+   */
+  PAYMENTS_SECRETS_KEY?: string;
+  /** Public URL of the member app: payment links and the card form return there. */
+  MEMBER_APP_URL: string;
   // Notifications (see docs/notificaciones.md). Each channel turns on when its keys exist.
   /** Cloudflare Queue `guaranix-notifications`; jobs wait in Postgres until it is bound. */
   NOTIFICATIONS_QUEUE?: Queue<NotificationJob>;
@@ -74,6 +84,10 @@ export interface Services {
   google: GoogleOAuth | null;
   /** Builds the AI provider the superadmin configured; tests pass a mock. */
   aiProviderFactory: AiProviderFactory;
+  /** Builds a box's card processor from its decrypted keys; tests pass the mock. */
+  paymentProviderFactory: PaymentProviderFactory;
+  /** Tells a member an automatic charge failed, with a link to pay. */
+  paymentNotifier: PaymentNotifier;
   /** Queue, channels and settings for push, Telegram and WhatsApp. */
   notifications: NotificationServices;
 }

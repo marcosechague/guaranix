@@ -7,8 +7,11 @@ import type {
   MemberStatus,
   MovementCategory,
   PaymentMethod,
+  PaymentProviderEnvironment,
+  PaymentProviderName,
   PaymentStatus,
   PlanKind,
+  SavedCardStatus,
   Scaling,
   ScoreType,
   TimerType,
@@ -273,4 +276,63 @@ export interface OwnAccount {
   charges: Charge[];
   payments: Omit<Payment, 'firstName' | 'lastName'>[];
   outstandingGs: number;
+}
+
+/** The box's own processor account, as the panel sees it: never the private key. */
+export interface PaymentAccountView {
+  provider: PaymentProviderName;
+  environment: PaymentProviderEnvironment;
+  publicKeyHint: string;
+  privateKeyHint: string;
+  autopayEnabled: boolean;
+  connected: boolean;
+  /** What the box gives Bancard as its confirmation URL. */
+  webhookUrl: string;
+  updatedAt: string;
+}
+
+export interface PaymentSettingsResponse {
+  /** The box's GuaraniX plan (or a platform override) includes card payments. */
+  included: boolean;
+  /** The server can encrypt keys (PAYMENTS_SECRETS_KEY is set). */
+  secretsReady: boolean;
+  providers: PaymentProviderName[];
+  account: PaymentAccountView | null;
+}
+
+export interface SavedCardView {
+  id: string;
+  status: SavedCardStatus;
+  brand: string | null;
+  last4: string | null;
+  expiresOn: string | null;
+  autopayConsentAt: string;
+  activatedAt: string | null;
+}
+
+export interface OwnCardsResponse {
+  /** The box takes cards right now. */
+  available: boolean;
+  autopayEnabled: boolean;
+  cards: SavedCardView[];
+}
+
+/** The processor's own form. Card numbers are typed there, never in our apps. */
+export type HostedCheckoutView =
+  | { kind: 'bancard'; form: 'card' | 'payment'; processId: string; scriptUrl: string }
+  | { kind: 'mock'; form: 'card' | 'payment'; processId: string };
+
+export interface StartCardResponse {
+  card: SavedCardView;
+  checkout: HostedCheckoutView;
+}
+
+export interface PaymentLinkView {
+  status: 'payable' | 'paid' | 'void' | 'expired';
+  boxName: string;
+  firstName: string;
+  description: string;
+  amountGs: number;
+  dueOn: string;
+  expiresAt: string;
 }

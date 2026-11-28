@@ -22,6 +22,8 @@ const PUBLIC_ROUTE_FILES = [
   'apps/api/src/middleware/account-scope.ts',
   'apps/api/src/routes/auth-*.ts',
   'apps/api/src/routes/health.ts',
+  // Processor webhooks (signed) and payment links (secret token in the URL, rate limited).
+  'apps/api/src/routes/payments-public.ts',
   // Called by Telegram's servers; authenticated by the webhook secret header.
   'apps/api/src/routes/telegram-webhook.ts',
 ];
@@ -45,6 +47,12 @@ const SYSTEM_SCOPE_FILES = [
   'apps/api/src/jobs/upcoming-classes.ts',
   // AI import: reads the platform's provider key and fills in the tokens of the box's own use row.
   'apps/api/src/services/ai-import.ts',
+  // Card autopay cron: lists the boxes with autopay on, then works inside each box's scope.
+  'apps/api/src/jobs/card-autopay.ts',
+  // Webhooks and payment links arrive without a session: an account id or a token hash
+  // says which box, and everything after that runs inside the box's scope.
+  'apps/api/src/services/payment-webhooks.ts',
+  'apps/api/src/services/payment-links.ts',
   // Notification queue consumer and crons: push subscriptions, Telegram links and
   // preferences belong to a person, not a box. Every query names the box or user.
   'apps/api/src/services/notifications/expand.ts',

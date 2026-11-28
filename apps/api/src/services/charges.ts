@@ -12,11 +12,14 @@ import { getMember, getOwnMember } from './members';
 
 export type ChargeInput = z.output<typeof chargeSchema>;
 export type ChargeRow = typeof charges.$inferSelect;
+/** Charge helpers the autopay job also uses, outside any user's request. */
+type TransactionContext = Pick<ServiceContext, 'transaction'>;
+
 export type ChargeView = ChargeRow & { paidGs: number; outstandingGs: number };
 
 /** Confirmed guaraníes per charge. Pending receipts don't count until staff confirm them. */
 export async function confirmedPaidByCharge(
-  context: ServiceContext,
+  context: TransactionContext,
   chargeIds: string[],
 ): Promise<Map<string, number>> {
   if (chargeIds.length === 0) return new Map();
@@ -40,7 +43,7 @@ async function withBalances(context: ServiceContext, rows: ChargeRow[]): Promise
   });
 }
 
-export async function getCharge(context: ServiceContext, chargeId: string): Promise<ChargeRow> {
+export async function getCharge(context: TransactionContext, chargeId: string): Promise<ChargeRow> {
   const [charge] = await context.transaction.select().from(charges).where(eq(charges.id, chargeId));
   if (!charge) throw notFound('charge');
   return charge;
@@ -134,7 +137,7 @@ export async function voidCharge(context: ServiceContext, chargeId: string): Pro
 }
 
 /** Marks a charge paid once confirmed payments cover it. */
-export async function settleCharge(context: ServiceContext, chargeId: string): Promise<void> {
+export async function settleCharge(context: TransactionContext, chargeId: string): Promise<void> {
   const charge = await getCharge(context, chargeId);
   if (charge.status !== 'open') return;
   const paid = (await confirmedPaidByCharge(context, [charge.id])).get(charge.id) ?? 0;
@@ -142,6 +145,19 @@ export async function settleCharge(context: ServiceContext, chargeId: string): P
     await context.transaction
       .update(charges)
       .set({ status: 'paid' })
+      .where(eq(charges.id, charge.id));
+  }
+}
+
+/** After a refund: a paid charge whose confirmed money no longer covers it is owed again. */
+export async function reopenCharge(context: TransactionContext, chargeId: string): Promise<void> {
+  const charge = await getCharge(context, chargeId);
+  if (charge.status !== 'paid') return;
+  const paid = (await confirmedPaidByCharge(context, [charge.id])).get(charge.id) ?? 0;
+  if (paid < charge.amountGs) {
+    await context.transaction
+      .update(charges)
+      .set({ status: 'open' })
       .where(eq(charges.id, charge.id));
   }
 }

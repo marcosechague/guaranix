@@ -14,6 +14,7 @@ const TONES: Record<PaymentStatus, BadgeTone> = {
   confirmed: 'success',
   pending_review: 'neutral',
   rejected: 'warning',
+  refunded: 'neutral',
 };
 
 /** What the member paid or reported, newest first, and whether the front desk confirmed it. */

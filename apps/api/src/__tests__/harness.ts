@@ -11,12 +11,18 @@ import {
   type TelegramAddress,
   type WhatsAppAddress,
 } from '@guaranix/messaging';
+import {
+  createMockPaymentProvider,
+  type MockBehaviour,
+  type PaymentProviderConfig,
+} from '@guaranix/payments';
 import { createTestDatabase, seedDemoBox, seedPlatform } from '@guaranix/db/testing';
 import type { Session } from '@guaranix/shared';
 import { createApp } from '../app';
 import type { Bindings, Services } from '../env';
 import { createMemoryFileStorage } from '../integrations/file-storage';
 import type { GoogleIdentity, GoogleOAuth } from '../integrations/google-oauth';
+import { createMemoryPaymentNotifier } from '../services/payment-notifier';
 import { createMemoryQueue, type NotificationServices } from '../services/notifications/queue';
 
 export const APP_ORIGIN = 'http://localhost:5173';
@@ -31,6 +37,9 @@ export const testEnv: Bindings = {
   RECEIPTS: {} as R2Bucket,
   // 32 bytes 0..31: a fixed test master key for the AI key encryption.
   AI_SECRETS_KEY: 'AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=', // gitleaks:allow
+  // 32 bytes 32..63: the master key for the boxes' processor keys.
+  PAYMENTS_SECRETS_KEY: 'ICEiIyQlJicoKSorLC0uLzAxMjM0NTY3ODk6Ozw9Pj8=', // gitleaks:allow
+  MEMBER_APP_URL: 'http://localhost:5173',
 };
 
 export interface FakeGoogle extends GoogleOAuth {
@@ -71,6 +80,18 @@ export async function createHarness() {
     failWith: null as AiProviderError | null,
   };
 
+  const payments = {
+    /** Every processor built, with the decrypted keys. */
+    configs: [] as PaymentProviderConfig[],
+    /** Swap in a fresh object to change how the mock processor answers. */
+    behaviour: {} as MockBehaviour,
+    notifier: createMemoryPaymentNotifier(),
+    factory: (config: PaymentProviderConfig) => {
+      payments.configs.push(config);
+      return createMockPaymentProvider(config, payments.behaviour);
+    },
+  };
+
   const notificationQueue = createMemoryQueue();
   const channels = {
     push: createMemoryChannel<PushAddress>('push'),
@@ -99,6 +120,8 @@ export async function createHarness() {
     get google() {
       return google;
     },
+    paymentProviderFactory: payments.factory,
+    paymentNotifier: payments.notifier,
     aiProviderFactory: (config) => {
       ai.configs.push(config);
       return createMockProvider(
@@ -124,6 +147,7 @@ export async function createHarness() {
     google,
     captcha,
     ai,
+    payments,
     notificationQueue,
     channels,
     notifications,

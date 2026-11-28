@@ -1,4 +1,5 @@
 import { createAiProvider } from '@guaranix/ai';
+import { createPaymentProvider } from '@guaranix/payments';
 import { createDatabase, type Database } from '@guaranix/db';
 import {
   createConsoleEmailSender,
@@ -9,6 +10,7 @@ import type { Bindings, Services } from '../env';
 import { createTurnstileVerifier } from '../integrations/captcha';
 import { createR2FileStorage } from '../integrations/file-storage';
 import { createGoogleOAuth } from '../integrations/google-oauth';
+import { createLoggingPaymentNotifier } from './payment-notifier';
 import { createNotificationServices } from './notifications/runtime';
 
 const REQUIRED_OUTSIDE_DEVELOPMENT = [
@@ -68,6 +70,8 @@ export function createRuntimeServices(env: Bindings): {
         ? createGoogleOAuth(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET)
         : null,
     aiProviderFactory: createAiProvider,
+    paymentProviderFactory: createPaymentProvider,
+    paymentNotifier: createLoggingPaymentNotifier(),
     notifications: createNotificationServices(env),
   };
   return {

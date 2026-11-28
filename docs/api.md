@@ -40,6 +40,12 @@ Roles: **staff** = dueño, admin, coach, recepción · **recepción** = dueño, 
 | `POST /box/imports/preview`                                                                                       | gestión                             | Vista previa de una importación, fila por fila                                             |
 | `POST /box/imports` · `GET /box/imports` · `GET /:id`                                                             | gestión                             | Importar alumnos, planes y saldos; historial                                               |
 | `GET /box/imports/ai-status` · `POST /box/ai-imports/extract`                                                     | gestión                             | Usos de IA del mes; leer una foto, PDF o planilla con IA y proponer filas (no guarda nada) |
+| `GET /box/card-payments/settings` · `PATCH /account`                                                              | gestión                             | Cuenta del procesador (nunca la clave privada), prender o apagar el débito automático      |
+| `PUT /box/card-payments/account` · `DELETE`                                                                       | dueño                               | Conectar o cambiar claves (se prueban y se guardan cifradas); desconectar                  |
+| `GET /box/card-payments/attempts` · `POST /links`                                                                 | recepción                           | Intentos de cobro; link de pago de un cargo con mensaje para WhatsApp                      |
+| `GET /box/card-payments/members/:id/cards`                                                                        | recepción                           | Tarjeta activa del alumno (marca y últimos 4)                                              |
+| `POST /box/card-payments/payments/:id/refund`                                                                     | gestión                             | Anular un pago con tarjeta del mismo día                                                   |
+| `GET /box/card-payments/me/cards` · `POST` · `POST /:id/confirm` · `DELETE /:id`                                  | alumno                              | Su tarjeta: guardar (con `acceptAutopay`), confirmar al volver del formulario, quitar      |
 | `GET /box/me` · `/plans` · `/bookings` · `/records` · `/account`                                                  | alumno                              | Perfil, planes, reservas, PRs y cuota                                                      |
 
 ## API de la plataforma
@@ -80,3 +86,14 @@ Ajustes de cada persona, fuera del box (siguen a la persona en todos sus boxes).
 | `POST /notifications/push-subscriptions/remove` | `{ endpoint }`: la saca                                                    |
 | `POST /notifications/telegram/link` · `DELETE`  | Enlace `t.me/<bot>?start=<código>` de un solo uso (15 min) · desvincular   |
 | `POST /integrations/telegram/webhook`           | Lo llama Telegram, con `X-Telegram-Bot-Api-Secret-Token`; sin sesión       |
+
+## Pagos con tarjeta (públicas)
+
+Sin sesión. Ver `docs/decisions/0012-pagos-con-tarjeta-bancard.md`.
+
+| Ruta                                 | Para qué                                                               |
+| ------------------------------------ | ---------------------------------------------------------------------- |
+| `POST /webhooks/payments/:accountId` | Confirmación del procesador; verifica firma, registra y es idempotente |
+| `GET /pay/:token`                    | Datos del link de pago (box, nombre, concepto, monto, estado)          |
+| `POST /pay/:token/checkout`          | Abre el formulario de pago del procesador                              |
+| `POST /pay/:token/simulate`          | Solo con el mock y fuera de producción: simula la respuesta            |

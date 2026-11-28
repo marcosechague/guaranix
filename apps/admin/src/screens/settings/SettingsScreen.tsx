@@ -4,6 +4,7 @@ import { LoadError, useBoxClock, usePaymentDetails } from '@guaranix/ui/data';
 import { useBookingPolicy } from '../../api/queries';
 import { canManage } from '../../lib/roles';
 import { BookingPolicyCard } from './BookingPolicyCard';
+import { CardPaymentsCard } from './CardPaymentsCard';
 import { PaymentDetailsCard } from './PaymentDetailsCard';
 import { SchedulesCard } from './SchedulesCard';
 
@@ -34,6 +35,7 @@ export function SettingsScreen() {
       ) : (
         <PaymentDetailsCard details={paymentDetails.data} editable={editable} />
       )}
+      {editable ? <CardPaymentsCard isOwner={role === 'box_owner'} /> : null}
     </Page>
   );
 }
