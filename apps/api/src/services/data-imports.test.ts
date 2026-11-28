@@ -359,6 +359,7 @@ describe('data imports', () => {
     );
     expect(preview.rows[0]).toMatchObject({ status: 'invalid', existingMemberId: null });
     expect(preview.rows[0]?.errors).toEqual([{ field: 'planName', code: 'plan_not_found' }]);
+    expect(preview.rows[0]?.requestedPlanName).toBe('Pack 12 Open');
 
     const result = await fixture.as(fixture.boxB, 'box_owner', (context) =>
       commitImport(

@@ -458,6 +458,103 @@
         "credits_exceed_plan": "Tiene más clases restantes que las que da el plan.",
         "credits_defaulted": "Sin clases restantes: le dejamos todas las del plan.",
         "balance_already_imported": "Su saldo ya se importó antes: no lo cargamos de nuevo."
+      },
+      "open": "Importar",
+      "title": "Importar alumnos",
+      "subtitle": "Traé alumnos, planes y saldos desde Excel, CSV o CrossHero. Nada se guarda hasta que lo confirmes.",
+      "steps": {
+        "label": "Pasos de la importación",
+        "file": "Archivo",
+        "columns": "Columnas",
+        "review": "Revisión"
+      },
+      "upload": {
+        "dropLabel": "Elegí o arrastrá el archivo",
+        "dropHint": "Excel (.xlsx) o CSV, hasta 3.000 alumnos",
+        "reading": "Leyendo el archivo…",
+        "unreadable": "No pudimos leer el archivo. Guardalo como .xlsx o .csv y probá de nuevo.",
+        "empty": "El archivo no tiene filas de alumnos debajo de los encabezados.",
+        "tooMany": "El archivo tiene más de 3.000 alumnos. Dividilo en partes.",
+        "howTitle": "Cómo armar el archivo",
+        "howRows": "Una fila por alumno, con los encabezados en la primera fila.",
+        "howColumns": "Nombre y apellido, y al menos cédula, teléfono o email para reconocerlo.",
+        "howPlan": "Si tiene un plan vigente: el nombre del plan, el vencimiento y las clases que le quedan.",
+        "howBalance": "Si debe plata: el saldo en guaraníes. Queda como deuda abierta.",
+        "howPlansSheet": "En Excel podés sumar una hoja \"Planes\" con nombre, tipo, precio y duración de los planes que todavía no cargaste.",
+        "template": "Descargar planilla de ejemplo",
+        "templateFileName": "guaranix-alumnos.csv",
+        "templateHeaders": "Nombre;Apellido;Cédula;Teléfono;Email;Plan;Inicio del plan;Vencimiento;Clases restantes;Saldo",
+        "templateExample": "Ana;Duarte;4123456;0981 123 456;ana@mail.com;Pack 10 clases;01/11/2026;30/11/2026;4;150.000"
+      },
+      "history": {
+        "title": "Importaciones anteriores",
+        "empty": "Todavía no importaste ningún archivo.",
+        "summary": "{members} alumnos nuevos · {balance} en saldos",
+        "sources": {
+          "spreadsheet": "Planilla",
+          "crosshero": "CrossHero",
+          "ai": "Con Brodi"
+        }
+      },
+      "mapping": {
+        "membersTitle": "Columnas de alumnos",
+        "membersHint": "Hoja \"{sheet}\". Revisá qué dato tiene cada columna.",
+        "plansTitle": "Columnas de planes",
+        "plansHint": "Hoja \"{sheet}\". Los planes que ya existen en el box no se cambian.",
+        "sample": "Ej.: {value}",
+        "noSample": "Sin datos",
+        "ignore": "No importar",
+        "sourceLabel": "Origen del archivo",
+        "balanceDescription": "Cómo se llama la deuda importada",
+        "balanceDescriptionDefault": "Saldo anterior a GuaraniX",
+        "balanceDescriptionHint": "Así la ven el alumno y recepción.",
+        "nameRequired": "Elegí qué columna tiene el nombre del alumno.",
+        "back": "Cambiar archivo",
+        "review": "Revisar filas",
+        "reviewing": "Revisando…"
+      },
+      "preview": {
+        "newMembers": "Alumnos nuevos",
+        "existingMembers": "Ya estaban en el box",
+        "invalidRows": "Filas con errores",
+        "balance": "Saldos a cargar",
+        "plansHint": "Planes nuevos: {plans} · Planes de alumnos: {memberPlans}",
+        "filterLabel": "Qué filas mostrar",
+        "filters": {
+          "all": "Todas",
+          "errors": "Con errores",
+          "warnings": "Con avisos"
+        },
+        "line": "Fila {line}",
+        "status": {
+          "new": "Nuevo",
+          "existing": "Ya estaba",
+          "invalid": "Con errores"
+        },
+        "planLine": "{plan}: del {from} al {to}",
+        "credits": "clases restantes: {count}",
+        "balanceLine": "Debe {amount}",
+        "showing": "Mostrando {shown} de {total} filas.",
+        "noneMatching": "No hay filas con ese filtro.",
+        "missingTitle": "Planes que faltan",
+        "missingHint": "Estos planes aparecen en el archivo pero no existen en el box. Crealos y volvemos a revisar.",
+        "createPlan": "Crear plan",
+        "planSheetErrors": "La hoja de planes tiene errores en la fila {line}.",
+        "commit": "Importar {count} filas",
+        "commitValid": "Importar solo las {count} filas válidas",
+        "committing": "Importando…",
+        "errorsNotice": "{count} filas tienen errores y no se van a importar. Podés corregir el archivo y volver a subirlo: lo que ya se importó no se duplica.",
+        "nothingNew": "No hay nada nuevo para importar: todos estos alumnos, planes y saldos ya están en el box.",
+        "back": "Volver a columnas",
+        "noName": "Sin nombre",
+        "missingRows": "Filas que lo usan: {count}"
+      },
+      "done": {
+        "title": "Listo, ya están en el box",
+        "body": "Importamos {members} alumnos nuevos, {memberPlans} planes y {charges} saldos por {balance}.",
+        "replayed": "Este archivo ya se había importado el {date}. No cargamos nada de nuevo.",
+        "seeMembers": "Ver alumnos",
+        "another": "Importar otro archivo"
       }
     }
   },

@@ -62,3 +62,5 @@ export { MoneyField } from './components/MoneyField';
 export type { MoneyFieldProps } from './components/MoneyField';
 export { SwitchField } from './components/SwitchField';
 export type { SwitchFieldProps } from './components/SwitchField';
+export { FileDropZone } from './components/FileDropZone';
+export type { FileDropZoneProps } from './components/FileDropZone';
