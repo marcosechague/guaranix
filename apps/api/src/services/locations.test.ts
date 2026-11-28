@@ -88,9 +88,7 @@ describe('locations', () => {
       ),
       'location_limit_reached',
     );
-    const forMember = await fixture.as(fixture.boxA, 'member', (context) =>
-      listLocations(context),
-    );
+    const forMember = await fixture.as(fixture.boxA, 'member', (context) => listLocations(context));
     expect(forMember.map((location) => location.id)).not.toContain(second.id);
     expect(forMember.map((location) => location.id)).toContain(third.id);
   });
@@ -191,9 +189,7 @@ describe('schedules and classes by location', () => {
     expect(atLuque.map((row) => row.id)).toEqual(generated.map((row) => row.id));
 
     await expectServiceError(
-      world.as('box_owner', (context) =>
-        updateLocation(context, location.id, { isActive: false }),
-      ),
+      world.as('box_owner', (context) => updateLocation(context, location.id, { isActive: false })),
       'location_has_schedules',
     );
     await world.as('box_owner', (context) => endSchedule(context, schedule.id, '2031-03-03'));
