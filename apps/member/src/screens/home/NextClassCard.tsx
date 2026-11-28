@@ -3,7 +3,7 @@ import { Badge, Button, Card, EmptyState, Eyebrow, ProgressBar, Skeleton } from 
 import { Link } from 'react-router';
 import { useState } from 'react';
 import { useClasses, useMyBookings } from '../../api/queries';
-import { useBoxClock } from '@guaranix/ui/data';
+import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { CancelBookingSheet } from '../book/CancelBookingSheet';
 
 export function NextClassCard() {
@@ -25,6 +25,10 @@ export function NextClassCard() {
         <Skeleton className="h-11" />
       </Card>
     );
+  }
+
+  if (bookings.isError && !bookings.data) {
+    return <LoadError error={bookings.error} onRetry={() => void bookings.refetch()} />;
   }
 
   if (!next) {

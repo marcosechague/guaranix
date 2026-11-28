@@ -49,13 +49,13 @@ export function SwitchField({
         aria-hidden="true"
         className={classNames(
           'relative h-7 w-12 shrink-0 rounded-pill transition-[background-color] duration-fast ease-out',
-          checked ? 'bg-accent' : 'bg-surface-sunken',
+          checked ? 'bg-accent-strong' : 'bg-surface-sunken',
         )}
       >
         <span
           className={classNames(
             'absolute top-1 left-1 size-5 rounded-pill bg-text shadow transition-transform duration-fast ease-out',
-            checked ? 'translate-x-5 bg-on-accent' : '',
+            checked ? 'translate-x-5 bg-surface' : '',
           )}
         />
       </span>

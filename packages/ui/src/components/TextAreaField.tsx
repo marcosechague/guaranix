@@ -1,5 +1,6 @@
 import { type Ref, type TextareaHTMLAttributes, useId } from 'react';
 import { classNames } from '../lib/class-names';
+import { fieldControlClasses } from './field-control';
 
 export interface TextAreaFieldProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label: string;
@@ -20,11 +21,7 @@ export function TextAreaField({ label, error, className, id, ref, ...props }: Te
         ref={ref}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${fieldId}-error` : undefined}
-        className={classNames(
-          'min-h-24 rounded-md border bg-surface px-3 py-2.5 text-base text-text outline-none',
-          'placeholder:text-text-secondary focus-visible:border-accent',
-          error ? 'border-warning' : 'border-border',
-        )}
+        className={fieldControlClasses(Boolean(error), 'min-h-24 bg-surface px-3 py-2.5 text-base')}
         {...props}
       />
       {error ? (

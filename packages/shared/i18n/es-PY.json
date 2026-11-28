@@ -172,6 +172,8 @@
       "scaling": "Categoría",
       "board": "Pizarra de hoy",
       "boardEmpty": "Todavía nadie cargó su resultado. Sé el primero.",
+      "boardOfflineTitle": "Estás sin conexión",
+      "boardOffline": "Conectate a internet para ver la pizarra y guardar tu resultado.",
       "you": "Vos",
       "fistBump": "Chocar los puños con {name}",
       "fistBumpUndo": "Sacar el choque de puños a {name}",

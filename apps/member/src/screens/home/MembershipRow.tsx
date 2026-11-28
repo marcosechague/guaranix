@@ -5,7 +5,7 @@ import { Link } from 'react-router';
 import { useMyAccount, useMyPlans, usePlans } from '../../api/queries';
 import { leftToPayGs } from '../../lib/fees';
 import { currentPlanHealth, type PlanHealth } from '../../lib/plan-status';
-import { useBoxClock } from '@guaranix/ui/data';
+import { LoadError, useBoxClock } from '@guaranix/ui/data';
 
 function headline(health: PlanHealth): string {
   switch (health.kind) {
@@ -28,6 +28,9 @@ export function MembershipRow() {
   const plans = usePlans();
   const account = useMyAccount();
   if (memberPlans.isPending) return <Skeleton className="h-18 rounded-xl" />;
+  if (memberPlans.isError) {
+    return <LoadError error={memberPlans.error} onRetry={() => void memberPlans.refetch()} />;
+  }
   const health = currentPlanHealth(memberPlans.data ?? [], today);
   const planName =
     health.kind === 'missing'

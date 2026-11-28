@@ -1,25 +1,45 @@
 import { formatScore, t } from '@guaranix/shared';
 import type { Leaderboard } from '@guaranix/shared/api';
-import { Avatar, Badge, classNames, DividedList, Eyebrow, Skeleton } from '@guaranix/ui';
-import { HandFist } from 'lucide-react';
+import {
+  Avatar,
+  Badge,
+  classNames,
+  DividedList,
+  EmptyState,
+  Eyebrow,
+  Skeleton,
+} from '@guaranix/ui';
+import { LoadError } from '@guaranix/ui/data';
+import { HandFist, WifiOff } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useFistBump } from '../../api/mutations';
+
+export type WhiteboardStatus = 'ready' | 'loading' | 'offline' | 'error';
 
 export interface WhiteboardProps {
   componentId: string;
   board: Leaderboard | undefined;
-  isPending: boolean;
+  status: WhiteboardStatus;
+  onRetry: () => void;
   ownMemberId: string | undefined;
 }
 
-export function Whiteboard({ componentId, board, isPending, ownMemberId }: WhiteboardProps) {
+export function Whiteboard({ componentId, board, status, onRetry, ownMemberId }: WhiteboardProps) {
   const fistBump = useFistBump(componentId);
   return (
     <section aria-labelledby="whiteboard-title" className="flex flex-col gap-3">
       <Eyebrow id="whiteboard-title" className="px-1">
         {t('member.wod.board')}
       </Eyebrow>
-      {isPending || !board ? (
+      {status === 'offline' ? (
+        <EmptyState
+          icon={WifiOff}
+          title={t('member.wod.boardOfflineTitle')}
+          description={t('member.wod.boardOffline')}
+        />
+      ) : status === 'error' ? (
+        <LoadError error={null} onRetry={onRetry} />
+      ) : !board ? (
         <div aria-busy="true" className="flex flex-col gap-2">
           {[0, 1, 2].map((index) => (
             <Skeleton key={index} className="h-16 rounded-xl" />

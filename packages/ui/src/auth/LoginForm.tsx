@@ -13,7 +13,8 @@ type LoginValues = { email: string; password: string };
 
 export interface LoginFormProps {
   initialError?: string | null;
-  onSignup(): void;
+  /** Leave it out where nobody signs up on their own (platform). */
+  onSignup?: () => void;
   onForgot(): void;
 }
 
@@ -64,10 +65,12 @@ export function LoginForm({ initialError, onSignup, onForgot }: LoginFormProps) 
       </form>
       <div className="flex flex-col items-center gap-1 text-sm">
         <TextLink onClick={onForgot}>{t('auth.login.forgot')}</TextLink>
-        <p className="text-text-secondary">
-          {t('auth.login.noAccount')}{' '}
-          <TextLink onClick={onSignup}>{t('auth.login.signupLink')}</TextLink>
-        </p>
+        {onSignup ? (
+          <p className="text-text-secondary">
+            {t('auth.login.noAccount')}{' '}
+            <TextLink onClick={onSignup}>{t('auth.login.signupLink')}</TextLink>
+          </p>
+        ) : null}
       </div>
     </AuthLayout>
   );

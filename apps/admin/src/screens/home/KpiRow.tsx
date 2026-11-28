@@ -1,6 +1,6 @@
 import { formatGuarani, t } from '@guaranix/shared';
 import { Skeleton, StatTile } from '@guaranix/ui';
-import { useBoxClock } from '@guaranix/ui/data';
+import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { useClasses, useDashboard, useMemberCount } from '../../api/queries';
 import { monthRange, occupancyPercent } from '../../lib/occupancy';
 
@@ -23,6 +23,9 @@ export function KpiRow({ showMoney }: { showMoney: boolean }) {
   const classes = useClasses(today, today);
 
   if (showMoney) {
+    if (dashboard.isError && !dashboard.data) {
+      return <LoadError error={dashboard.error} onRetry={() => void dashboard.refetch()} />;
+    }
     if (!dashboard.data) return <KpiSkeleton />;
     const { money, members: people, classes: occupancy } = dashboard.data;
     return (
@@ -75,6 +78,8 @@ export function KpiRow({ showMoney }: { showMoney: boolean }) {
     );
   }
 
+  const failed = [classes, members].find((query) => query.isError && query.data === undefined);
+  if (failed) return <LoadError error={failed.error} onRetry={() => void failed.refetch()} />;
   if (!classes.data || members.data === undefined) return <KpiSkeleton />;
   const todays = classes.data.filter((item) => item.status === 'scheduled');
   const bookings = todays.reduce((total, item) => total + item.takenSpots, 0);
