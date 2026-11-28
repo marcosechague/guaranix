@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { t } from '@guaranix/shared';
-import { classNames } from '@guaranix/ui';
+import { BottomBar, classNames } from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
 import { Settings, UserRound } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
@@ -41,10 +41,7 @@ export function MobileTopBar() {
 
 export function MobileTabBar() {
   return (
-    <nav
-      aria-label={t('admin.nav.label')}
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-surface pb-safe md:hidden"
-    >
+    <BottomBar as="nav" aria-label={t('admin.nav.label')} className="md:hidden">
       <ul className="grid grid-cols-5">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <li key={to}>
@@ -75,6 +72,6 @@ export function MobileTabBar() {
           </li>
         ))}
       </ul>
-    </nav>
+    </BottomBar>
   );
 }

@@ -1,0 +1,1 @@
+export { BoxOnboarding } from './BoxOnboarding';
