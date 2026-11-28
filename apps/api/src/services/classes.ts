@@ -17,6 +17,7 @@ import { notFound, unprocessable } from './errors';
 import { getOwnMember } from './members';
 import { definedFields } from './objects';
 import { assertCoach } from './schedules';
+import { rosterWarnings } from './coach-attendance';
 
 const MAX_LISTING_DAYS = 31;
 
@@ -114,7 +115,18 @@ export async function getClassRoster(context: ServiceContext, classId: string) {
     .innerJoin(members, eq(members.id, bookings.memberId))
     .where(eq(bookings.classId, classId))
     .orderBy(asc(bookings.waitlistPosition), asc(members.lastName));
-  return { class: classRow, roster };
+  const warnings = await rosterWarnings(
+    context,
+    roster.map((entry) => entry.memberId),
+  );
+  return {
+    class: classRow,
+    roster: roster.map((entry) => ({
+      ...entry,
+      owedGs: warnings.get(entry.memberId)?.owedGs ?? 0,
+      memberInactive: warnings.get(entry.memberId)?.inactive ?? false,
+    })),
+  };
 }
 
 /** Cancels a class (holiday, coach sick): every booking is cancelled and credits go back. */

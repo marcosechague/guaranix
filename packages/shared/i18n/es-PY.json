@@ -520,13 +520,28 @@
       "capacity": "Cupo",
       "bookedCount": "{taken}/{capacity}",
       "coach": "Coach",
-      "attendanceHint": "Tocá a cada alumno para marcar si vino.",
+      "attendanceHint": "Marcá a cada alumno a medida que llega. \"Faltó\" se habilita cuando empieza la clase.",
       "checkedIn": "Vino",
       "missing": "Faltó",
       "pending": "Sin marcar",
       "waitlistTitle": "Lista de espera ({count})",
       "day": "Día",
-      "schedules": "Horarios y cupos"
+      "schedules": "Horarios y cupos",
+      "attendanceLater": "La asistencia se marca desde {minutes} minutos antes de la clase.",
+      "attendanceOff": "Este box no usa la lista del coach. La asistencia se marca en la entrada o con el QR de la pared.",
+      "warnings": {
+        "owes": "Debe {amount}",
+        "inactive": "Dado de baja"
+      },
+      "walkIn": {
+        "open": "Sumar a alguien que vino sin reservar",
+        "title": "Vino sin reservar",
+        "search": "Buscar alumno",
+        "hint": "Escribí al menos 2 letras del nombre o apellido.",
+        "add": "Sumar",
+        "onList": "Ya está",
+        "noResults": "No encontramos alumnos activos con ese nombre."
+      }
     },
     "wod": {
       "title": "WOD",
@@ -1522,6 +1537,7 @@
     "payment_in_progress": "Ya hay un pago de esta cuota en curso. Esperá unos minutos y volvé a abrir el link.",
     "check_in_pass_invalid": "Ese QR no es de GuaraniX o no es de este box.",
     "check_in_pass_expired": "Ese QR ya venció. Pedile al alumno que abra su QR de nuevo.",
+    "check_in_not_open": "Todavía no se puede marcar: se abre 30 minutos antes de la clase.",
     "check_in_mode_disabled": "El box no usa esta forma de marcar asistencia. Se activa en Ajustes.",
     "class_full": "La clase se llenó. Probá con la siguiente."
   },
