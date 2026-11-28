@@ -1,7 +1,7 @@
 import { t } from '@guaranix/shared';
 import type { Location } from '@guaranix/shared/api';
 import { Badge, Button, Card, IconButton, Skeleton } from '@guaranix/ui';
-import { LoadError, useLocations } from '@guaranix/ui/data';
+import { LoadError, useBoxClock, useLocations } from '@guaranix/ui/data';
 import { MapPin, Pencil, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { LocationFormSheet } from './LocationFormSheet';
@@ -9,7 +9,15 @@ import { LocationFormSheet } from './LocationFormSheet';
 const addressLine = (location: Location) =>
   [location.address, location.city].filter(Boolean).join(', ');
 
-function LocationRow({ location, onEdit }: { location: Location; onEdit: (() => void) | null }) {
+function LocationRow({
+  location,
+  onEdit,
+  needsCoordinates,
+}: {
+  location: Location;
+  onEdit: (() => void) | null;
+  needsCoordinates: boolean;
+}) {
   return (
     <li className="flex items-center gap-3 py-3">
       <MapPin aria-hidden="true" size={18} className="shrink-0 text-text-secondary" />
@@ -21,6 +29,9 @@ function LocationRow({ location, onEdit }: { location: Location; onEdit: (() => 
         </span>
         {addressLine(location) ? (
           <span className="truncate text-sm text-text-secondary">{addressLine(location)}</span>
+        ) : null}
+        {needsCoordinates && location.latitude === null ? (
+          <span className="text-sm text-text-secondary">{t('locations.noCoordinates')}</span>
         ) : null}
       </span>
       {onEdit ? (
@@ -38,6 +49,7 @@ function LocationRow({ location, onEdit }: { location: Location; onEdit: (() => 
 
 export function LocationsCard({ editable }: { editable: boolean }) {
   const locations = useLocations();
+  const wallQr = useBoxClock().checkInModes?.wallQr ?? false;
   // `null` is the new-location form; undefined means the sheet is closed.
   const [editing, setEditing] = useState<Location | null | undefined>(undefined);
   const rows = locations.data ?? [];
@@ -69,6 +81,7 @@ export function LocationsCard({ editable }: { editable: boolean }) {
               key={location.id}
               location={location}
               onEdit={editable ? () => setEditing(location) : null}
+              needsCoordinates={wallQr}
             />
           ))}
         </ul>

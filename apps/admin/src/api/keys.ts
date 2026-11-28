@@ -18,6 +18,7 @@ export const queryKeys = {
   dashboard: (from: string, to: string) => ['dashboard', from, to] as const,
   debtors: ['debtors'] as const,
   bookingPolicy: ['settings', 'booking'] as const,
+  checkInPolicy: ['settings', 'check-in'] as const,
   schedules: ['schedules'] as const,
   allPayments: ['payments'] as const,
   payments: (from: string, to: string) => ['payments', from, to] as const,

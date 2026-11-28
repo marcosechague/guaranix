@@ -13,18 +13,33 @@ import { errorText } from '@guaranix/ui/data';
 import { Controller, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { useSaveLocation } from '../../api/location-mutations';
+import { LocationCoordinatesFields } from './LocationCoordinatesFields';
 
-const formSchema = z.object({
-  name: z.string().trim().min(1).max(120),
-  address: z.string().trim().max(240),
-  city: z.string().trim().max(120),
-  phone: z.union([z.literal(''), z.string().regex(/^\+[1-9]\d{7,14}$/)]),
-  isActive: z.boolean(),
-  isDefault: z.boolean(),
-});
+const coordinate = (limit: number) =>
+  z
+    .string()
+    .trim()
+    .refine((value) => value === '' || Math.abs(Number(value)) <= limit, 'invalid');
+
+const formSchema = z
+  .object({
+    name: z.string().trim().min(1).max(120),
+    address: z.string().trim().max(240),
+    city: z.string().trim().max(120),
+    phone: z.union([z.literal(''), z.string().regex(/^\+[1-9]\d{7,14}$/)]),
+    latitude: coordinate(90),
+    longitude: coordinate(180),
+    isActive: z.boolean(),
+    isDefault: z.boolean(),
+  })
+  .refine((values) => (values.latitude === '') === (values.longitude === ''), {
+    path: ['longitude'],
+  });
 type FormValues = z.infer<typeof formSchema>;
 
 const orNull = (value: string) => value.trim() || null;
+const numberOrNull = (value: string) => (value.trim() === '' ? null : Number(value));
+const asText = (value: number | null | undefined) => (value == null ? '' : String(value));
 
 /** Only what changed is sent, so moving the default never re-sends it for the old one. */
 function toInput(values: FormValues, location: Location | null) {
@@ -33,6 +48,8 @@ function toInput(values: FormValues, location: Location | null) {
     address: orNull(values.address),
     city: orNull(values.city),
     phone: orNull(values.phone),
+    latitude: numberOrNull(values.latitude),
+    longitude: numberOrNull(values.longitude),
   };
   if (!location) return fields;
   return {
@@ -58,6 +75,8 @@ export function LocationFormSheet({ location, onClose }: LocationFormSheetProps)
       address: location?.address ?? '',
       city: location?.city ?? '',
       phone: location?.phone ?? '',
+      latitude: asText(location?.latitude),
+      longitude: asText(location?.longitude),
       isActive: location?.isActive ?? true,
       isDefault: location?.isDefault ?? false,
     },
@@ -112,6 +131,7 @@ export function LocationFormSheet({ location, onClose }: LocationFormSheetProps)
             {...form.register('phone')}
           />
         </div>
+        <LocationCoordinatesFields form={form} />
         {location && !location.isDefault ? (
           <>
             <Controller

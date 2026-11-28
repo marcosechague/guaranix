@@ -1,6 +1,10 @@
 import { eq } from 'drizzle-orm';
 import { auditLogs, boxes, classSchedules, classes } from '@guaranix/db/schema';
-import { classScheduleSchema, createLocationSchema } from '@guaranix/shared/schemas';
+import {
+  classScheduleSchema,
+  createLocationSchema,
+  updateLocationSchema,
+} from '@guaranix/shared/schemas';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { bookingWorld, hoursFromNow } from '../testing/booking-helpers';
 import { expectServiceError } from '../testing/expectations';
@@ -115,6 +119,29 @@ describe('locations', () => {
     // Put it back so other tests see the original default.
     await fixture.as(fixture.boxB, 'box_owner', (context) =>
       updateLocation(context, main?.id ?? '', { isDefault: true }),
+    );
+  });
+
+  it('stores where the location is, for the wall QR', async () => {
+    const main = await fixture.as(fixture.boxA, 'box_admin', (context) => defaultLocation(context));
+    const placed = await fixture.as(fixture.boxA, 'box_admin', (context) =>
+      updateLocation(context, main.id, { latitude: -25.2867, longitude: -57.647 }),
+    );
+    expect(placed).toMatchObject({ latitude: -25.2867, longitude: -57.647 });
+    const cleared = await fixture.as(fixture.boxA, 'box_admin', (context) =>
+      updateLocation(context, main.id, { latitude: null, longitude: null }),
+    );
+    expect(cleared).toMatchObject({ latitude: null, longitude: null });
+  });
+
+  it('rejects half a coordinate or one off the map', () => {
+    expect(updateLocationSchema.safeParse({ latitude: -25.2 }).success).toBe(false);
+    expect(updateLocationSchema.safeParse({ latitude: -25.2, longitude: null }).success).toBe(
+      false,
+    );
+    expect(updateLocationSchema.safeParse({ latitude: 95, longitude: 10 }).success).toBe(false);
+    expect(createLocationSchema.safeParse({ name: 'Lambaré', longitude: -57.6 }).success).toBe(
+      false,
     );
   });
 

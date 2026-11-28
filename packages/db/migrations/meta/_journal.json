@@ -162,6 +162,20 @@
       "when": 1795865225583,
       "tag": "0022_brodi_weekly_notification",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1795874326763,
+      "tag": "0023_check_in_modes",
+      "breakpoints": true
+    },
+    {
+      "idx": 24,
+      "version": "7",
+      "when": 1795874327642,
+      "tag": "0024_check_in_modes_grants",
+      "breakpoints": true
     }
   ]
 }

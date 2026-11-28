@@ -665,6 +665,19 @@
         "replaceKeys": "Cambiar claves",
         "disconnect": "Desconectar",
         "disconnectConfirm": "Sí, dejar de cobrar con tarjeta"
+      },
+      "checkIn": {
+        "title": "Asistencia",
+        "hint": "Elegí cómo se marca quién vino a clase. Podés usar una, varias o ninguna.",
+        "desk": "Tablet en la entrada",
+        "deskHint": "El alumno muestra su QR y la tablet o el celular de recepción lo lee.",
+        "coach": "Lista del coach",
+        "coachHint": "El coach marca quién vino desde la clase, en su celular.",
+        "wallQr": "QR impreso en la pared",
+        "wallQrHint": "El alumno escanea el cartel con su celular. Solo cuenta si está en el box y en horario de clase.",
+        "radius": "Distancia máxima a la sede (metros)",
+        "radiusHint": "Cargá la ubicación de cada sede en Sedes. 150 m alcanza para la mayoría de los boxes.",
+        "radiusInvalid": "Poné un número entre 30 y 1000."
       }
     },
     "payments": {
@@ -1509,6 +1522,7 @@
     "payment_in_progress": "Ya hay un pago de esta cuota en curso. Esperá unos minutos y volvé a abrir el link.",
     "check_in_pass_invalid": "Ese QR no es de GuaraniX o no es de este box.",
     "check_in_pass_expired": "Ese QR ya venció. Pedile al alumno que abra su QR de nuevo.",
+    "check_in_mode_disabled": "El box no usa esta forma de marcar asistencia. Se activa en Ajustes.",
     "class_full": "La clase se llenó. Probá con la siguiente."
   },
   "workout": {
@@ -1568,7 +1582,17 @@
     "planScope": "Sedes donde vale",
     "planEverywhere": "En todas",
     "planSome": "Solo en algunas",
-    "planSomeHint": "Si no elegís ninguna, vale en todas."
+    "planSomeHint": "Si no elegís ninguna, vale en todas.",
+    "coordinates": "Ubicación en el mapa",
+    "coordinatesHint": "La usa el QR de la pared para saber si el alumno está en el box. Lo más fácil: tocá el botón parado dentro de la sede.",
+    "locateHere": "Usar mi ubicación actual",
+    "locating": "Buscando tu ubicación…",
+    "locateDenied": "Tu navegador no dio permiso para ver la ubicación. Activalo en los ajustes del navegador o copiá los números desde un mapa.",
+    "locateFailed": "No pudimos leer la ubicación. Probá de nuevo cerca de una ventana o copiá los números desde un mapa.",
+    "latitude": "Latitud",
+    "longitude": "Longitud",
+    "coordinatesInvalid": "Completá latitud y longitud, o dejá las dos vacías.",
+    "noCoordinates": "Sin ubicación: el QR de la pared no funciona acá."
   },
   "plans": {
     "kinds": {

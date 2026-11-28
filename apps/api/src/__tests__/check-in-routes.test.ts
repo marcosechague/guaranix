@@ -1,4 +1,4 @@
-import { boxUsers, classes, members, programs } from '@guaranix/db/schema';
+import { boxUsers, boxes, classes, members, programs } from '@guaranix/db/schema';
 import { withSystemScope } from '@guaranix/db';
 import { calendarDateIn, type BoxRole } from '@guaranix/shared';
 import { eq } from 'drizzle-orm';
@@ -9,6 +9,12 @@ let harness: Harness;
 
 beforeAll(async () => {
   harness = await createHarness();
+  await withSystemScope(harness.database, (transaction) =>
+    transaction
+      .update(boxes)
+      .set({ checkInDeskEnabled: true })
+      .where(eq(boxes.id, harness.boxA.boxId)),
+  );
 }, 60_000);
 
 afterAll(async () => {

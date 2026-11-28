@@ -2,6 +2,7 @@ import { boxes } from '@guaranix/db/schema';
 import { BOX_ROLES } from '@guaranix/shared';
 import { eq } from 'drizzle-orm';
 import { createBoxRouter } from '../middleware/box-scope';
+import { checkInModesOf } from '../services/box-settings';
 
 const box = createBoxRouter();
 
@@ -13,10 +14,19 @@ box.get('/current', BOX_ROLES, async (context) => {
       slug: boxes.slug,
       city: boxes.city,
       timezone: boxes.timezone,
+      checkInDeskEnabled: boxes.checkInDeskEnabled,
+      checkInCoachEnabled: boxes.checkInCoachEnabled,
+      checkInWallQrEnabled: boxes.checkInWallQrEnabled,
     })
     .from(boxes)
     .where(eq(boxes.id, context.var.auth.boxId));
-  return context.json({ box: profile ?? null, role: context.var.auth.role });
+  if (!profile) return context.json({ box: null, role: context.var.auth.role });
+  const { checkInDeskEnabled, checkInCoachEnabled, checkInWallQrEnabled, ...rest } = profile;
+  const box = {
+    ...rest,
+    checkInModes: checkInModesOf({ checkInDeskEnabled, checkInCoachEnabled, checkInWallQrEnabled }),
+  };
+  return context.json({ box, role: context.var.auth.role });
 });
 
 export const boxRoutes = box.router;

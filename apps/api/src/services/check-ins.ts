@@ -11,6 +11,7 @@ import type {
 import { markAttendance } from './attendance';
 import { findPlanForClass } from './booking-eligibility';
 import { currentBox } from './box-calendar';
+import { assertCheckInModeEnabled } from './box-settings';
 import { SPOT_STATUSES, bookClass, takenSpots } from './bookings';
 import { overdueOwedBy } from './charges';
 import { signCheckInPass, verifyCheckInPass } from './check-in-pass';
@@ -145,6 +146,7 @@ export async function checkInWithPass(
   pass: string,
 ): Promise<CheckInResult> {
   assertRole(context.auth.role, CLASS_STAFF_ROLES);
+  await assertCheckInModeEnabled(context, 'desk');
   const memberId = await verifyCheckInPass(secret, context.auth.boxId, pass, context.now);
   const member = await getMember(context, memberId);
   const who: CheckInMember = {
@@ -193,6 +195,7 @@ export async function issueOwnCheckInPass(
   secret: string,
 ): Promise<CheckInPassView> {
   const member = await getOwnMember(context);
+  await assertCheckInModeEnabled(context, 'desk');
   if (member.status !== 'active') throw unprocessable('member_inactive');
   const { pass, expiresAt } = await signCheckInPass(
     secret,

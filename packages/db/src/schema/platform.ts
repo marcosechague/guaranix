@@ -72,6 +72,12 @@ export const boxes = pgTable(
     lateCancelConsumesCredit: boolean().notNull().default(true),
     noShowConsumesCredit: boolean().notNull().default(true),
     waitlistAutoPromote: boolean().notNull().default(true),
+    // How members get marked as present; each box turns on any combination (decision 0015).
+    checkInDeskEnabled: boolean().notNull().default(false),
+    checkInCoachEnabled: boolean().notNull().default(true),
+    checkInWallQrEnabled: boolean().notNull().default(false),
+    /** How close to a location a phone must be for the wall QR to count. */
+    checkInRadiusMeters: integer().notNull().default(150),
     // Where members pay by transfer or QR, shown in the member app. The QR image is in R2.
     paymentBankName: text(),
     paymentAccountNumber: text(),
@@ -89,6 +95,7 @@ export const boxes = pgTable(
       sql`${table.bookingOpensHoursBefore} > 0 and ${table.bookingClosesMinutesBefore} >= 0 and ${table.lateCancelMinutesBefore} >= 0`,
     ),
     check('boxes_extra_locations_non_negative', sql`${table.extraLocations} >= 0`),
+    check('boxes_check_in_radius_range', sql`${table.checkInRadiusMeters} between 30 and 1000`),
     pgPolicy('boxes_select_own', {
       for: 'select',
       to: appRole,

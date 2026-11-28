@@ -1,5 +1,13 @@
 import { sql } from 'drizzle-orm';
-import { boolean, check, pgTable, text, unique, uniqueIndex } from 'drizzle-orm/pg-core';
+import {
+  boolean,
+  check,
+  doublePrecision,
+  pgTable,
+  text,
+  unique,
+  uniqueIndex,
+} from 'drizzle-orm/pg-core';
 import { tenantColumns, tenantIsolationPolicy, tenantKey } from './tenant';
 
 /**
@@ -15,6 +23,9 @@ export const locations = pgTable(
     address: text(),
     city: text(),
     phone: text(),
+    /** Where the wall QR checks the member's phone against; set by staff standing there. */
+    latitude: doublePrecision(),
+    longitude: doublePrecision(),
     isDefault: boolean().notNull().default(false),
     isActive: boolean().notNull().default(true),
   },
@@ -26,6 +37,10 @@ export const locations = pgTable(
       .where(sql`${table.isDefault}`),
     // The default is where classes go when nobody picks a location, so it must stay open.
     check('locations_default_is_active', sql`not ${table.isDefault} or ${table.isActive}`),
+    check(
+      'locations_coordinates_valid',
+      sql`(${table.latitude} is null and ${table.longitude} is null) or (${table.latitude} between -90 and 90 and ${table.longitude} between -180 and 180)`,
+    ),
     tenantIsolationPolicy(table.boxId),
   ],
 );

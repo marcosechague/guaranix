@@ -14,7 +14,7 @@ import { Ellipsis, Settings, UserRound } from 'lucide-react';
 import { useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router';
 import { canManage } from '../lib/roles';
-import { BRODI_NAV_ITEM, NAV_ITEMS, splitForPhone, type NavItem } from './nav-items';
+import { BRODI_NAV_ITEM, navItemsFor, splitForPhone, type NavItem } from './nav-items';
 
 function TopBarLink({ to, label, children }: { to: string; label: string; children: ReactNode }) {
   return (
@@ -99,7 +99,7 @@ function MoreSheet({
  * bar stays on one row however many sections the panel grows.
  */
 export function MobileTabBar() {
-  const { tabs, more } = splitForPhone(NAV_ITEMS);
+  const { tabs, more } = splitForPhone(navItemsFor(useBoxClock().checkInModes));
   const { pathname } = useLocation();
   const [moreOpen, setMoreOpen] = useState(false);
   const inMore = more.some((item) => pathname === item.to || pathname.startsWith(`${item.to}/`));
