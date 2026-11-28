@@ -50,6 +50,20 @@
       "when": 1795826058374,
       "tag": "0006_booking_opens_24h",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1795826944735,
+      "tag": "0007_data_imports",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1795826960472,
+      "tag": "0008_data_imports_grants",
+      "breakpoints": true
     }
   ]
 }

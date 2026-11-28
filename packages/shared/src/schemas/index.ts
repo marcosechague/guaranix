@@ -9,3 +9,4 @@ export * from './billing';
 export * from './audit';
 export * from './auth';
 export * from './platform';
+export * from './data-import';

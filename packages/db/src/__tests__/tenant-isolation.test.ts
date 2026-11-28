@@ -46,6 +46,7 @@ describe('tenant tables', () => {
         "charges",
         "class_schedules",
         "classes",
+        "data_imports",
         "member_plans",
         "members",
         "movements",

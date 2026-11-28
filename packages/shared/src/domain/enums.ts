@@ -8,6 +8,9 @@ export const ROLES = [...PLATFORM_ROLES, ...BOX_ROLES] as const;
 export const BOX_STATUSES = ['trial', 'active', 'suspended', 'cancelled'] as const;
 /** Kind of center; picks the sign-up template and, later, the modules it gets. */
 export const BUSINESS_TYPES = ['functional_box', 'pilates_studio', 'combat_gym'] as const;
+/** Where imported data came from. CrossHero exports are mapped with their own column names. */
+export const IMPORT_SOURCES = ['spreadsheet', 'crosshero', 'ai'] as const;
+
 export const MEMBER_STATUSES = ['active', 'inactive'] as const;
 
 export const PLAN_KINDS = ['unlimited', 'weekly_limit', 'class_pack', 'drop_in'] as const;
