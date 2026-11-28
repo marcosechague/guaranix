@@ -1,4 +1,4 @@
-# 0013 — Brodi para el dueño (v1)
+# 0015 — Brodi para el dueño (v1)
 
 Fecha: 2026-11-28 · Estado: propuesta
 
