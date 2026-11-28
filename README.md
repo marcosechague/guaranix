@@ -58,11 +58,15 @@ Para probar Turnstile, descomentá las claves de prueba en `apps/api/.dev.vars`.
 2. **APIs y servicios → Pantalla de consentimiento de OAuth**: tipo "Externo", nombre GuaraniX, email de soporte, y los alcances `openid`, `email` y `profile`. Mientras esté en modo prueba, agregá tu email como usuario de prueba.
 3. **Credenciales → Crear credenciales → ID de cliente de OAuth**, tipo "Aplicación web".
 4. **URIs de redireccionamiento autorizados**: `http://localhost:8787/auth/google/callback` para desarrollo y `https://<dominio-de-la-api>/auth/google/callback` para producción.
-5. Copiá el ID y el secreto a `apps/api/.dev.vars` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`). En Cloudflare: `wrangler secret put GOOGLE_CLIENT_ID` y `wrangler secret put GOOGLE_CLIENT_SECRET`.
+5. Copiá el ID y el secreto a `apps/api/.dev.vars` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`). En staging y producción van en el environment de GitHub (ver `docs/despliegue.md`).
 
 #### Producción
 
 En staging y producción la API no arranca si falta alguna de estas: `AUTH_SECRET`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `RESEND_API_KEY` y `EMAIL_FROM` (un remitente verificado en Resend). Además, `ALLOWED_ORIGINS` con los dominios de las apps y `PUBLIC_API_URL` con el de la API. Detalles en `docs/decisions/0003-login-y-sesiones.md`.
+
+## Despliegue
+
+Staging se publica solo cuando un cambio llega a `main` con CI en verde; producción, con un tag `v*`. Cloudflare (Workers, Hyperdrive, R2, Queues) y Neon, con los secretos en los environments de GitHub. Configuración inicial, secretos y cómo volver atrás: [`docs/despliegue.md`](docs/despliegue.md).
 
 ### Base de datos
 

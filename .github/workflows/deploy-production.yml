@@ -1,0 +1,20 @@
+# Production only by hand: a `v*` tag (e.g. v0.1.0) or "Run workflow" on a commit
+# already tested in staging. Add required reviewers to the `production`
+# environment in GitHub to get an approval step (docs/despliegue.md).
+name: Deploy production
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy.yml
+    with:
+      environment: production
+      ref: ${{ github.sha }}
+    secrets: inherit

@@ -4,8 +4,8 @@
 # not 5432, so it never collides with another Postgres already running on this machine.
 DATABASE_URL=postgres://guaranix:guaranix@localhost:54329/guaranix
 
-# Any long random string locally. In Cloudflare: `wrangler secret put AUTH_SECRET`
-# with `openssl rand -base64 48`. Changing it invalidates every password.
+# Any long random string locally. In Cloudflare it comes from the GitHub environment
+# (docs/despliegue.md), made with `openssl rand -base64 48`. Changing it invalidates every password.
 AUTH_SECRET=dev-only-secret-change-me-0123456789abcdefghijklmnop
 
 # Optional in development. Leave them out and login works with email and
@@ -26,7 +26,7 @@ AUTH_SECRET=dev-only-secret-change-me-0123456789abcdefghijklmnop
 # Notifications (optional, see docs/notificaciones.md). Without keys, Telegram and
 # WhatsApp messages are printed to the terminal and push stays off.
 # Push: `pnpm --filter @guaranix/messaging vapid:generate`. Cloudflare:
-# VAPID_PUBLIC_KEY in wrangler.jsonc vars, `wrangler secret put VAPID_PRIVATE_KEY`.
+# In Cloudflare they come from the GitHub environment (docs/despliegue.md).
 # VAPID_PUBLIC_KEY=
 # VAPID_PRIVATE_KEY=
 # VAPID_SUBJECT=mailto:soporte@guaranix.com.py
