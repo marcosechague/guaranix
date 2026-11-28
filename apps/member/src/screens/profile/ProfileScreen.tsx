@@ -2,6 +2,7 @@ import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
 import type { MemberPlan } from '@guaranix/shared/api';
 import {
   AppearanceCard,
+  Button,
   Avatar,
   Badge,
   Page,
@@ -13,6 +14,7 @@ import {
   Columns,
 } from '@guaranix/ui';
 import { AccountSecurity, useSession } from '@guaranix/ui/auth';
+import { Link } from 'react-router';
 import { useMe, useMyPlans, usePlans } from '../../api/queries';
 import { useBoxClock } from '@guaranix/ui/data';
 
@@ -83,6 +85,9 @@ function PlanCard() {
           />
         ))}
       </dl>
+      <Button asChild variant="secondary">
+        <Link to="/cuota">{t('member.profile.seeFees')}</Link>
+      </Button>
     </Card>
   );
 }

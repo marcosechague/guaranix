@@ -7,3 +7,4 @@ export { catalogKeys, useMovements, usePlans, usePrograms } from './catalog';
 export { OfflineNotice } from './OfflineNotice';
 export { newestDataAt, persistQueryCache, restoreQueryCache } from './offline-cache';
 export { useOnlineStatus } from './use-online-status';
+export { recordPaymentWithReceipt } from './payments';

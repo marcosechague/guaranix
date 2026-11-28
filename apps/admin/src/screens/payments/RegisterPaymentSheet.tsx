@@ -2,7 +2,7 @@ import {
   formatGuarani,
   formatShortDate,
   RECEIPT_CONTENT_TYPES,
-  RECEIPT_MAX_BYTES,
+  receiptFileProblem,
   recordPaymentSchema,
   t,
 } from '@guaranix/shared';
@@ -43,10 +43,8 @@ const PENDING_UPLOAD = 'pending-upload';
 /** Same limits the API enforces, checked before uploading so the error shows at once. */
 function receiptProblem(file: File | null, method: StaffMethod): string | undefined {
   if (!file) return method === 'qr' ? t('errors.receipt_required') : undefined;
-  if (!(RECEIPT_CONTENT_TYPES as readonly string[]).includes(file.type)) {
-    return t('errors.receipt_type');
-  }
-  return file.size > RECEIPT_MAX_BYTES ? t('errors.receipt_too_large') : undefined;
+  const problem = receiptFileProblem(file);
+  return problem ? t(`errors.${problem}`) : undefined;
 }
 
 export function RegisterPaymentSheet({ initialMemberId, onClose }: RegisterPaymentSheetProps) {
@@ -163,9 +161,9 @@ export function RegisterPaymentSheet({ initialMemberId, onClose }: RegisterPayme
             value={method}
             onChange={setMethod}
             options={[
-              { value: 'cash', label: t('admin.payments.methods.cash') },
-              { value: 'bank_transfer', label: t('admin.payments.methods.bank_transfer') },
-              { value: 'qr', label: t('admin.payments.methods.qr') },
+              { value: 'cash', label: t('payments.methods.cash') },
+              { value: 'bank_transfer', label: t('payments.methods.bank_transfer') },
+              { value: 'qr', label: t('payments.methods.qr') },
             ]}
           />
         </div>
