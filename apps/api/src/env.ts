@@ -45,6 +45,8 @@ export interface AuthenticatedSession {
   userId: string;
   activeBoxId: string | null;
   isPlatformAdmin: boolean;
+  /** Set while a platform admin is working inside a box ("entrar como"). */
+  impersonation: { boxId: string; endsAt: Date } | null;
 }
 
 export interface Variables {

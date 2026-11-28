@@ -6,6 +6,8 @@ export const BOX_ROLES = ['box_owner', 'box_admin', 'coach', 'reception', 'membe
 export const ROLES = [...PLATFORM_ROLES, ...BOX_ROLES] as const;
 
 export const BOX_STATUSES = ['trial', 'active', 'suspended', 'cancelled'] as const;
+/** Kind of center; picks the sign-up template and, later, the modules it gets. */
+export const BUSINESS_TYPES = ['functional_box', 'pilates_studio', 'combat_gym'] as const;
 export const MEMBER_STATUSES = ['active', 'inactive'] as const;
 
 export const PLAN_KINDS = ['unlimited', 'weekly_limit', 'class_pack', 'drop_in'] as const;
@@ -56,6 +58,7 @@ export type PlatformRole = (typeof PLATFORM_ROLES)[number];
 export type BoxRole = (typeof BOX_ROLES)[number];
 export type Role = (typeof ROLES)[number];
 export type BoxStatus = (typeof BOX_STATUSES)[number];
+export type BusinessType = (typeof BUSINESS_TYPES)[number];
 export type MemberStatus = (typeof MEMBER_STATUSES)[number];
 export type PlanKind = (typeof PLAN_KINDS)[number];
 export type MemberPlanStatus = (typeof MEMBER_PLAN_STATUSES)[number];

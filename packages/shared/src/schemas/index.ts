@@ -8,3 +8,4 @@ export * from './workout';
 export * from './billing';
 export * from './audit';
 export * from './auth';
+export * from './platform';

@@ -121,7 +121,12 @@ describe('login', () => {
     const session = (await response.json()) as Session;
     expect(session.activeBoxId).toBe(harness.boxA.boxId);
     expect(session.memberships).toEqual([
-      { boxId: harness.boxA.boxId, boxName: 'Box Demo Asunción', role: 'coach' },
+      {
+        boxId: harness.boxA.boxId,
+        boxName: 'Box Demo Asunción',
+        role: 'coach',
+        boxStatus: 'trial',
+      },
     ]);
   });
 });

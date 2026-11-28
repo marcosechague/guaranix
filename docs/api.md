@@ -37,3 +37,18 @@ Roles: **staff** = dueño, admin, coach, recepción · **recepción** = dueño, 
 | `GET /box/reports/debtors`                                                                                        | recepción                           | Deudores                                       |
 | `GET /box/reports/dashboard?from&to`                                                                              | gestión                             | Cobrado, pendiente, deuda, alumnos, ocupación  |
 | `GET /box/me` · `/plans` · `/bookings` · `/records` · `/account`                                                  | alumno                              | Perfil, planes, reservas, PRs y cuota          |
+
+## API de la plataforma
+
+Rutas del superadmin (`apps/platform`). Solo para cuentas con `users.is_platform_admin`; cualquier otro rol de un box recibe `403 forbidden`. Corren sin aislamiento por box (ven todos los centros) y cada cambio queda en `audit_logs`, con el `box_id` del box afectado para que también aparezca en su historial. Ver `docs/decisions/0006-plataforma-superadmin.md`.
+
+| Ruta                                           | Para qué                                                                |
+| ---------------------------------------------- | ----------------------------------------------------------------------- |
+| `GET /platform/metrics`                        | MRR, MRR potencial de los boxes en prueba, boxes por estado, alumnos    |
+| `GET /platform/plans` · `POST` · `PATCH /:id`  | Planes de GuaraniX (precio, sede adicional, cupo de boxes)              |
+| `GET /platform/boxes?status&search` · `POST`   | Listar y dar de alta boxes (con dueño y plantilla)                      |
+| `GET /platform/boxes/:id` · `PATCH /:id`       | Ficha con actividad reciente; cambiar plan, sedes extra o fin de prueba |
+| `POST /platform/boxes/:id/suspend` · `/remove` | Suspender o dar de baja (`{ reason }`, lo ve el staff del box)          |
+| `POST /platform/boxes/:id/reactivate`          | Reactivar                                                               |
+| `POST /platform/boxes/:id/impersonate`         | "Entrar como" el box durante una hora                                   |
+| `POST /platform/impersonation/end`             | Salir del box                                                           |

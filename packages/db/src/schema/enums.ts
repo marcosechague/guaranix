@@ -2,6 +2,7 @@ import {
   BOOKING_STATUSES,
   BOX_ROLES,
   BOX_STATUSES,
+  BUSINESS_TYPES,
   CHARGE_STATUSES,
   CLASS_STATUSES,
   MEMBER_PLAN_STATUSES,
@@ -19,6 +20,7 @@ import { pgEnum } from 'drizzle-orm/pg-core';
 
 export const boxRoleEnum = pgEnum('box_role', BOX_ROLES);
 export const boxStatusEnum = pgEnum('box_status', BOX_STATUSES);
+export const businessTypeEnum = pgEnum('business_type', BUSINESS_TYPES);
 export const memberStatusEnum = pgEnum('member_status', MEMBER_STATUSES);
 export const planKindEnum = pgEnum('plan_kind', PLAN_KINDS);
 export const memberPlanStatusEnum = pgEnum('member_plan_status', MEMBER_PLAN_STATUSES);

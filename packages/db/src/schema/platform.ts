@@ -11,7 +11,7 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 import { primaryId, timestamps } from './columns';
-import { boxStatusEnum } from './enums';
+import { boxStatusEnum, businessTypeEnum } from './enums';
 import { appRole, currentBoxId, currentUserId } from './rls';
 
 /** GuaraniX's own subscription plans (base, founder…). Global and public to the app. */
@@ -23,6 +23,9 @@ export const platformPlans = pgTable(
     name: text().notNull(),
     monthlyPriceGs: integer().notNull(),
     extraLocationMonthlyPriceGs: integer().notNull(),
+    description: text(),
+    /** How many boxes may take this plan (founders: the first 15–20). Null means no limit. */
+    boxLimit: integer(),
     isActive: boolean().notNull().default(true),
     ...timestamps(),
   },
@@ -30,6 +33,10 @@ export const platformPlans = pgTable(
     check(
       'platform_plans_prices_non_negative',
       sql`${table.monthlyPriceGs} >= 0 and ${table.extraLocationMonthlyPriceGs} >= 0`,
+    ),
+    check(
+      'platform_plans_box_limit_positive',
+      sql`${table.boxLimit} is null or ${table.boxLimit} > 0`,
     ),
   ],
 );
@@ -50,9 +57,15 @@ export const boxes = pgTable(
     timezone: text().notNull().default('America/Asuncion'),
     accentColor: text(),
     logoFileKey: text(),
+    businessType: businessTypeEnum().notNull().default('functional_box'),
     status: boxStatusEnum().notNull().default('trial'),
+    /** Why the platform suspended or removed the box, shown to its staff. */
+    statusReason: text(),
+    statusChangedAt: timestamp({ withTimezone: true }),
     trialEndsAt: timestamp({ withTimezone: true }),
     platformPlanId: uuid().references(() => platformPlans.id),
+    /** Locations beyond the first, billed at the plan's extra-location price. */
+    extraLocations: integer().notNull().default(0),
     bookingOpensHoursBefore: integer().notNull().default(168),
     bookingClosesMinutesBefore: integer().notNull().default(0),
     lateCancelMinutesBefore: integer().notNull().default(120),
@@ -66,6 +79,7 @@ export const boxes = pgTable(
       'boxes_booking_policy_non_negative',
       sql`${table.bookingOpensHoursBefore} > 0 and ${table.bookingClosesMinutesBefore} >= 0 and ${table.lateCancelMinutesBefore} >= 0`,
     ),
+    check('boxes_extra_locations_non_negative', sql`${table.extraLocations} >= 0`),
     pgPolicy('boxes_select_own', {
       for: 'select',
       to: appRole,

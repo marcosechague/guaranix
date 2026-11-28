@@ -7,6 +7,8 @@ export interface ServiceAuth {
   userId: string;
   boxId: string;
   role: BoxRole;
+  /** Set when a platform admin acts "as" the box ("entrar como"). */
+  impersonatorUserId?: string;
 }
 
 /**

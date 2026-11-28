@@ -1,4 +1,4 @@
-import { type SchemaDatabase, withSystemScope } from '@guaranix/db';
+import { type SchemaDatabase, type ScopedTransaction, withSystemScope } from '@guaranix/db';
 import {
   boxUsers,
   boxes,
@@ -7,10 +7,17 @@ import {
   userCredentials,
   users,
 } from '@guaranix/db/schema';
-import type { Membership, Session } from '@guaranix/shared';
+import type { Impersonation, Membership, Session } from '@guaranix/shared';
 import { and, asc, eq, gt, isNull, ne } from 'drizzle-orm';
 import type { AuthenticatedSession } from '../env';
 import { hmacSha256, randomToken, sha256 } from '../lib/crypto';
+
+/** Revoking also drops any impersonation, so it can never come back with the session. */
+const REVOKED = () => ({
+  revokedAt: new Date(),
+  impersonatedBoxId: null,
+  impersonationEndsAt: null,
+});
 
 export const SESSION_LIFETIME_SECONDS = 30 * 24 * 60 * 60;
 
@@ -20,12 +27,24 @@ export async function listMemberships(
 ): Promise<Membership[]> {
   return withSystemScope(database, (transaction) =>
     transaction
-      .select({ boxId: boxUsers.boxId, boxName: boxes.name, role: boxUsers.role })
+      .select({
+        boxId: boxUsers.boxId,
+        boxName: boxes.name,
+        role: boxUsers.role,
+        boxStatus: boxes.status,
+      })
       .from(boxUsers)
       .innerJoin(boxes, eq(boxes.id, boxUsers.boxId))
       .where(and(eq(boxUsers.userId, userId), eq(boxUsers.isActive, true)))
       .orderBy(asc(boxUsers.createdAt)),
   );
+}
+
+export async function boxStatusOf(database: SchemaDatabase, boxId: string) {
+  const [box] = await withSystemScope(database, (transaction) =>
+    transaction.select({ status: boxes.status }).from(boxes).where(eq(boxes.id, boxId)),
+  );
+  return box?.status ?? null;
 }
 
 /** Starts a session in the user's first box; returns the token for the cookie. */
@@ -56,6 +75,8 @@ export async function findSession(
         userId: sessions.userId,
         activeBoxId: sessions.activeBoxId,
         isPlatformAdmin: users.isPlatformAdmin,
+        impersonatedBoxId: sessions.impersonatedBoxId,
+        impersonationEndsAt: sessions.impersonationEndsAt,
       })
       .from(sessions)
       .innerJoin(users, eq(users.id, sessions.userId))
@@ -67,12 +88,66 @@ export async function findSession(
         ),
       ),
   );
-  return row ? { ...row, token } : null;
+  if (!row) return null;
+  const { impersonatedBoxId, impersonationEndsAt, ...session } = row;
+  // Only a platform admin can impersonate, and only until the window closes.
+  const impersonating =
+    session.isPlatformAdmin &&
+    impersonatedBoxId !== null &&
+    impersonationEndsAt !== null &&
+    impersonationEndsAt > new Date();
+  // A stale impersonation is dropped right away, so restoring the admin flag can't revive it.
+  if (impersonatedBoxId !== null && !impersonating) {
+    await withSystemScope(database, (transaction) =>
+      transaction
+        .update(sessions)
+        .set({ impersonatedBoxId: null, impersonationEndsAt: null })
+        .where(eq(sessions.id, session.id)),
+    );
+  }
+  return {
+    ...session,
+    token,
+    impersonation: impersonating ? { boxId: impersonatedBoxId, endsAt: impersonationEndsAt } : null,
+  };
+}
+
+export const IMPERSONATION_MINUTES = 60;
+
+/** Points the session at `boxId` as its owner for an hour. The caller audits it. */
+export async function startImpersonation(
+  transaction: ScopedTransaction,
+  sessionId: string,
+  boxId: string,
+  now: Date,
+): Promise<Date> {
+  const endsAt = new Date(now.getTime() + IMPERSONATION_MINUTES * 60_000);
+  await transaction
+    .update(sessions)
+    .set({ impersonatedBoxId: boxId, impersonationEndsAt: endsAt })
+    .where(eq(sessions.id, sessionId));
+  return endsAt;
+}
+
+/** Clears the impersonation, even an expired one; returns the box it pointed at. */
+export async function endImpersonation(
+  transaction: ScopedTransaction,
+  sessionId: string,
+): Promise<string | null> {
+  const [before] = await transaction
+    .select({ boxId: sessions.impersonatedBoxId })
+    .from(sessions)
+    .where(eq(sessions.id, sessionId));
+  await transaction
+    .update(sessions)
+    .set({ impersonatedBoxId: null, impersonationEndsAt: null })
+    .where(eq(sessions.id, sessionId));
+  return before?.boxId ?? null;
 }
 
 export async function revokeSession(database: SchemaDatabase, sessionId: string): Promise<void> {
   await withSystemScope(database, (transaction) =>
-    transaction.update(sessions).set({ revokedAt: new Date() }).where(eq(sessions.id, sessionId)),
+    transaction.update(sessions).set(REVOKED()).where(eq(sessions.id, sessionId)),
   );
 }
 
@@ -85,7 +160,7 @@ export async function revokeUserSessions(
   await withSystemScope(database, (transaction) =>
     transaction
       .update(sessions)
-      .set({ revokedAt: new Date() })
+      .set(REVOKED())
       .where(
         and(
           eq(sessions.userId, userId),
@@ -147,15 +222,31 @@ export async function describeSession(
   ]);
   if (!user) return null;
   const { hasPassword, googleLinked, ...profile } = user;
-  const activeBoxId = memberships.some((membership) => membership.boxId === session.activeBoxId)
-    ? session.activeBoxId
-    : null;
+  const impersonation = await describeImpersonation(database, session);
+  const activeBoxId = impersonation
+    ? impersonation.boxId
+    : memberships.some((membership) => membership.boxId === session.activeBoxId)
+      ? session.activeBoxId
+      : null;
   return {
     user: profile,
     hasPassword: hasPassword !== null,
     googleLinked: googleLinked !== null,
     memberships,
     activeBoxId,
+    impersonation,
     csrfToken: await csrfTokenFor(secret, token),
   };
+}
+
+async function describeImpersonation(
+  database: SchemaDatabase,
+  session: AuthenticatedSession,
+): Promise<Impersonation | null> {
+  if (!session.impersonation) return null;
+  const { boxId, endsAt } = session.impersonation;
+  const [box] = await withSystemScope(database, (transaction) =>
+    transaction.select({ name: boxes.name }).from(boxes).where(eq(boxes.id, boxId)),
+  );
+  return box ? { boxId, boxName: box.name, endsAt: endsAt.toISOString() } : null;
 }
