@@ -7,6 +7,7 @@ import {
 } from '@guaranix/shared';
 import {
   Button,
+  CitySelectField,
   FormMessage,
   SelectField,
   Sheet,
@@ -113,7 +114,11 @@ export function NewBoxSheet({ open, onClose, onCreated }: NewBoxSheetProps) {
       >
         {field('name', t('platform.newBox.name'), { autoComplete: 'organization' })}
         <div className="grid gap-4 sm:grid-cols-2">
-          {field('city', t('platform.newBox.city'), { autoComplete: 'address-level2' })}
+          <CitySelectField
+            label={t('platform.newBox.city')}
+            value={values.city}
+            onChange={(event) => setValues({ ...values, city: event.target.value })}
+          />
           <SelectField
             label={t('platform.newBox.businessType')}
             value={businessType}

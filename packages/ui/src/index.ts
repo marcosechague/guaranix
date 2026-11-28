@@ -56,6 +56,8 @@ export { ProgressBar } from './components/ProgressBar';
 export type { ProgressBarProps } from './components/ProgressBar';
 export { SegmentedControl } from './components/SegmentedControl';
 export type { SegmentedControlProps } from './components/SegmentedControl';
+export { CitySelectField } from './components/CitySelectField';
+export type { CitySelectFieldProps } from './components/CitySelectField';
 export { SelectField } from './components/SelectField';
 export type { SelectFieldProps } from './components/SelectField';
 export { Sheet } from './components/Sheet';
