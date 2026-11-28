@@ -37,7 +37,7 @@ export function AiKeysCard({ configuration }: { configuration: AiConfiguration }
               <div className="flex min-w-0 flex-col gap-1">
                 <span className="font-semibold">{name}</span>
                 {key.hint ? (
-                  <span className="flex flex-wrap items-center gap-2 text-sm text-text-secondary">
+                  <span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-text-secondary">
                     <Badge tone="success" dot>
                       {t('platform.ai.keyLoaded', { hint: key.hint })}
                     </Badge>
