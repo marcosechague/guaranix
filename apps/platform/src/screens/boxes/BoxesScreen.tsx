@@ -17,11 +17,10 @@ import {
 import { errorText } from '@guaranix/ui/data';
 import { Plus, SearchX } from 'lucide-react';
 import { useDeferredValue, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { Navigate, useNavigate, useSearchParams } from 'react-router';
 import { useBoxes } from '../../api/queries';
 import { BoxActionSheet, type ReasonAction } from './BoxActionSheet';
 import { BoxesTable } from './BoxesTable';
-import { BoxSheet } from './BoxSheet';
 import { MetricsRow } from './MetricsRow';
 import { NewBoxSheet } from './NewBoxSheet';
 
@@ -84,6 +83,7 @@ function BoxList({
 
 export function BoxesScreen() {
   const [params, setParams] = useSearchParams();
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const deferredSearch = useDeferredValue(search.trim());
   const [creating, setCreating] = useState(false);
@@ -94,7 +94,8 @@ export function BoxesScreen() {
   const status = isFilter(params.get('estado'))
     ? (params.get('estado') as PlatformBoxFilter)
     : 'all';
-  const openBoxId = params.get('box');
+  // Old links opened the box in a side panel (`?box=`); it has its own page now.
+  const legacyBoxId = params.get('box');
 
   const update = (changes: Record<string, string | null>) =>
     setParams((current) => {
@@ -105,6 +106,8 @@ export function BoxesScreen() {
       }
       return next;
     });
+
+  if (legacyBoxId) return <Navigate replace to={`/box/${legacyBoxId}`} />;
 
   return (
     <Page layout="panel">
@@ -139,16 +142,11 @@ export function BoxesScreen() {
         <BoxList
           status={status}
           search={deferredSearch}
-          onOpen={(box) => update({ box: box.id })}
+          onOpen={(box) => void navigate(`/box/${box.id}`)}
           onEnter={(box) => setPending({ box, action: 'impersonate' })}
         />
       </Card>
 
-      <BoxSheet
-        boxId={openBoxId}
-        onClose={() => update({ box: null })}
-        onAction={(action, box) => setPending({ box, action })}
-      />
       {pending ? (
         <BoxActionSheet
           box={pending.box}
@@ -159,7 +157,7 @@ export function BoxesScreen() {
       <NewBoxSheet
         open={creating}
         onClose={() => setCreating(false)}
-        onCreated={(boxId) => update({ box: boxId })}
+        onCreated={(boxId) => void navigate(`/box/${boxId}`)}
       />
     </Page>
   );
