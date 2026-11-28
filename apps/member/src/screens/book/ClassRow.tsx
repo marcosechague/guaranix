@@ -96,12 +96,10 @@ export function ClassRow(props: ClassRowProps) {
         <span className="flex min-w-0 items-center gap-2 font-semibold">
           <ColorDot color={item.programColor} />
           <span className="truncate">{item.programName}</span>
-          {showLocation ? (
-            <span className="truncate text-sm font-normal text-text-secondary">
-              · {item.locationName}
-            </span>
-          ) : null}
         </span>
+        {showLocation ? (
+          <span className="-mt-1 truncate text-xs text-text-secondary">{item.locationName}</span>
+        ) : null}
         <div className="flex items-center gap-2">
           <ProgressBar
             className="w-10 shrink-0"
