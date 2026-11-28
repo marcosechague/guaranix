@@ -21,7 +21,7 @@
     "db:generate": "pnpm --filter @guaranix/db db:generate",
     "db:migrate": "pnpm --filter @guaranix/db db:migrate",
     "db:studio": "pnpm --filter @guaranix/db db:studio",
-    "db:seed": "pnpm --filter @guaranix/db db:seed",
+    "db:seed": "pnpm --filter @guaranix/db db:seed && pnpm --filter @guaranix/api demo:passwords",
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "check:ui": "node scripts/ui/check-reuse.mjs",
     "check:secrets": "node scripts/security/scan-secrets.mjs",
