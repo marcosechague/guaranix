@@ -3,6 +3,7 @@ import type { AppEnv } from '../../env';
 import { chargeRoutes, paymentRoutes, reportRoutes } from './billing';
 import { bookingRoutes, meRoutes } from './bookings';
 import { classRoutes, programRoutes, scheduleRoutes } from './classes';
+import { importRoutes } from './imports';
 import { memberRoutes } from './members';
 import { memberPlanRoutes, planRoutes } from './plans';
 import { componentRoutes, movementRoutes, resultRoutes, workoutRoutes } from './workouts';
@@ -23,5 +24,6 @@ export function mountBoxRoutes(app: Hono<AppEnv>) {
   app.route('/box/charges', chargeRoutes);
   app.route('/box/payments', paymentRoutes);
   app.route('/box/reports', reportRoutes);
+  app.route('/box/imports', importRoutes);
   app.route('/box/me', meRoutes);
 }

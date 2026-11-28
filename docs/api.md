@@ -36,6 +36,8 @@ Roles: **staff** = dueño, admin, coach, recepción · **recepción** = dueño, 
 | `POST /box/payments`                                                                                              | recepción, o alumno con comprobante | Registrar o informar un pago                   |
 | `GET /box/reports/debtors`                                                                                        | recepción                           | Deudores                                       |
 | `GET /box/reports/dashboard?from&to`                                                                              | gestión                             | Cobrado, pendiente, deuda, alumnos, ocupación  |
+| `POST /box/imports/preview`                                                                                       | gestión                             | Vista previa de una importación, fila por fila |
+| `POST /box/imports` · `GET /box/imports` · `GET /:id`                                                             | gestión                             | Importar alumnos, planes y saldos; historial   |
 | `GET /box/me` · `/plans` · `/bookings` · `/records` · `/account`                                                  | alumno                              | Perfil, planes, reservas, PRs y cuota          |
 
 ## API de la plataforma

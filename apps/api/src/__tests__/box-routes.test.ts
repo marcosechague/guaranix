@@ -98,6 +98,8 @@ describe('box API routes', () => {
     ['member', 'get', '/box/schedules'],
     ['coach', 'post', '/box/classes/generate'],
     ['box_owner', 'get', '/box/me'],
+    ['reception', 'post', '/box/imports'],
+    ['coach', 'post', '/box/imports/preview'],
   ] as const)('deny %s on %s %s', async (role, method, path) => {
     const { browser } = as[role];
     const response = method === 'get' ? await browser.get(path) : await browser.post(path, {});
@@ -321,5 +323,37 @@ describe('payments, debtors and dashboard', () => {
       (await reception.browser.get(`/box/reports/dashboard?from=${today()}&to=${today()}`)).status,
     ).toBe(403);
     expect((await coach.browser.get('/box/payments')).status).toBe(403);
+  });
+
+  it('the owner previews an import and commits it once', async () => {
+    const { browser } = as.box_owner;
+    const body = {
+      fileName: 'alumnos.csv',
+      source: 'crosshero',
+      balanceDescription: 'Saldo anterior',
+      members: [
+        {
+          firstName: 'Ruta',
+          lastName: 'Importada',
+          documentNumber: '8800001',
+          balanceGs: '50.000',
+        },
+      ],
+    };
+    const preview = await browser.post('/box/imports/preview', body);
+    expect(preview.status).toBe(200);
+    expect(await json<{ analysis: { summary: unknown } }>(preview)).toMatchObject({
+      analysis: { summary: { membersCreated: 1, chargesCreated: 1, balanceGs: 50_000 } },
+    });
+    const committed = await browser.post('/box/imports', body);
+    expect(committed.status).toBe(201);
+    const first = await json<{ import: { id: string }; replayed: boolean }>(committed);
+    expect(first.replayed).toBe(false);
+    const again = await json<{ import: { id: string }; replayed: boolean }>(
+      await browser.post('/box/imports', body),
+    );
+    expect(again).toMatchObject({ replayed: true, import: { id: first.import.id } });
+    const empty = await browser.post('/box/imports/preview', { ...body, members: [] });
+    expect(empty.status).toBe(400);
   });
 });

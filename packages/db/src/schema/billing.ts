@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { check, date, index, integer, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { chargeStatusEnum, paymentMethodEnum, paymentStatusEnum } from './enums';
+import { dataImports } from './imports';
 import { members } from './people';
 import { users } from './platform';
 import { memberPlans } from './plans';
@@ -17,6 +18,8 @@ export const charges = pgTable(
     amountGs: integer().notNull(),
     dueOn: date().notNull(),
     status: chargeStatusEnum().notNull().default('open'),
+    /** The import that created this row, if any. */
+    importId: uuid(),
   },
   (table) => [
     tenantKey('charges', table.boxId, table.id),
@@ -29,6 +32,11 @@ export const charges = pgTable(
       'charges_member_plan_fk',
       [table.boxId, table.memberPlanId],
       [memberPlans.boxId, memberPlans.id],
+    ),
+    sameBoxReference(
+      'charges_import_fk',
+      [table.boxId, table.importId],
+      [dataImports.boxId, dataImports.id],
     ),
     index('charges_box_id_status_due_on_idx').on(table.boxId, table.status, table.dueOn),
     check('charges_amount_positive', sql`${table.amountGs} > 0`),
