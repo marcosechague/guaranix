@@ -16,8 +16,9 @@ test('a new box owner without Google gets in with a one-time link', async ({ pag
   await form.getByLabel(t('platform.newBox.ownerEmail')).fill(ownerEmail);
   await form.getByRole('button', { name: t('platform.newBox.create') }).click();
 
-  // The box opens with what to send the owner.
-  const sheet = page.getByRole('dialog').filter({ hasText: boxName });
+  // The box's own page opens with what to send the owner.
+  await expect(page.getByRole('heading', { name: boxName })).toBeVisible();
+  const sheet = page.getByRole('main');
   await expect(sheet.getByText(t('platform.ownerAccess.pending'))).toBeVisible();
   await expect(sheet.getByText(t('platform.ownerAccess.googleMessage'))).toBeVisible();
   await sheet.getByRole('button', { name: t('platform.ownerAccess.createLink') }).click();

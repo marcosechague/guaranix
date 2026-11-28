@@ -59,7 +59,9 @@ const reviews = [
     key: 'ux',
     agent: 'ux-reviewer',
     files: changed.filter(isUiFile),
-    what: 'diseño y UX (jerarquía, espaciado, consistencia entre las 3 apps, responsive, accesibilidad)',
+    what:
+      'diseño y UX (jerarquía, espaciado, consistencia entre las 3 apps, responsive, accesibilidad). ' +
+      'Si la base local está levantada, corré antes `pnpm e2e:layout` (celular, tablet y escritorio)',
   },
   {
     key: 'security',

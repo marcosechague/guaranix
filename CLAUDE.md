@@ -91,6 +91,11 @@ Cada pantalla se arma con `Page` (layout `mobile`, `panel` o `centered`), `PageH
 ### Principios
 
 - **Mobile first** en la app del alumno; **responsive** en admin y platform (funciona en celular, tablet y escritorio).
+- **Aprovechar el espacio en cada tamaño** (celular 390 px, tablet 834 px, escritorio 1440 px):
+  - Celular: una columna, sin scroll horizontal, nada que se salga de la pantalla. Las tablas pasan a tarjetas (`DataTable` ya lo hace).
+  - Tablet y escritorio: el contenido ocupa el ancho que tiene (al menos el 70% del espacio al lado del menú). Repartí en columnas (`grid md:grid-cols-2 lg:grid-cols-3`), listas en `DataTable` y formularios en dos columnas cuando son largos. Nunca una columna de celular flotando en una pantalla vacía. La única excepción es `Page layout="centered"` (login, mensajes cortos).
+  - Lo ancho que no entra (una tabla larga) scrollea dentro de su propio marco, no la página.
+- **Mantenible y reutilizable**: una pantalla solo compone piezas de `packages/ui` y su propia lógica. Si un bloque de UI (tarjeta, fila, filtro, estado vacío) sirve o puede servir en otra pantalla o en otra app, va a `packages/ui` con sus props, no copiado.
 - Jerarquía clara: lo más importante de cada pantalla arriba y grande (próxima clase, WOD, cuota).
 - Mínimo de clics: reservar en 2 toques, cargar un resultado en 1 pantalla.
 - Estados vacíos útiles (que digan qué hacer), nunca pantallas en blanco con un ícono gigante.
@@ -187,6 +192,7 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 2. Construí por partes: esquema de datos → API con tests → UI.
 3. Reutilizá componentes de `packages/ui`; si falta uno, crealo ahí.
 4. Al terminar, corré lint, typecheck y tests (`pnpm lint && pnpm typecheck && pnpm test`). Si tocaste un flujo crítico (login, alta del box, reservas, WOD, pagos, importación, "entrar como"), corré también `pnpm e2e` y actualizá su test en `e2e/tests`.
+5. Si tocaste pantallas o componentes de `packages/ui`, corré `pnpm e2e:layout` y mirá las capturas que deja en `.claude/screenshots/layout/`. Si sumaste una ruta, agregala a `SCREENS` en `e2e/tests/layout.spec.ts`.
 
 ### Guardas automáticas
 
@@ -196,4 +202,5 @@ Las reglas de diseño, reuso y seguridad de este archivo están automatizadas (d
 - Los hooks de `.claude/settings.json` corren esos chequeos después de cada edición y antes de terminar. Si te devuelven errores, arreglalos; no los saltees.
 - Cuando el hook de Stop lo pida, corré los agentes `ux-reviewer` y/o `security-reviewer` (`.claude/agents/`) y aplicá lo bloqueante.
 - Para ver una pantalla: `pnpm ui:screenshots <member|admin|platform|all>` (capturas en celular, tablet y escritorio).
+- `pnpm e2e:layout` recorre las pantallas principales de las tres apps en celular, tablet y escritorio (necesita la base local con el seed, como `pnpm e2e`). Falla si una pantalla scrollea de costado, si algo se sale por la derecha o si en tablet o escritorio el contenido usa menos del 70% del ancho disponible. También corre dentro de `pnpm e2e`.
 - Para levantar una excepción, sumá el archivo a la lista que corresponde en `eslint.config.js` o dejá el comentario con el motivo; que quede visible en el PR.

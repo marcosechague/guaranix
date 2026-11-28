@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { BOX_STATUSES, BUSINESS_TYPES } from '../domain/enums';
 import { boxSlugSchema } from './box';
-import { emailSchema, guaraniAmountSchema, idSchema, nameSchema } from './common';
+import { accountEmailSchema, guaraniAmountSchema, idSchema, nameSchema } from './common';
 
 /** GuaraniX's own plans (PRD §5). Prices are data the superadmin edits, never code. */
 export const platformPlanInputSchema = z.object({
@@ -29,7 +29,7 @@ export const createPlatformBoxSchema = z.object({
   city: cityShape.nullable().default(null),
   businessType: z.enum(BUSINESS_TYPES).default('functional_box'),
   platformPlanId: idSchema,
-  ownerEmail: emailSchema,
+  ownerEmail: accountEmailSchema,
   ownerName: nameSchema,
   trialDays: z.number().int().min(0).max(90).default(30),
   /** Loads the Paraguayan template (programs, schedule, plans) for the business type. */

@@ -27,6 +27,7 @@
     "check:secrets": "node scripts/security/scan-secrets.mjs",
     "ui:screenshots": "node scripts/ui/screenshots.mjs",
     "e2e": "pnpm --filter @guaranix/e2e e2e",
+    "e2e:layout": "pnpm --filter @guaranix/e2e e2e layout",
     "check:deploy": "node scripts/deploy/check-config.mjs",
     "deploy:setup": "node scripts/deploy/local.mjs setup",
     "deploy:production": "node scripts/deploy/local.mjs deploy"

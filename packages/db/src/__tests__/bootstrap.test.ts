@@ -96,4 +96,18 @@ describe('bootstrapPlatform', () => {
       bootstrapPlatform(testDatabase.database, { platformAdminEmail: 'not-an-email' }),
     ).rejects.toThrow(TypeError);
   });
+
+  it('promotes the Gmail account however the admin email was spelled', async () => {
+    await withSystemScope(testDatabase.database, (tx) =>
+      tx.insert(users).values({ email: 'duenogx@gmail.com', fullName: 'Dueño' }),
+    );
+    const result = await bootstrapPlatform(testDatabase.database, {
+      platformAdminEmail: 'Dueno.GX+admin@googlemail.com',
+    });
+    expect(result.platformAdmin).toBe('promoted');
+    const [admin] = await readAll((tx) =>
+      tx.select().from(users).where(eq(users.email, 'duenogx@gmail.com')),
+    );
+    expect(admin?.isPlatformAdmin).toBe(true);
+  });
 });

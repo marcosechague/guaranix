@@ -1,5 +1,5 @@
 import { formatGuarani, type PlatformBoxSummary, t } from '@guaranix/shared';
-import { Button, FormMessage, SelectField, TextField, useToast } from '@guaranix/ui';
+import { FormSaveActions, SelectField, TextField, useToast } from '@guaranix/ui';
 import { errorText } from '@guaranix/ui/data';
 import { useState } from 'react';
 import { useBoxMutations, usePlans } from '../../api/queries';
@@ -14,6 +14,10 @@ export function BoxBillingForm({ box }: { box: PlatformBoxSummary }) {
   const [extraLocations, setExtraLocations] = useState(String(box.extraLocations));
   const [trialEndsOn, setTrialEndsOn] = useState(dateInputValue(box.trialEndsAt));
   const selected = plans.find((plan) => plan.id === planId);
+  const dirty =
+    planId !== (box.platformPlan?.id ?? '') ||
+    extraLocations !== String(box.extraLocations) ||
+    trialEndsOn !== dateInputValue(box.trialEndsAt);
 
   async function save() {
     await update.mutateAsync({
@@ -78,10 +82,12 @@ export function BoxBillingForm({ box }: { box: PlatformBoxSummary }) {
           />
         ) : null}
       </div>
-      {update.error ? <FormMessage tone="error">{errorText(update.error)}</FormMessage> : null}
-      <Button type="submit" variant="secondary" className="self-start" disabled={update.isPending}>
-        {t('platform.box.save')}
-      </Button>
+      <FormSaveActions
+        editable
+        dirty={dirty}
+        pending={update.isPending}
+        error={update.error ? errorText(update.error) : null}
+      />
     </form>
   );
 }

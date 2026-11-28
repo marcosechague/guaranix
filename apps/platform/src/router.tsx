@@ -14,6 +14,12 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: 'box/:boxId',
+          lazy: async () => ({
+            Component: (await import('./screens/boxes/BoxScreen')).BoxScreen,
+          }),
+        },
+        {
           path: 'planes',
           lazy: async () => ({
             Component: (await import('./screens/plans/PlansScreen')).PlansScreen,
