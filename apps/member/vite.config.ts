@@ -35,6 +35,9 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,png,webp,woff2}'],
         // Push notifications: `public/push-sw.js`.
         importScripts: ['push-sw.js'],
+        // On the shared production origin the panel, the platform and the API live
+        // under these paths (apps/gateway); the member shell must never answer them.
+        navigateFallbackDenylist: [/^\/panel(\/|$)/, /^\/plataforma(\/|$)/, /^\/api(\/|$)/],
       },
     }),
   ],

@@ -9,8 +9,12 @@ import { router } from './router';
 
 const STAFF_ROLES: readonly BoxRole[] = ['box_owner', 'box_admin', 'coach', 'reception'];
 
-/** The panel is for staff of the active box; the API enforces it again on every route. */
+/**
+ * The panel is for staff of the active box, or a GuaraniX admin looking at it
+ * read-only ("entrar como"). The API enforces both again on every route.
+ */
 function hasStaffBox(session: Session): boolean {
+  if (session.impersonation) return true;
   return session.memberships.some(
     (membership) =>
       membership.boxId === session.activeBoxId && STAFF_ROLES.includes(membership.role),

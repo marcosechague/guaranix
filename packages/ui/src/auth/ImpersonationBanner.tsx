@@ -14,6 +14,8 @@ export interface ImpersonationBannerProps {
 const timeFormat = new Intl.DateTimeFormat('es-PY', {
   hour: '2-digit',
   minute: '2-digit',
+  // 24-hour clock, as everywhere else in the apps ("hasta las 14:30", not "2:30 p. m.").
+  hourCycle: 'h23',
   timeZone: 'America/Asuncion',
 });
 

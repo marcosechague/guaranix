@@ -1,5 +1,5 @@
-# Production only by hand: a `v*` tag (e.g. v0.1.0) or "Run workflow" on a commit
-# already tested in staging. Add required reviewers to the `production`
+# Production only by hand: a `v*` tag (e.g. v0.1.0) or "Run workflow". Merging to
+# main never deploys by itself. Add required reviewers to the `production`
 # environment in GitHub to get an approval step (docs/despliegue.md).
 name: Deploy production
 
