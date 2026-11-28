@@ -35,6 +35,12 @@ afterAll(async () => {
   await fixture.close();
 });
 
+function componentOf(input: ReturnType<typeof wodInput>, index: number) {
+  const component = input.components[index];
+  if (!component) throw new Error(`No component ${index}`);
+  return component;
+}
+
 function wodInput() {
   dayCounter += 1;
   return createWorkoutSchema.parse({
@@ -147,6 +153,34 @@ describe('WODs', () => {
     );
   });
 
+  it('saves the guided steps and the suggested load of a part', async () => {
+    const input = wodInput();
+    const steps = [
+      { quantity: '21', name: 'Thrusters' },
+      { quantity: '21', name: 'Pull-ups' },
+    ];
+    const metcon = {
+      ...componentOf(input, 1),
+      guidedSteps: steps,
+      loadPercent: 75,
+      movementId: backSquatId,
+    };
+    const wod = await world.as('coach', (context) =>
+      createWorkout(context, { ...input, components: [componentOf(input, 0), metcon] }),
+    );
+    expect(wod.components[1]).toMatchObject({ guidedSteps: steps, loadPercent: 75 });
+    const plain = await world.as('coach', (context) => createWorkout(context, wodInput()));
+    expect(plain.components[1]).toMatchObject({ guidedSteps: null, loadPercent: null });
+  });
+
+  it('only suggests a load from a movement', () => {
+    const parsed = createWorkoutSchema.safeParse({
+      ...wodInput(),
+      components: [{ position: 0, kind: 'metcon', description: '21 Thrusters', loadPercent: 70 }],
+    });
+    expect(parsed.success).toBe(false);
+  });
+
   it("can't use another box's program or movements", async () => {
     const other = bookingWorld(fixture, fixture.boxB);
     await expectServiceError(
@@ -212,6 +246,27 @@ describe('results', () => {
     expect(corrected.result.id).toBe(first.result.id);
     expect(corrected.result).toMatchObject({ timeSeconds: 380, scaling: 'scaled' });
     expect(strength).toBeDefined();
+  });
+
+  it('keeps the load used on a part based on a movement, without a personal record', async () => {
+    const input = wodInput();
+    const metcon = { ...componentOf(input, 1), movementId: backSquatId, loadPercent: 75 };
+    const draft = await world.as('coach', (context) =>
+      createWorkout(context, { ...input, components: [metcon] }),
+    );
+    const wod = await world.as('coach', (context) => setWorkoutPublished(context, draft.id, true));
+    const member = await world.memberWith();
+    const logged = await member.act((context) =>
+      logResult(context, {
+        ...empty,
+        componentId: wod.components[0]?.id ?? '',
+        scaling: 'rx',
+        timeSeconds: 538,
+        loadGrams: 30_000,
+      }),
+    );
+    expect(logged.result).toMatchObject({ timeSeconds: 538, loadGrams: 30_000 });
+    expect(logged.isPersonalRecord).toBe(false);
   });
 
   it('detects personal records on load components', async () => {

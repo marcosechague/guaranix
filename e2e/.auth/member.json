@@ -2,10 +2,10 @@
   "cookies": [
     {
       "name": "gx_session",
-      "value": "IvVWTM2gEqQ2XM1IOQVIG4_-6DKxLnHW6fw-7UgT-VM",
+      "value": "a7cphUd2rqykktLkdY6TrJzH_XXOQffuCbwSUVS_U6A",
       "domain": "localhost",
       "path": "/",
-      "expires": 1798430491.673,
+      "expires": 1798456644.41,
       "httpOnly": true,
       "secure": false,
       "sameSite": "Lax"

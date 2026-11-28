@@ -21,6 +21,14 @@ export const movementSchema = z.object({
   category: z.enum(MOVEMENT_CATEGORIES),
 });
 
+/** One line of the guided mode: "21" + "Thrusters", "400 m" + "Run". */
+export const guidedStepSchema = z.object({
+  quantity: z.string().trim().max(30),
+  name: z.string().trim().min(1).max(80),
+});
+
+export type GuidedStep = z.infer<typeof guidedStepSchema>;
+
 export const workoutComponentSchema = z
   .object({
     position: z.number().int().min(0).max(50),
@@ -35,6 +43,10 @@ export const workoutComponentSchema = z
     workSeconds: secondsSchema.nullable().default(null),
     restSeconds: z.number().int().min(0).max(3600).nullable().default(null),
     movementId: idSchema.nullable().default(null),
+    /** Steps the guided mode walks through; null means "read them from the description". */
+    guidedSteps: z.array(guidedStepSchema).min(1).max(40).nullable().default(null),
+    /** Suggested load as a % of the member's best on `movementId`. */
+    loadPercent: z.number().int().min(1).max(150).nullable().default(null),
   })
   .superRefine((component, context) => {
     const require = (field: keyof typeof component, message: string) => {
@@ -49,6 +61,9 @@ export const workoutComponentSchema = z
       require('workSeconds', 'Tabata needs work seconds');
       require('restSeconds', 'Tabata needs rest seconds');
       require('rounds', 'Tabata needs a number of rounds');
+    }
+    if (component.loadPercent !== null) {
+      require('movementId', 'A suggested load needs the movement it is based on');
     }
   });
 
