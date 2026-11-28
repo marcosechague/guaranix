@@ -1,5 +1,8 @@
 export { Brodi } from './components/Brodi';
 export type { BrodiProps } from './components/Brodi';
+export { BoxMark } from './components/BoxMark';
+export { Columns } from './components/Columns';
+export type { ColumnsProps } from './components/Columns';
 export { Button } from './components/Button';
 export type { ButtonProps } from './components/Button';
 export { Card, Eyebrow } from './components/Card';
@@ -66,3 +69,5 @@ export { ToggleChips } from './components/ToggleChips';
 export type { ToggleChipOption, ToggleChipsProps } from './components/ToggleChips';
 export { ActionBar, BottomBar } from './components/ActionBar';
 export type { ActionBarProps, BottomBarProps } from './components/ActionBar';
+export { GuaranixLogo } from './components/GuaranixLogo';
+export type { GuaranixLogoProps } from './components/GuaranixLogo';

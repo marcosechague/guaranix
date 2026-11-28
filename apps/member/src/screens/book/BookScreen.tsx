@@ -86,7 +86,7 @@ export function BookScreen() {
   };
 
   return (
-    <Page layout="mobile" className="gap-4">
+    <Page layout="mobile">
       <PageHeader size="large" title={t('member.book.title')} subtitle={subtitle} />
       <DayStrip
         days={days}
@@ -106,7 +106,7 @@ export function BookScreen() {
         />
       ) : null}
       {classes.isPending ? (
-        <div aria-busy="true" className="flex flex-col gap-3">
+        <div aria-busy="true" className="grid grid-cols-1 gap-3 md:grid-cols-2">
           {[0, 1, 2, 3].map((index) => (
             <Skeleton key={index} className="h-18 rounded-xl" />
           ))}
@@ -123,7 +123,7 @@ export function BookScreen() {
           description={t('member.book.emptyBody')}
         />
       ) : (
-        <ul className="flex flex-col gap-2.5">
+        <ul className="grid grid-cols-1 gap-2.5 md:grid-cols-2 md:gap-3">
           {visible.map((item) => (
             <ClassRow
               key={item.id}

@@ -77,6 +77,7 @@ Cada pantalla se arma con `Page` (layout `mobile`, `panel` o `centered`), `PageH
 ### Identidad
 
 - Marca: **GuaraniX**. Asistente/mascota: **Brodi** (una pesa rusa con vincha, entrenada y simpática). Imagen en `packages/ui/src/assets/` (componente `<Brodi />`); original en `docs/brand/`.
+- **Logo y logo en letras: pendientes**, van a ser distintos de Brodi. Brodi es el asistente, **nunca el logo**. Mientras tanto se usa `<GuaranixLogo />` de `packages/ui`, que hoy es solo el nombre en Space Grotesk. Cuando llegue el logo definitivo se cambia solo ese componente.
 - Colores base (tokens en `packages/ui/src/tokens`, expuestos a Tailwind en `packages/ui/src/styles/theme.css`):
   - Fondo oscuro `#0E0F11`, superficie `#17181B`, borde `#2A2C30`
   - Texto `#F4F5F2`, texto secundario `#A3A69E`

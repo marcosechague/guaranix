@@ -5,6 +5,7 @@ import {
   LayoutDashboard,
   Ticket,
   Users,
+  Wallet,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -19,5 +20,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { to: '/alumnos', label: t('admin.nav.members'), icon: Users },
   { to: '/clases', label: t('admin.nav.classes'), icon: CalendarDays },
   { to: '/wod', label: t('admin.nav.wod'), icon: Dumbbell },
+  { to: '/cobros', label: t('admin.nav.payments'), icon: Wallet },
   { to: '/planes', label: t('admin.nav.plans'), icon: Ticket },
 ];

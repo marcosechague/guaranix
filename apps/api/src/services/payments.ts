@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, lt, ne, sum, type SQL } from 'drizzle-orm';
 import type { z } from 'zod';
-import { payments } from '@guaranix/db/schema';
+import { members, payments } from '@guaranix/db/schema';
 import type { PaymentStatus } from '@guaranix/shared/domain';
 import type { recordPaymentSchema } from '@guaranix/shared/schemas';
 import { recordAudit } from './audit';
@@ -119,6 +119,7 @@ export async function reviewPayment(
   return reviewed;
 }
 
+/** Payments with the member's name, newest first, for the front desk. */
 export async function listPayments(
   context: ServiceContext,
   query: {
@@ -127,17 +128,19 @@ export async function listPayments(
     from?: Date | undefined;
     to?: Date | undefined;
   },
-): Promise<PaymentRow[]> {
+): Promise<(PaymentRow & { firstName: string; lastName: string })[]> {
   assertRole(context.auth.role, FRONT_DESK_ROLES);
   const filters: SQL[] = [];
   if (query.status) filters.push(eq(payments.status, query.status));
   if (query.memberId) filters.push(eq(payments.memberId, query.memberId));
   if (query.from) filters.push(gte(payments.paidAt, query.from));
   if (query.to) filters.push(lt(payments.paidAt, query.to));
-  return context.transaction
-    .select()
+  const rows = await context.transaction
+    .select({ payment: payments, firstName: members.firstName, lastName: members.lastName })
     .from(payments)
+    .innerJoin(members, eq(members.id, payments.memberId))
     .where(and(...filters))
     .orderBy(desc(payments.paidAt))
     .limit(500);
+  return rows.map((row) => ({ ...row.payment, firstName: row.firstName, lastName: row.lastName }));
 }
