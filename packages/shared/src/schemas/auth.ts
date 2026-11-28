@@ -53,6 +53,8 @@ export const impersonationSchema = z.object({
   boxId: idSchema,
   boxName: z.string(),
   endsAt: z.string(),
+  /** Always true: support can look but never change a box's data (see `docs/decisions/0006`). */
+  readOnly: z.literal(true),
 });
 
 export const sessionSchema = z.object({
@@ -92,6 +94,7 @@ export const AUTH_ERROR_CODES = [
   'not_a_member',
   'box_suspended',
   'box_cancelled',
+  'impersonation_read_only',
   'unauthenticated',
   'forbidden',
   'csrf_failed',

@@ -920,7 +920,7 @@
       "editShort": "Editar"
     },
     "impersonation": {
-      "banner": "Estás dentro de {box} como soporte de GuaraniX, hasta las {time}.",
+      "banner": "Estás viendo {box} como soporte de GuaraniX, en modo solo lectura, hasta las {time}.",
       "leave": "Salir del box"
     },
     "activity": {
@@ -1105,7 +1105,8 @@
       "validation_failed": "Revisá los datos e intentá de nuevo.",
       "internal_error": "Algo salió mal de nuestro lado. Probá de nuevo en un rato.",
       "box_suspended": "Tu box está suspendido. Escribile al dueño para reactivarlo.",
-      "box_cancelled": "Este box ya no usa GuaraniX."
+      "box_cancelled": "Este box ya no usa GuaraniX.",
+      "impersonation_read_only": "Como soporte solo podés mirar: no se pueden guardar cambios dentro de un box."
     },
     "email": {
       "resetSubject": "Creá tu nueva contraseña de GuaraniX",
@@ -1120,6 +1121,7 @@
   "errors": {
     "invalid_input": "Revisá los datos: hay algo incompleto o mal escrito.",
     "forbidden": "No tenés permiso para hacer esto.",
+    "impersonation_read_only": "Como soporte solo podés mirar: no se pueden guardar cambios dentro de un box.",
     "member_not_found": "No encontramos a ese alumno.",
     "plan_not_found": "No encontramos ese plan.",
     "member_plan_not_found": "No encontramos ese plan del alumno.",

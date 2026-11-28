@@ -54,7 +54,7 @@ Rutas del superadmin (`apps/platform`). Solo para cuentas con `users.is_platform
 | `GET /platform/boxes/:id` · `PATCH /:id`       | Ficha con actividad reciente; cambiar plan, sedes extra o fin de prueba |
 | `POST /platform/boxes/:id/suspend` · `/remove` | Suspender o dar de baja (`{ reason }`, lo ve el staff del box)          |
 | `POST /platform/boxes/:id/reactivate`          | Reactivar                                                               |
-| `POST /platform/boxes/:id/impersonate`         | "Entrar como" el box durante una hora                                   |
+| `POST /platform/boxes/:id/impersonate`         | "Entrar como" el box durante una hora, solo lectura                     |
 | `POST /platform/impersonation/end`             | Salir del box                                                           |
 | `GET /platform/ai` · `PATCH`                   | Proveedor y modelo de IA; qué claves hay cargadas (solo su final)       |
 | `PUT /platform/ai/keys/:provider` · `DELETE`   | Cargar (se guarda cifrada) o quitar la clave de un proveedor            |

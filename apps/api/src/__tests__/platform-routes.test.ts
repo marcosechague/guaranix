@@ -183,16 +183,11 @@ describe('platform routes', () => {
     const current = await admin.browser.get('/box/current');
     expect(await current.json()).toMatchObject({ box: { id: boxId }, role: 'box_owner' });
     const session = (await (await admin.browser.get('/auth/session')).json()) as Session;
-    expect(session).toMatchObject({ activeBoxId: boxId, impersonation: { boxId } });
-
-    expect((await admin.browser.post('/box/programs', { name: 'Halterofilia' })).status).toBe(201);
-    const [write] = await system((transaction) =>
-      transaction
-        .select()
-        .from(auditLogs)
-        .where(and(eq(auditLogs.boxId, boxId), eq(auditLogs.action, 'program.created'))),
-    );
-    expect(write?.impersonatorUserId).toBe(admin.session.user.id);
+    expect(session).toMatchObject({
+      activeBoxId: boxId,
+      impersonation: { boxId, readOnly: true },
+    });
+    expect((await admin.browser.get('/box/members')).status).toBe(200);
 
     expect((await admin.browser.post('/platform/impersonation/end')).status).toBe(200);
     expect((await admin.browser.get('/box/current')).status).toBe(403);
@@ -200,6 +195,37 @@ describe('platform routes', () => {
     expect(actions).toEqual(
       expect.arrayContaining(['box.impersonation_started', 'box.impersonation_ended']),
     );
+  });
+
+  it('keep "entrar como" read-only: no payments, prices, plans, deletions or other writes', async () => {
+    const admin = await platformAdmin();
+    const boxId = harness.boxB.boxId;
+    await admin.browser.post(`/platform/boxes/${boxId}/impersonate`, SUPPORT);
+    const denied = { error: 'impersonation_read_only' };
+    const anyId = '00000000-0000-4000-8000-000000000000';
+    const writes = [
+      () => admin.browser.post('/box/programs', { name: 'Halterofilia' }),
+      () => admin.browser.post('/box/plans', { name: 'Libre', priceGs: 1 }),
+      () => admin.browser.patch(`/box/plans/${anyId}`, { priceGs: 1 }),
+      () => admin.browser.post('/box/payments', { amountGs: 300_000 }),
+      () => admin.browser.post(`/box/charges/${anyId}/void`, {}),
+      () => admin.browser.delete(`/box/members/${anyId}`),
+      () => admin.browser.post('/box/ai-imports/extract', {}),
+    ];
+    for (const write of writes) {
+      const response = await write();
+      expect(response.status).toBe(403);
+      expect(await response.json()).toEqual(denied);
+    }
+    const created = await system((transaction) =>
+      transaction
+        .select()
+        .from(auditLogs)
+        .where(and(eq(auditLogs.boxId, boxId), eq(auditLogs.action, 'program.created'))),
+    );
+    expect(created).toEqual([]);
+    // Leaving is a platform route, so it still works.
+    expect((await admin.browser.post('/platform/impersonation/end')).status).toBe(200);
   });
 
   it('ignore an impersonation that expired or belongs to a non-admin', async () => {
