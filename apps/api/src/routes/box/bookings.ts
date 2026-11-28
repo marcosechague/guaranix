@@ -4,6 +4,7 @@ import { idParam, parseBody, respond } from '../../lib/service-route';
 import { bookClass, cancelBooking, listOwnBookings } from '../../services/bookings';
 import { listMemberPlans } from '../../services/member-plans';
 import { ownAccount } from '../../services/charges';
+import { issueOwnCheckInPass } from '../../services/check-ins';
 import { getOwnMember, viewOwnMember } from '../../services/members';
 import { listOwnPersonalRecords } from '../../services/workout-results';
 import { ANY_ROLE, MEMBERS_ONLY } from './roles';
@@ -55,6 +56,13 @@ me.get('/records', MEMBERS_ONLY, (context) =>
 
 me.get('/account', MEMBERS_ONLY, (context) =>
   respond(context, async (service) => ownAccount(service)),
+);
+
+/** The QR the member shows at the entrance. Short-lived, so the app asks again before it expires. */
+me.get('/check-in-pass', MEMBERS_ONLY, (context) =>
+  respond(context, async (service) => ({
+    pass: await issueOwnCheckInPass(service, context.env.AUTH_SECRET),
+  })),
 );
 
 export const meRoutes = me.router;

@@ -27,6 +27,7 @@ Roles: **staff** = dueño, admin, coach, recepción · **recepción** = dueño, 
 | `GET /box/classes/:id/roster` · `POST /:id/attendance`                                                            | staff                               | Lista y asistencia                                                                         |
 | `PATCH /box/classes/:id` · `POST /:id/cancel`                                                                     | gestión                             | Cupo, coach, suspender                                                                     |
 | `POST /box/bookings` · `POST /box/bookings/:id/cancel`                                                            | todos                               | Reservar (`{ classId }`) y cancelar                                                        |
+| `POST /box/check-ins`                                                                                             | staff                               | Check-in con el QR del alumno (`{ pass }`); ver `decisions/0013`                           |
 | `GET /box/movements` · `POST`                                                                                     | todos / coaching                    | Movimientos                                                                                |
 | `GET /box/workouts?date&programId` · `GET /:id`                                                                   | todos                               | WOD del día (alumnos: solo publicados)                                                     |
 | `POST /box/workouts` · `PATCH /:id` · `POST /:id/publish` · `/unpublish` · `DELETE /:id`                          | coaching                            | Programar WODs                                                                             |
@@ -47,6 +48,7 @@ Roles: **staff** = dueño, admin, coach, recepción · **recepción** = dueño, 
 | `POST /box/card-payments/payments/:id/refund`                                                                     | gestión                             | Anular un pago con tarjeta del mismo día                                                   |
 | `GET /box/card-payments/me/cards` · `POST` · `POST /:id/confirm` · `DELETE /:id`                                  | alumno                              | Su tarjeta: guardar (con `acceptAutopay`), confirmar al volver del formulario, quitar      |
 | `GET /box/me` · `/plans` · `/bookings` · `/records` · `/account`                                                  | alumno                              | Perfil, planes, reservas, PRs y cuota                                                      |
+| `GET /box/me/check-in-pass`                                                                                       | alumno                              | QR para entrar al box (dura 2 minutos)                                                     |
 
 ## API de la plataforma
 

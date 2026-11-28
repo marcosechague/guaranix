@@ -93,6 +93,22 @@ export async function ownAccount(context: ServiceContext) {
   };
 }
 
+/** What a member owes on charges already past due: what "cuota al día" checks. */
+export async function overdueOwedBy(
+  context: ServiceContext,
+  memberId: string,
+  today: string,
+): Promise<number> {
+  const rows = await context.transaction
+    .select()
+    .from(charges)
+    .where(
+      and(eq(charges.memberId, memberId), eq(charges.status, 'open'), lt(charges.dueOn, today)),
+    );
+  const balances = await withBalances(context, rows);
+  return balances.reduce((total, charge) => total + charge.outstandingGs, 0);
+}
+
 export async function createCharge(
   context: ServiceContext,
   input: ChargeInput,

@@ -1339,7 +1339,10 @@
     "refund_not_available": "Este pago ya no se puede devolver desde acá. Hacelo desde el portal de Bancard.",
     "refund_card_only": "Solo los pagos con tarjeta se devuelven desde acá.",
     "payment_not_refundable": "Este pago no se puede devolver.",
-    "payment_in_progress": "Ya hay un pago de esta cuota en curso. Esperá unos minutos y volvé a abrir el link."
+    "payment_in_progress": "Ya hay un pago de esta cuota en curso. Esperá unos minutos y volvé a abrir el link.",
+    "check_in_pass_invalid": "Ese QR no es de GuaraniX o no es de este box.",
+    "check_in_pass_expired": "Ese QR ya venció. Pedile al alumno que abra su QR de nuevo.",
+    "class_full": "La clase se llenó. Probá con la siguiente."
   },
   "workout": {
     "kinds": {
