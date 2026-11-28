@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import { classNames } from '../lib/class-names';
 import { Brodi } from './Brodi';
+import { IconCircle } from './IconCircle';
 
 export interface EmptyStateProps {
   title: string;
@@ -32,13 +33,7 @@ export function EmptyState({
       )}
     >
       <div className="shrink-0">
-        {Icon ? (
-          <span className="flex size-12 items-center justify-center rounded-pill bg-surface-sunken text-text-secondary">
-            <Icon aria-hidden="true" size={22} />
-          </span>
-        ) : (
-          <Brodi alt="" size={64} />
-        )}
+        {Icon ? <IconCircle icon={Icon} /> : <Brodi alt="" size={64} />}
       </div>
       <div className="flex flex-col items-start gap-1.5">
         <p className="font-semibold text-text">{title}</p>
