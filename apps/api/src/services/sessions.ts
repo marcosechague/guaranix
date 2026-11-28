@@ -248,5 +248,7 @@ async function describeImpersonation(
   const [box] = await withSystemScope(database, (transaction) =>
     transaction.select({ name: boxes.name }).from(boxes).where(eq(boxes.id, boxId)),
   );
-  return box ? { boxId, boxName: box.name, endsAt: endsAt.toISOString() } : null;
+  return box
+    ? { boxId, boxName: box.name, endsAt: endsAt.toISOString(), readOnly: true as const }
+    : null;
 }
