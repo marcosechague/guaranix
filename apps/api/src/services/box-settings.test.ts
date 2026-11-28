@@ -17,7 +17,7 @@ afterAll(async () => {
 });
 
 const policy: BookingPolicy = {
-  bookingOpensHoursBefore: 24,
+  bookingOpensHoursBefore: 36,
   bookingClosesMinutesBefore: 30,
   lateCancelMinutesBefore: 180,
   lateCancelConsumesCredit: true,
@@ -66,7 +66,7 @@ describe('booking policy settings', () => {
         ),
     );
     expect(entry?.actorUserId).toBe(fixture.boxA.userIds.box_admin);
-    expect(entry?.changes).toMatchObject({ bookingOpensHoursBefore: { to: 24 } });
+    expect(entry?.changes).toMatchObject({ bookingOpensHoursBefore: { to: 36 } });
     const [row] = await fixture.system((transaction) =>
       transaction.select().from(boxes).where(eq(boxes.id, fixture.boxB.boxId)),
     );
