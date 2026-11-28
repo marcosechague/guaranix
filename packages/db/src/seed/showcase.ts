@@ -4,6 +4,7 @@ import {
   boxUsers,
   bookings,
   classes,
+  locations,
   memberPlans,
   members,
   movements,
@@ -97,8 +98,14 @@ export async function seedShowcase(
         paymentQrFileKey: `boxes/${boxId}/payment-qr/seed.png`,
         // The demo shows every way of checking in.
         checkInDeskEnabled: true,
+        checkInWallQrEnabled: true,
       })
       .where(eq(boxes.id, boxId));
+    // Downtown Asunción, so the wall QR can be tried with a phone placed there (e2e does).
+    await transaction
+      .update(locations)
+      .set({ latitude: -25.2867, longitude: -57.647 })
+      .where(eq(locations.boxId, boxId));
     return user.id;
   });
 

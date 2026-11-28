@@ -17,6 +17,13 @@ export const router = createBrowserRouter(
       }),
     },
     {
+      // The printable poster for the wall QR, without menus so it prints clean.
+      path: '/cartel/:locationId',
+      lazy: async () => ({
+        Component: (await import('./screens/wall-poster/WallPosterScreen')).WallPosterScreen,
+      }),
+    },
+    {
       path: '/',
       Component: AppShell,
       children: [

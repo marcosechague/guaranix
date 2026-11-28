@@ -16,6 +16,13 @@ export const router = createBrowserRouter([
     }),
   },
   {
+    // Opened by the phone's camera from the poster on the wall; full screen like the entry QR.
+    path: '/pared/:code',
+    lazy: async () => ({
+      Component: (await import('./screens/wall/WallCheckInScreen')).WallCheckInScreen,
+    }),
+  },
+  {
     path: '/wod/guiado/:componentId',
     lazy: async () => ({
       Component: (await import('./screens/guided/GuidedScreen')).GuidedScreen,

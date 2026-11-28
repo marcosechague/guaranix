@@ -22,6 +22,18 @@ export async function markAttendance(
   entries: AttendanceEntry[],
 ) {
   assertRole(context.auth.role, CLASS_STAFF_ROLES);
+  return recordAttendance(context, classId, entries);
+}
+
+/**
+ * The same, without the staff check: for a member checking themselves in at
+ * the wall QR, after the caller verified who they are and where.
+ */
+export async function recordAttendance(
+  context: ServiceContext,
+  classId: string,
+  entries: AttendanceEntry[],
+) {
   const box = await currentBox(context);
   const classRow = await lockClass(context, classId);
   if (classRow.status === 'cancelled') throw unprocessable('class_cancelled');

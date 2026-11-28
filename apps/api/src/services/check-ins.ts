@@ -1,5 +1,5 @@
 import { and, asc, eq, gt, lte } from 'drizzle-orm';
-import { bookings, classes, programs } from '@guaranix/db/schema';
+import { bookings, classes, type members, programs } from '@guaranix/db/schema';
 import type { CheckInDenial, CheckInPassView, CheckInResult } from '@guaranix/shared/schemas';
 import {
   type Candidate,
@@ -17,8 +17,14 @@ import { CLASS_STAFF_ROLES, assertRole, type ServiceContext } from './context';
 import { unprocessable } from './errors';
 import { getMember, getOwnMember } from './members';
 
+type MemberRow = typeof members.$inferSelect;
+
 /** Classes open for check-in right now, with the member's booking in each, soonest first. */
-async function candidateClasses(context: ServiceContext, memberId: string): Promise<Candidate[]> {
+async function candidateClasses(
+  context: ServiceContext,
+  memberId: string,
+  locationId: string | null,
+): Promise<Candidate[]> {
   const opensBy = checkInOpensBy(context.now);
   const rows = await context.transaction
     .select({ class: classes, programName: programs.name, booking: bookings })
@@ -30,6 +36,7 @@ async function candidateClasses(context: ServiceContext, memberId: string): Prom
         eq(classes.status, 'scheduled'),
         lte(classes.startsAt, opensBy),
         gt(classes.endsAt, context.now),
+        locationId ? eq(classes.locationId, locationId) : undefined,
       ),
     )
     .orderBy(asc(classes.startsAt));
@@ -107,7 +114,19 @@ export async function checkInWithPass(
   assertRole(context.auth.role, CLASS_STAFF_ROLES);
   await assertCheckInModeEnabled(context, 'desk');
   const memberId = await verifyCheckInPass(secret, context.auth.boxId, pass, context.now);
-  const member = await getMember(context, memberId);
+  return checkInMember(context, await getMember(context, memberId), null);
+}
+
+/**
+ * Lets a member in, the same way whoever does the reading: fee up to date,
+ * then the class they booked, or a free spot in the next one their plan covers.
+ * `locationId` keeps the search to one location (the wall QR is per location).
+ */
+export async function checkInMember(
+  context: ServiceContext,
+  member: MemberRow,
+  locationId: string | null,
+): Promise<CheckInResult> {
   const who = memberView(member);
   const deny = (reason: CheckInDenial, candidate: Candidate | null, owedGs: number | null = null) =>
     ({
@@ -121,7 +140,7 @@ export async function checkInWithPass(
   const block = await memberEntryBlock(context, member);
   if (block) return deny(block.reason, null, block.owedGs);
 
-  const candidates = await candidateClasses(context, member.id);
+  const candidates = await candidateClasses(context, member.id, locationId);
   const booked = bookedCandidate(candidates, context.now);
   if (booked) {
     if (booked.booking?.status === 'attended') {

@@ -94,6 +94,10 @@ export type { GuaranixLogoProps, GuaranixLogoVariant } from './components/Guaran
 export * from './theme';
 export * from './notifications';
 export { QrCode } from './components/QrCode';
+export { FullScreenHeader } from './components/FullScreenHeader';
+export type { FullScreenHeaderProps } from './components/FullScreenHeader';
+export { StatusPanel } from './components/StatusPanel';
+export type { StatusPanelProps, StatusTone } from './components/StatusPanel';
 export type { QrCodeProps } from './components/QrCode';
 export { useWakeLock } from './lib/use-wake-lock';
 export { getDevicePosition, PositionError } from './lib/geolocation';

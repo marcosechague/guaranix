@@ -22,3 +22,11 @@ Con el check-in con QR en la entrada (0014) quedó una duda: no todos los boxes 
 - La lista muestra a cada alumno con lo que diría la entrada ("Debe ₲ …", "Dado de baja"). El coach decide igual, porque la persona ya está en el box.
 - "Sumar a alguien que vino sin reservar" (`POST /box/classes/:id/walk-ins`) aplica las mismas reglas que la entrada: si no puede, no escribe nada y dice por qué. A diferencia de la entrada, también funciona con la clase ya empezada.
 - Con la lista del coach apagada en Ajustes, el coach y recepción no pueden marcar. El dueño y los administradores sí, para corregir.
+
+## QR de la pared
+
+- El cartel se imprime desde Ajustes → Sedes (ícono de impresora, `/panel/cartel/:sede`). Su QR abre la app del alumno en `/pared/w1.<sede>.<HMAC>`. La firma usa `AUTH_SECRET` e incluye el `box_id`, así un cartel de otro box no sirve acá. No vence porque está impreso. Si hay que invalidarlo, se rota el secreto.
+- La app pide la ubicación una vez (alta precisión, sin guardarla) y manda `POST /box/me/wall-check-ins { code, latitude, longitude, accuracyMeters }`.
+- La API rechaza con un motivo claro: `wall_qr_too_far` si está más lejos que el radio, `wall_qr_inaccurate` si la precisión del GPS es peor que el radio, `wall_qr_location_missing` si la sede no tiene ubicación, `check_in_mode_disabled` si el box no usa este modo y `wall_qr_invalid` si el código está mal. Después aplica las mismas reglas que la entrada, solo con clases de esa sede (`checkInMember`). "Una vez por clase" sale solo: la segunda vez responde que ya estaba presente.
+- Si el alumno no da permiso de ubicación o el GPS no alcanza, la pantalla lo explica y le dice que le avise al coach, que lo marca desde la lista.
+- Un celular con la ubicación falseada podría engañar al chequeo. Es un riesgo aceptado: alcanza para frenar la foto del cartel mandada por WhatsApp, y el coach ve la lista igual.

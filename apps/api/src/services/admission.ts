@@ -2,7 +2,7 @@ import type { bookings, classes, members } from '@guaranix/db/schema';
 import { calendarDateIn } from '@guaranix/shared';
 import { CHECK_IN_OPENS_MINUTES_BEFORE } from '@guaranix/shared/schemas';
 import type { CheckInClass, CheckInDenial, CheckInMember } from '@guaranix/shared/schemas';
-import { markAttendance } from './attendance';
+import { recordAttendance } from './attendance';
 import { findPlanForClass } from './booking-eligibility';
 import { currentBox } from './box-calendar';
 import { overdueOwedBy } from './charges';
@@ -90,7 +90,7 @@ export async function planDenial(
 export async function admit(context: ServiceContext, candidate: Candidate) {
   const booking = candidate.booking;
   if (!booking) throw new Error('Admitting a class without a booking');
-  await markAttendance(context, candidate.class.id, [
+  await recordAttendance(context, candidate.class.id, [
     { bookingId: booking.id, status: 'attended' },
   ]);
 }
