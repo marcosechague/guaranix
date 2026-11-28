@@ -1,5 +1,5 @@
 import { withSystemScope } from '@guaranix/db';
-import { auditLogs, boxes, classSchedules, plans } from '@guaranix/db/schema';
+import { auditLogs, boxes, classes, classSchedules, plans } from '@guaranix/db/schema';
 import { BOX_TEMPLATES, type BoxSignupInput, type Session } from '@guaranix/shared';
 import { count, eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -24,7 +24,10 @@ const signup = (changes: Partial<BoxSignupInput> = {}): BoxSignupInput => ({
   ...changes,
 });
 
-const totalIn = async (table: typeof classSchedules | typeof plans, boxId: string) => {
+const totalIn = async (
+  table: typeof classSchedules | typeof plans | typeof classes,
+  boxId: string,
+) => {
   const [row] = await withSystemScope(harness.database, (transaction) =>
     transaction.select({ total: count() }).from(table).where(eq(table.boxId, boxId)),
   );
@@ -56,6 +59,8 @@ describe('box sign-up', () => {
     // 6 weekday times × 5 days + 2 Saturday + 2 Open Box × 5 days.
     expect(await totalIn(classSchedules, result.box.id)).toBe(42);
     expect(await totalIn(plans, result.box.id)).toBe(6);
+    // Two weeks of classes so members can book right away: each weekday twice.
+    expect(await totalIn(classes, result.box.id)).toBe(84);
 
     const session = (await (await browser.get('/auth/session')).json()) as Session;
     expect(session.activeBoxId).toBe(result.box.id);
@@ -68,6 +73,23 @@ describe('box sign-up', () => {
       transaction.select().from(auditLogs).where(eq(auditLogs.boxId, result.box.id)),
     );
     expect(audit?.action).toBe('box.signed_up');
+  });
+
+  it('only creates classes for the new box', async () => {
+    const allClasses = async () => {
+      const [row] = await withSystemScope(harness.database, (transaction) =>
+        transaction.select({ total: count() }).from(classes),
+      );
+      return row?.total ?? 0;
+    };
+    const before = await allClasses();
+    const { browser } = await signedUpBrowser(harness);
+    const response = await browser.post(
+      '/onboarding/box',
+      signup({ name: 'Otro Box', slug: 'otro-box' }),
+    );
+    expect(response.status).toBe(201);
+    expect((await allClasses()) - before).toBe(84);
   });
 
   it('rejects impossible timetables with the issues to show', async () => {
