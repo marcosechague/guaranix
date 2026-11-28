@@ -36,3 +36,21 @@ export const reviewPaymentSchema = z.object({
 export type ChargeInput = z.input<typeof chargeSchema>;
 export type RecordPaymentInput = z.input<typeof recordPaymentSchema>;
 export type ReviewPaymentInput = z.infer<typeof reviewPaymentSchema>;
+
+export const listChargesQuerySchema = z.object({
+  memberId: idSchema.optional(),
+  status: z.enum(CHARGE_STATUSES).optional(),
+});
+
+export const listPaymentsQuerySchema = z.object({
+  memberId: idSchema.optional(),
+  status: z.enum(PAYMENT_STATUSES).optional(),
+  from: z.coerce.date().optional(),
+  to: z.coerce.date().optional(),
+});
+
+/** Box-local dates, both included. */
+export const dashboardQuerySchema = z.object({
+  from: calendarDateSchema,
+  to: calendarDateSchema,
+});
