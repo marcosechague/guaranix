@@ -1,4 +1,11 @@
-import { boxUsers, classes, programs, telegramLinkCodes, telegramLinks } from '@guaranix/db/schema';
+import {
+  boxUsers,
+  classes,
+  programs,
+  pushSubscriptions,
+  telegramLinkCodes,
+  telegramLinks,
+} from '@guaranix/db/schema';
 import type { NotificationSettings, Session, TelegramLinkStart } from '@guaranix/shared';
 import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -143,6 +150,20 @@ describe('push subscriptions', () => {
       await ana.browser.get('/notifications/settings'),
     );
     expect(settings.push.subscriptions).toBe(10);
+  });
+
+  it('unlinks only this browser when the person logs out', async () => {
+    const ana = await signedUpBrowser(harness);
+    const phone = 'https://fcm.googleapis.com/fcm/send/ana-phone';
+    const laptop = 'https://fcm.googleapis.com/fcm/send/ana-laptop';
+    await ana.browser.post('/notifications/push-subscriptions', subscription(phone));
+    await ana.browser.post('/notifications/push-subscriptions', subscription(laptop));
+    expect((await ana.browser.post('/auth/logout', { pushEndpoint: phone })).status).toBe(204);
+    const left = await harness.database
+      .select({ endpoint: pushSubscriptions.endpoint })
+      .from(pushSubscriptions)
+      .where(eq(pushSubscriptions.userId, ana.session.user.id));
+    expect(left).toEqual([{ endpoint: laptop }]);
   });
 
   it('forgets linked browsers and Telegram after a password reset', async () => {

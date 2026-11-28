@@ -12,7 +12,12 @@ import { getPlan } from './plans';
 
 export type MemberPlanRow = typeof memberPlans.$inferSelect;
 export type PlanPauseRow = typeof planPauses.$inferSelect;
-export type MemberPlanView = MemberPlanRow & { state: MemberPlanState; pauses: PlanPauseRow[] };
+export type MemberPlanView = Omit<MemberPlanRow, 'priceGs'> & {
+  /** Null for coaches: what a member pays is for the front desk. */
+  priceGs: number | null;
+  state: MemberPlanState;
+  pauses: PlanPauseRow[];
+};
 
 const LIVE_STATUSES = ['active', 'paused'] as const;
 
@@ -108,9 +113,11 @@ export async function listMemberPlans(
     rows.map((row) => row.id),
   );
   const today = await boxToday(context);
+  const showPrice = context.auth.role !== 'coach';
   return rows.map((row) => {
     const own = pauses.filter((pause) => pause.memberPlanId === row.id);
-    return { ...row, pauses: own, state: memberPlanStateOn(row, own, today) };
+    const priceGs = showPrice ? row.priceGs : null;
+    return { ...row, priceGs, pauses: own, state: memberPlanStateOn(row, own, today) };
   });
 }
 

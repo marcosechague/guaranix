@@ -3,7 +3,15 @@ import { auditLogs } from '@guaranix/db/schema';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { expectServiceError } from '../testing/expectations';
 import { createServiceFixture, type ServiceFixture } from '../testing/service-fixture';
-import { createMember, getMember, getOwnMember, listMembers, updateMember } from './members';
+import {
+  createMember,
+  getMember,
+  getOwnMember,
+  listMembers,
+  updateMember,
+  viewMember,
+  viewOwnMember,
+} from './members';
 
 let fixture: ServiceFixture;
 
@@ -45,7 +53,7 @@ describe('members', () => {
 
   it('searches by name, full name and document', async () => {
     const search = (text: string) =>
-      fixture.as(fixture.boxA, 'coach', (context) =>
+      fixture.as(fixture.boxA, 'reception', (context) =>
         listMembers(context, { search: text, limit: 50, offset: 0 }),
       );
     expect((await search('duar')).map((member) => member.lastName)).toEqual(['Duarte']);
@@ -53,6 +61,24 @@ describe('members', () => {
     expect(await search('7123456')).toHaveLength(1);
     // LIKE wildcards are searched literally.
     expect(await search('%')).toHaveLength(0);
+  });
+
+  it('never shows a cédula to a coach, nor lets one search by it', async () => {
+    const asCoach = (text: string) =>
+      fixture.as(fixture.boxA, 'coach', (context) =>
+        listMembers(context, { search: text, limit: 50, offset: 0 }),
+      );
+    const [listed] = await asCoach('Duarte');
+    expect(listed).toMatchObject({ lastName: 'Duarte', documentNumber: null });
+    expect(await asCoach('7123456')).toHaveLength(0);
+    const opened = await fixture.as(fixture.boxA, 'coach', (context) =>
+      viewMember(context, listed?.id ?? ''),
+    );
+    expect(opened.documentNumber).toBeNull();
+    const atDesk = await fixture.as(fixture.boxA, 'reception', (context) =>
+      viewMember(context, listed?.id ?? ''),
+    );
+    expect(atDesk.documentNumber).toBe('7123456');
   });
 
   it('never lists or opens members of another box', async () => {
@@ -114,5 +140,17 @@ describe('members', () => {
       phone: { from: null, to: '+595981000111' },
       medicalNotes: { from: '[redacted]', to: '[redacted]' },
     });
+  });
+
+  it('keeps the box notes about a member away from the member', async () => {
+    await fixture.as(fixture.boxA, 'reception', (context) =>
+      updateMember(context, fixture.boxA.memberId, { notes: 'Debe la remera' }),
+    );
+    const own = await fixture.as(fixture.boxA, 'member', (context) => viewOwnMember(context));
+    expect(own.notes).toBeNull();
+    const staff = await fixture.as(fixture.boxA, 'coach', (context) =>
+      viewMember(context, fixture.boxA.memberId),
+    );
+    expect(staff.notes).toBe('Debe la remera');
   });
 });

@@ -153,7 +153,29 @@ export async function revokeSession(database: SchemaDatabase, sessionId: string)
   );
 }
 
-/** Logs the user out everywhere, except `keepSessionId` when given. */
+/**
+ * Logging out also unlinks this browser's push subscription, so a shared or
+ * borrowed phone stops getting the person's notifications.
+ */
+export async function logOut(
+  database: SchemaDatabase,
+  session: Pick<AuthenticatedSession, 'id' | 'userId'>,
+  pushEndpoint: string | undefined,
+): Promise<void> {
+  await withSystemScope(database, async (transaction) => {
+    await transaction.update(sessions).set(REVOKED()).where(eq(sessions.id, session.id));
+    if (!pushEndpoint) return;
+    await transaction
+      .delete(pushSubscriptions)
+      .where(
+        and(
+          eq(pushSubscriptions.userId, session.userId),
+          eq(pushSubscriptions.endpoint, pushEndpoint),
+        ),
+      );
+  });
+}
+
 /**
  * After a password reset or an account takeover fix, whoever held a session may
  * also have linked their own Telegram chat or browser: drop those too, so
@@ -169,6 +191,7 @@ export async function forgetNotificationAddresses(
   });
 }
 
+/** Logs the user out everywhere, except `keepSessionId` when given. */
 export async function revokeUserSessions(
   database: SchemaDatabase,
   userId: string,

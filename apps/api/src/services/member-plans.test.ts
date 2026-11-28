@@ -222,6 +222,15 @@ describe('pauses', () => {
     expect(view?.pauses).toHaveLength(1);
   });
 
+  it('shows the price to the front desk but not to a coach', async () => {
+    const { member } = await soldUnlimited('Price');
+    const listAs = (role: 'reception' | 'coach') =>
+      fixture.as(fixture.boxA, role, (context) => listMemberPlans(context, member.id));
+    expect((await listAs('reception'))[0]?.priceGs).toBe(350_000);
+    const [coachView] = await listAs('coach');
+    expect(coachView).toMatchObject({ state: 'active', priceGs: null });
+  });
+
   it('refuses overlapping pauses and pauses outside the plan', async () => {
     const { sold } = await soldUnlimited('PauseRules');
     const pause = (startsOn: string, endsOn: string) =>

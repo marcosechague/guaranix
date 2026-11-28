@@ -228,6 +228,32 @@ describe('platform routes', () => {
     expect((await admin.browser.post('/platform/impersonation/end')).status).toBe(200);
   });
 
+  it('log, for the platform only, which member files support opens', async () => {
+    const admin = await platformAdmin();
+    const boxId = harness.boxB.boxId;
+    await admin.browser.post(`/platform/boxes/${boxId}/impersonate`, SUPPORT);
+    const { members } = (await (await admin.browser.get('/box/members')).json()) as {
+      members: { id: string }[];
+    };
+    const memberId = members[0]?.id ?? '';
+    expect((await admin.browser.get(`/box/members/${memberId}`)).status).toBe(200);
+    await admin.browser.post('/platform/impersonation/end');
+
+    const viewed = (await auditActions(boxId)).filter(
+      (entry) => entry.action === 'support.member_viewed',
+    );
+    expect(viewed).toEqual([
+      expect.objectContaining({
+        entityId: memberId,
+        actorUserId: admin.session.user.id,
+        impersonatorUserId: admin.session.user.id,
+      }),
+    ]);
+    const detail = await admin.browser.get(`/platform/boxes/${boxId}`);
+    const { activity } = (await detail.json()) as { activity: { action: string }[] };
+    expect(activity.map((entry) => entry.action)).toContain('support.member_viewed');
+  });
+
   it('ignore an impersonation that expired or belongs to a non-admin', async () => {
     const admin = await platformAdmin();
     const boxId = harness.boxB.boxId;

@@ -41,3 +41,18 @@ export async function subscribeToPush(publicKey: string): Promise<PushSubscripti
     keys: { p256dh: json.keys?.['p256dh'] ?? '', auth: json.keys?.['auth'] ?? '' },
   };
 }
+
+/**
+ * Stops push in this browser before logging out and returns its endpoint, so
+ * the API can forget it too. Never throws: logging out must always work.
+ */
+export async function unsubscribeThisBrowser(): Promise<string | undefined> {
+  try {
+    const subscription = await currentPushSubscription();
+    if (!subscription) return undefined;
+    await subscription.unsubscribe();
+    return subscription.endpoint;
+  } catch {
+    return undefined;
+  }
+}

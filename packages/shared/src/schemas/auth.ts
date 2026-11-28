@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { BOX_ROLES, BOX_STATUSES } from '../domain/enums';
 import { emailSchema, idSchema, nameSchema } from './common';
+import { pushUnsubscribeInputSchema } from './notifications';
 
 /** NIST 800-63B: length over composition rules. 128 caps hashing cost. */
 export const passwordSchema = z.string().min(8).max(128);
@@ -39,6 +40,12 @@ export const setPasswordSchema = z.object({
 });
 
 export const selectBoxSchema = z.object({ boxId: idSchema });
+
+/** Optional body of `POST /auth/logout`: this browser's push endpoint, to unlink it. */
+export const logoutSchema = z.object({
+  pushEndpoint: pushUnsubscribeInputSchema.shape.endpoint.optional(),
+});
+export type LogoutInput = z.infer<typeof logoutSchema>;
 
 export const membershipSchema = z.object({
   boxId: idSchema,
@@ -87,6 +94,7 @@ export const AUTH_ERROR_CODES = [
   'rate_limited',
   'invalid_reset_token',
   'current_password_required',
+  'recent_sign_in_required',
   'google_already_linked',
   'google_not_configured',
   'google_failed',

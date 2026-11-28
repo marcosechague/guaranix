@@ -74,7 +74,9 @@ function PlanCard() {
             to: formatShortDate(current.endsOn),
           })}
         />
-        <Row label={t('member.profile.price')} value={formatGuarani(current.priceGs)} />
+        {current.priceGs === null ? null : (
+          <Row label={t('member.profile.price')} value={formatGuarani(current.priceGs)} />
+        )}
         {current.classesRemaining !== null ? (
           <Row label={t('member.profile.credits')} value={String(current.classesRemaining)} />
         ) : null}

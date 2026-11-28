@@ -1,10 +1,10 @@
-import { type AuthConfig, selectBoxSchema } from '@guaranix/shared';
+import { type AuthConfig, logoutSchema, selectBoxSchema } from '@guaranix/shared';
 import { Hono } from 'hono';
 import type { AppEnv } from '../env';
 import { clearSessionCookie } from '../lib/cookies';
 import { fail, readBody } from '../lib/http';
 import { unlinkGoogle } from '../services/google-auth';
-import { revokeSession, selectActiveBox } from '../services/sessions';
+import { logOut, selectActiveBox } from '../services/sessions';
 import { respondWithSession } from './auth-helpers';
 
 // Apart from /config, the auth gate guarantees a session (and a CSRF token on writes).
@@ -44,7 +44,9 @@ export const sessionRoutes = new Hono<AppEnv>()
 
   .post('/logout', async (context) => {
     const session = context.var.session;
-    if (session) await revokeSession(context.var.services.database(), session.id);
+    // The body is optional: an old client logs out without it.
+    const input = (await readBody(context, logoutSchema)) ?? {};
+    if (session) await logOut(context.var.services.database(), session, input.pushEndpoint);
     clearSessionCookie(context);
     return context.body(null, 204);
   });

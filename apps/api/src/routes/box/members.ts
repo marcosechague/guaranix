@@ -10,9 +10,9 @@ import { assignMemberPlan, listMemberPlans } from '../../services/member-plans';
 import {
   countMembers,
   createMember,
-  getMember,
   listMembers,
   updateMember,
+  viewMember,
 } from '../../services/members';
 import { listPersonalRecords } from '../../services/workout-results';
 import { FRONT_DESK, STAFF } from './roles';
@@ -41,7 +41,7 @@ routes.post('/', FRONT_DESK, (context) =>
 
 routes.get('/:memberId', STAFF, (context) =>
   respond(context, async (service) => ({
-    member: await getMember(service, idParam(context, 'memberId', 'member')),
+    member: await viewMember(service, idParam(context, 'memberId', 'member')),
   })),
 );
 

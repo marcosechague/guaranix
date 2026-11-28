@@ -78,10 +78,17 @@ export async function ownAccount(context: ServiceContext) {
     .from(payments)
     .where(eq(payments.memberId, member.id))
     .orderBy(asc(payments.paidAt));
+  // Notes written by staff are internal to the box; the member only sees their own.
+  const ownHistory = history.map((payment) => ({
+    ...payment,
+    notes: payment.recordedByUserId === context.auth.userId ? payment.notes : null,
+    recordedByUserId: null,
+    reviewedByUserId: null,
+  }));
   const balances = await withBalances(context, rows);
   return {
     charges: balances,
-    payments: history,
+    payments: ownHistory,
     outstandingGs: balances.reduce((total, charge) => total + charge.outstandingGs, 0),
   };
 }

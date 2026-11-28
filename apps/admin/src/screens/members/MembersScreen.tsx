@@ -55,7 +55,9 @@ export function MembersScreen() {
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <TextField
           className="md:w-96"
-          label={t('admin.members.search')}
+          label={
+            canFrontDesk(role) ? t('admin.members.search') : t('admin.members.searchNoDocument')
+          }
           type="search"
           value={search}
           onChange={(event) => setSearch(event.target.value)}
@@ -75,6 +77,7 @@ export function MembersScreen() {
         query={members}
         searching={deferredSearch.length > 0}
         onCreate={canFrontDesk(role) ? () => setSearchParams({ nuevo: '1' }) : undefined}
+        showDocument={canFrontDesk(role)}
       />
       <MemberFormSheet
         open={creating}
