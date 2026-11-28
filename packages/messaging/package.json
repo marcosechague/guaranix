@@ -9,7 +9,8 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "vapid:generate": "node scripts/generate-vapid-keys.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.11",

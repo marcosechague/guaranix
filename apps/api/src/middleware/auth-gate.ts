@@ -20,6 +20,13 @@ export const PUBLIC_ROUTES = new Set([
   'GET /auth/google/callback',
 ]);
 
+/**
+ * Server-to-server callbacks (no browser, no Origin, no cookie). Each one
+ * proves who is calling on its own, e.g. Telegram's secret token header,
+ * checked first thing in its handler.
+ */
+export const WEBHOOK_ROUTES = new Set(['POST /integrations/telegram/webhook']);
+
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
 /**
@@ -31,6 +38,10 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
  */
 export const authGate: MiddlewareHandler<AppEnv> = async (context, next) => {
   const method = context.req.method;
+  if (WEBHOOK_ROUTES.has(`${method} ${context.req.path}`)) {
+    context.set('session', null);
+    return next();
+  }
   const isWrite = !SAFE_METHODS.has(method);
   if (isWrite) {
     const origin = context.req.header('origin');

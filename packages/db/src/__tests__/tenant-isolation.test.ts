@@ -40,6 +40,24 @@ beforeAll(async () => {
         provider: 'anthropic',
         model: 'claude-opus-5-5',
       });
+      const [notification] = await transaction
+        .insert(schema.notifications)
+        .values({
+          boxId: box.boxId,
+          kind: 'workout_published',
+          idempotencyKey: 'workout_published:test',
+          audience: { type: 'active_members' },
+          params: {},
+        })
+        .returning();
+      await transaction.insert(schema.notificationDeliveries).values({
+        boxId: box.boxId,
+        notificationId: notification?.id ?? '',
+        channel: 'push',
+        recipientKey: `user:${box.ownerId}`,
+        userId: box.ownerId,
+        message: { title: 'WOD', body: 'Ya está' },
+      });
     }
   });
 });
@@ -67,6 +85,8 @@ describe('tenant tables', () => {
         "member_plans",
         "members",
         "movements",
+        "notification_deliveries",
+        "notifications",
         "payments",
         "personal_records",
         "plan_pauses",
@@ -109,7 +129,7 @@ describe('tenant tables', () => {
         const deleted = await transaction.delete(table).where(eq(boxId, boxB.boxId)).returning();
         return updated.length + deleted.length;
       }).catch((error: unknown) => {
-        // audit_logs has no UPDATE/DELETE grant at all, which is even stricter.
+        // Append-only tables (audit log, notifications) have no UPDATE/DELETE grant, which is even stricter.
         expect(String((error as { cause?: unknown }).cause ?? error)).toMatch(/permission denied/);
         return 0;
       });

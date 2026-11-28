@@ -9,6 +9,7 @@ import type { Bindings, Services } from '../env';
 import { createTurnstileVerifier } from '../integrations/captcha';
 import { createR2FileStorage } from '../integrations/file-storage';
 import { createGoogleOAuth } from '../integrations/google-oauth';
+import { createNotificationServices } from './notifications/runtime';
 
 const REQUIRED_OUTSIDE_DEVELOPMENT = [
   'AUTH_SECRET',
@@ -67,6 +68,7 @@ export function createRuntimeServices(env: Bindings): {
         ? createGoogleOAuth(env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET)
         : null,
     aiProviderFactory: createAiProvider,
+    notifications: createNotificationServices(env),
   };
   return {
     services,

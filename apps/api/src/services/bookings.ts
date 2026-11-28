@@ -7,6 +7,7 @@ import { isStaff, type ServiceContext } from './context';
 import { consumeCredit, refundCredit } from './credits';
 import { conflict, notFound, unprocessable, ServiceError } from './errors';
 import { getOwnMember } from './members';
+import { notifyBookingConfirmed, notifyWaitlistPromoted } from './notifications/events';
 
 export type BookingRow = typeof bookings.$inferSelect;
 type ClassRow = typeof classes.$inferSelect;
@@ -128,6 +129,7 @@ export async function bookClass(
         .values({ ...values, boxId: context.auth.boxId, classId: classRow.id, memberId })
         .returning();
   if (!booking) throw new Error('Booking was not saved');
+  await notifyBookingConfirmed(context, booking, classRow);
   return booking;
 }
 
@@ -184,6 +186,7 @@ export async function cancelBooking(
     await refundCredit(context, booking.memberPlanId);
   }
   const promoted = box.waitlistAutoPromote ? await promoteFromWaitlist(context, classRow, box) : [];
+  await notifyWaitlistPromoted(context, promoted, classRow);
   return { booking: cancelled, promoted };
 }
 
