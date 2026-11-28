@@ -20,7 +20,7 @@ export const testEnv: Bindings = {
   AUTH_SECRET: 'test-secret-that-is-long-enough-for-hmac-keys',
   TURNSTILE_SITE_KEY: 'site-key',
   // 32 bytes 0..31: a fixed test master key for the AI key encryption.
-  AI_SECRETS_KEY: 'AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=',
+  AI_SECRETS_KEY: 'AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8=', // gitleaks:allow
 };
 
 export interface FakeGoogle extends GoogleOAuth {
