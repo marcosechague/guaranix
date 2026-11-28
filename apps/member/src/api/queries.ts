@@ -1,3 +1,4 @@
+import type { CheckInPassView } from '@guaranix/shared';
 import type {
   ClassListItem,
   Leaderboard,
@@ -34,6 +35,20 @@ export function useMyBookings() {
   return useQuery({
     queryKey: queryKeys.myBookings,
     queryFn: async () => (await api.get<{ bookings: OwnBooking[] }>('/box/me/bookings')).bookings,
+  });
+}
+
+/** The entry QR, asked for again well before its 2 minutes run out. */
+export function useCheckInPass() {
+  const api = useApi();
+  return useQuery({
+    queryKey: queryKeys.checkInPass,
+    queryFn: async () => (await api.get<{ pass: CheckInPassView }>('/box/me/check-in-pass')).pass,
+    refetchInterval: 45_000,
+    refetchIntervalInBackground: false,
+    staleTime: 0,
+    gcTime: 0,
+    retry: 1,
   });
 }
 

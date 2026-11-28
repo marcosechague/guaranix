@@ -87,3 +87,6 @@ export { GuaranixLogo } from './components/GuaranixLogo';
 export type { GuaranixLogoProps, GuaranixLogoVariant } from './components/GuaranixLogo';
 export * from './theme';
 export * from './notifications';
+export { QrCode } from './components/QrCode';
+export type { QrCodeProps } from './components/QrCode';
+export { useWakeLock } from './lib/use-wake-lock';

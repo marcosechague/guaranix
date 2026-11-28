@@ -1,5 +1,6 @@
 import { dateOfInstant, formatTimeIn, relativeDayLabel, t } from '@guaranix/shared';
 import { Badge, Button, Card, EmptyState, Eyebrow, ProgressBar, Skeleton } from '@guaranix/ui';
+import { QrCode as QrCodeIcon } from 'lucide-react';
 import { Link } from 'react-router';
 import { useState } from 'react';
 import { useClasses, useMyBookings } from '../../api/queries';
@@ -88,6 +89,14 @@ export function NextClassCard() {
       ) : (
         <Skeleton className="h-1.5" />
       )}
+      {!isWaitlisted && classDate === today ? (
+        <Button asChild>
+          <Link to="/entrar">
+            <QrCodeIcon aria-hidden="true" size={18} />
+            {t('member.checkIn.open')}
+          </Link>
+        </Button>
+      ) : null}
       <div className="flex gap-3">
         <Button asChild variant="inverse" className="flex-1">
           <Link to="/wod">{t('member.home.seeWod')}</Link>

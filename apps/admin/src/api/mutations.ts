@@ -1,6 +1,7 @@
 import type { ClassSchedule, Member, MemberPlan, Plan, Workout } from '@guaranix/shared/api';
 import type {
   BookingPolicy,
+  CheckInResult,
   CreateMemberInput,
   CreatePlanInput,
   CreateWorkoutInput,
@@ -156,5 +157,20 @@ export function useReviewPayment() {
     mutationFn: ({ paymentId, status }: { paymentId: string; status: 'confirmed' | 'rejected' }) =>
       api.post(`/box/payments/${paymentId}/review`, { status }),
     onSuccess: () => invalidateMoney(queryClient),
+  });
+}
+
+/** Sends a QR read at the entrance; a check-in changes rosters and the day's numbers. */
+export function useCheckIn() {
+  const api = useApi();
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (pass: string) =>
+      (await api.post<{ result: CheckInResult }>('/box/check-ins', { pass })).result,
+    onSuccess: (result) => {
+      if (result.outcome === 'denied') return;
+      void queryClient.invalidateQueries({ queryKey: queryKeys.roster(result.class.id) });
+      void queryClient.invalidateQueries({ queryKey: queryKeys.allClasses });
+    },
   });
 }

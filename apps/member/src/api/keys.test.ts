@@ -10,9 +10,10 @@ describe('keepOffline', () => {
     expect(keepOffline(['box'])).toBe(true);
   });
 
-  it('never keeps the profile, records or the whiteboard', () => {
+  it('never keeps the profile, records, the entry QR or the whiteboard', () => {
     expect(keepOffline(queryKeys.me)).toBe(false);
     expect(keepOffline(queryKeys.myRecords)).toBe(false);
+    expect(keepOffline(queryKeys.checkInPass)).toBe(false);
     expect(keepOffline(queryKeys.leaderboard('c1'))).toBe(false);
   });
 });

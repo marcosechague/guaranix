@@ -7,7 +7,7 @@ import {
   timerSnapshot,
 } from '@guaranix/shared';
 import type { WorkoutComponent } from '@guaranix/shared/api';
-import { Badge, IconButton, ProgressBar } from '@guaranix/ui';
+import { Badge, IconButton, ProgressBar, useWakeLock } from '@guaranix/ui';
 import { Volume2, VolumeX, X } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -16,7 +16,6 @@ import { RoundCounter } from './RoundCounter';
 import { TimerControls } from './TimerControls';
 import { TimerFinished } from './TimerFinished';
 import { createTimerFeedback } from './timer-feedback';
-import { useWakeLock } from './use-wake-lock';
 import { type TimerStatus, useWorkoutTimer } from './use-workout-timer';
 
 export interface TimerRunnerProps {
