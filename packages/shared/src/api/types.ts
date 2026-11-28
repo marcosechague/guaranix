@@ -219,3 +219,20 @@ export interface PersonalRecord {
   reps: number | null;
   achievedOn: string;
 }
+
+export interface DashboardReport {
+  range: { from: string; to: string };
+  money: { collectedGs: number; pendingReviewGs: number; outstandingGs: number; overdueGs: number };
+  members: { activeMembers: number; newMembers: number; lostMembers: number };
+  classes: { classes: number; occupancyRate: number | null; attended: number };
+}
+
+export interface Debtor {
+  memberId: string;
+  firstName: string;
+  lastName: string;
+  phone: string | null;
+  owedGs: number;
+  oldestDueOn: string;
+  charges: number;
+}

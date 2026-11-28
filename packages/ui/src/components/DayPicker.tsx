@@ -14,12 +14,17 @@ export interface DayPickerProps {
   days: readonly DayOption[];
   value: string;
   onChange: (value: string) => void;
+  className?: string | undefined;
 }
 
 /** A week as seven tappable days ("Vie 27"). */
-export function DayPicker({ label, days, value, onChange }: DayPickerProps) {
+export function DayPicker({ label, days, value, onChange, className }: DayPickerProps) {
   return (
-    <div role="radiogroup" aria-label={label} className="grid grid-cols-7 gap-1.5">
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className={classNames('grid grid-cols-7 gap-1.5', className)}
+    >
       {days.map((day) => {
         const selected = day.value === value;
         return (

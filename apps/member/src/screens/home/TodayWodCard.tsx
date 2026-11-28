@@ -3,7 +3,7 @@ import { Badge, Card, EmptyState, Eyebrow, Skeleton } from '@guaranix/ui';
 import { ChevronRight, Hourglass } from 'lucide-react';
 import { Link } from 'react-router';
 import { useWorkouts } from '../../api/queries';
-import { useBoxClock } from '../../lib/use-box-clock';
+import { useBoxClock } from '@guaranix/ui/data';
 import { mainScoredComponent, timerChips } from '../../lib/workout-summary';
 
 export function TodayWodCard() {

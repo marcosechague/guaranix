@@ -7,11 +7,11 @@ export interface SheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  description?: string;
+  description?: string | undefined;
   closeLabel: string;
   children?: ReactNode;
   /** Sticky actions at the bottom (save, cancel). */
-  footer?: ReactNode;
+  footer?: ReactNode | undefined;
   size?: 'md' | 'lg';
 }
 

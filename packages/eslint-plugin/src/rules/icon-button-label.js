@@ -34,6 +34,8 @@ export default {
         if (!BUTTONS.has(elementName(opening))) return;
         if (opening.attributes.some((attribute) => attribute.type === 'JSXSpreadAttribute')) return;
         if (LABELS.some((label) => findAttribute(opening, label))) return;
+        // IconButton takes a required `label` and turns it into aria-label itself.
+        if (elementName(opening) === 'IconButton' && findAttribute(opening, 'label')) return;
         if (findAttribute(opening, 'asChild')) return;
         if (node.children.length === 0 || hasReadableChild(node.children)) return;
         context.report({ node: opening, messageId: 'missing' });

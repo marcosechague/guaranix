@@ -8,7 +8,7 @@ export interface ChipGroupProps<T extends string> {
   options: readonly ChipOption<T>[];
   value: T;
   onChange: (value: T) => void;
-  className?: string;
+  className?: string | undefined;
 }
 
 /** Single-choice filter pills ("Todos · CrossFit · Open Box"). */

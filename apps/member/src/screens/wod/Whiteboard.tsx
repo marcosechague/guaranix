@@ -1,6 +1,6 @@
 import { formatScore, t } from '@guaranix/shared';
 import type { Leaderboard } from '@guaranix/shared/api';
-import { Avatar, Badge, classNames, Eyebrow, Skeleton } from '@guaranix/ui';
+import { Avatar, Badge, classNames, DividedList, Eyebrow, Skeleton } from '@guaranix/ui';
 import { HandFist } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useFistBump } from '../../api/mutations';
@@ -30,7 +30,7 @@ export function Whiteboard({ componentId, board, isPending, ownMemberId }: White
           {t('member.wod.boardEmpty')}
         </p>
       ) : (
-        <ol className="flex flex-col divide-y divide-divider rounded-xl border border-border bg-surface">
+        <DividedList as="ol">
           {board.entries.map((entry, index) => {
             const mine = entry.memberId === ownMemberId;
             const name = `${entry.firstName} ${entry.lastName.charAt(0)}.`;
@@ -95,7 +95,7 @@ export function Whiteboard({ componentId, board, isPending, ownMemberId }: White
               </li>
             );
           })}
-        </ol>
+        </DividedList>
       )}
     </section>
   );

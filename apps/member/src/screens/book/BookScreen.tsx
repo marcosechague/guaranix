@@ -1,15 +1,12 @@
 import { addDays, dateOfInstant, formatTimeIn, relativeDayLabel, t } from '@guaranix/shared';
 import type { ClassListItem, Plan } from '@guaranix/shared/api';
 import { ChipGroup, EmptyState, Page, PageHeader, Skeleton, useToast } from '@guaranix/ui';
-import { errorText } from '@guaranix/ui/data';
+import { LoadError, errorText, useBoxClock, useNow } from '@guaranix/ui/data';
 import { CalendarDays } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useBookClass } from '../../api/mutations';
 import { useClasses, useMyPlans, usePlans } from '../../api/queries';
-import { LoadError } from '../../layout/LoadError';
 import { currentPlanHealth } from '../../lib/plan-status';
-import { useBoxClock } from '../../lib/use-box-clock';
-import { useNow } from '../../lib/use-now';
 import { CancelBookingSheet, type CancelTarget } from './CancelBookingSheet';
 import { type ClassAction, ClassRow } from './ClassRow';
 import { DayStrip } from './DayStrip';

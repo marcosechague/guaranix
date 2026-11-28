@@ -4,8 +4,7 @@ import { Badge, Button, EmptyState, Page, PageHeader, Skeleton } from '@guaranix
 import { Trophy } from 'lucide-react';
 import { Link } from 'react-router';
 import { useMovements, useMyRecords } from '../../api/queries';
-import { LoadError } from '../../layout/LoadError';
-import { useBoxClock } from '../../lib/use-box-clock';
+import { LoadError, useBoxClock } from '@guaranix/ui/data';
 
 function recordValue(record: PersonalRecord): string {
   if (record.loadGrams !== null) return formatKilograms(record.loadGrams);

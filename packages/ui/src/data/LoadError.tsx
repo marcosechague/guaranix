@@ -1,7 +1,9 @@
 import { t } from '@guaranix/shared';
-import { Button, Card } from '@guaranix/ui';
-import { errorText } from '@guaranix/ui/data';
+import { Button } from '../components/Button';
+import { Card } from '../components/Card';
+import { errorText } from './ApiProvider';
 
+/** What a screen shows when its data failed to load: the reason and a retry. */
 export function LoadError({ error, onRetry }: { error: unknown; onRetry: () => void }) {
   return (
     <Card role="alert" className="flex flex-col items-start gap-3">
