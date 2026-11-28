@@ -4,7 +4,7 @@ import { Hono, type Handler, type MiddlewareHandler } from 'hono';
 import type { AppEnv, AuthenticatedSession } from '../env';
 import { fail } from '../lib/http';
 import { runRequestInTransaction } from '../lib/request-transaction';
-import { listMemberships } from '../services/sessions';
+import { boxStatusOf, listMemberships } from '../services/sessions';
 
 /** Who is calling and in which box. `boxId` always comes from the session, never the request. */
 export interface BoxAuth {
@@ -37,6 +37,9 @@ async function resolveBoxAuth(
 ): Promise<BoxAuthResult> {
   if (!session) return { error: 'not_a_member' };
   if (session.impersonation) {
+    // Support may enter a suspended box to fix it, never a removed one.
+    const status = await boxStatusOf(database, session.impersonation.boxId);
+    if (!status || status === 'cancelled') return { error: 'box_cancelled' };
     return {
       userId: session.userId,
       boxId: session.impersonation.boxId,

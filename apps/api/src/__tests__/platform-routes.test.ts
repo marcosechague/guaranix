@@ -6,6 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createHarness, type Harness, signedUpBrowser, uniqueEmail } from './harness';
 
 let harness: Harness;
+const SUPPORT = { reason: 'No le aparecen las clases del sábado' };
 
 beforeAll(async () => {
   harness = await createHarness();
@@ -53,7 +54,8 @@ describe('platform routes', () => {
     const owner = await ownerOf(harness.boxA.boxId);
     expect((await owner.browser.get('/platform/metrics')).status).toBe(403);
     expect(
-      (await owner.browser.post(`/platform/boxes/${harness.boxA.boxId}/impersonate`)).status,
+      (await owner.browser.post(`/platform/boxes/${harness.boxA.boxId}/impersonate`, SUPPORT))
+        .status,
     ).toBe(403);
     const { browser } = await signedUpBrowser(harness);
     expect((await browser.get('/platform/boxes')).status).toBe(403);
@@ -174,7 +176,10 @@ describe('platform routes', () => {
     const boxId = harness.boxB.boxId;
     expect((await admin.browser.get('/box/current')).status).toBe(403);
 
-    expect((await admin.browser.post(`/platform/boxes/${boxId}/impersonate`)).status).toBe(200);
+    expect((await admin.browser.post(`/platform/boxes/${boxId}/impersonate`)).status).toBe(400);
+    expect((await admin.browser.post(`/platform/boxes/${boxId}/impersonate`, SUPPORT)).status).toBe(
+      200,
+    );
     const current = await admin.browser.get('/box/current');
     expect(await current.json()).toMatchObject({ box: { id: boxId }, role: 'box_owner' });
     const session = (await (await admin.browser.get('/auth/session')).json()) as Session;
@@ -200,7 +205,7 @@ describe('platform routes', () => {
   it('ignore an impersonation that expired or belongs to a non-admin', async () => {
     const admin = await platformAdmin();
     const boxId = harness.boxB.boxId;
-    await admin.browser.post(`/platform/boxes/${boxId}/impersonate`);
+    await admin.browser.post(`/platform/boxes/${boxId}/impersonate`, SUPPORT);
     await system((transaction) =>
       transaction
         .update(sessions)
@@ -209,12 +214,39 @@ describe('platform routes', () => {
     );
     expect((await admin.browser.get('/box/current')).status).toBe(403);
 
-    await admin.browser.post(`/platform/boxes/${boxId}/impersonate`);
+    await admin.browser.post(`/platform/boxes/${boxId}/impersonate`, SUPPORT);
     await harness.database
       .update(users)
       .set({ isPlatformAdmin: false })
       .where(eq(users.id, admin.session.user.id));
     expect((await admin.browser.get('/box/current')).status).toBe(403);
+    // It was dropped when it stopped being valid, so getting the flag back does not revive it.
+    await harness.database
+      .update(users)
+      .set({ isPlatformAdmin: true })
+      .where(eq(users.id, admin.session.user.id));
+    expect((await admin.browser.get('/box/current')).status).toBe(403);
+  });
+
+  it('stop an impersonation when the box is removed', async () => {
+    const admin = await platformAdmin();
+    const created = await admin.browser.post('/platform/boxes', {
+      name: 'Box Para Baja',
+      platformPlanId: harness.platform.basePlanId,
+      ownerEmail: uniqueEmail(),
+      ownerName: 'Rosa',
+      applyTemplate: false,
+    });
+    const { box } = (await created.json()) as { box: PlatformBoxSummary };
+    await admin.browser.post(`/platform/boxes/${box.id}/impersonate`, SUPPORT);
+    expect((await admin.browser.get('/box/current')).status).toBe(200);
+    await admin.browser.post(`/platform/boxes/${box.id}/remove`, { reason: 'Cerró el local' });
+    const denied = await admin.browser.get('/box/current');
+    expect(await denied.json()).toEqual({ error: 'box_cancelled' });
+    expect(
+      (await admin.browser.post(`/platform/boxes/${box.id}/impersonate`, SUPPORT)).status,
+    ).toBe(422);
+    expect((await admin.browser.patch(`/platform/boxes/${box.id}`, {})).status).toBe(400);
   });
 
   it('manage GuaraniX plans as data', async () => {

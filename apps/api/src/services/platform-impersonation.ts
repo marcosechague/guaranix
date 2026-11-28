@@ -8,7 +8,7 @@ import { lockBox } from './platform-boxes';
  * hour. Both ends are audited in the box's own trail, and every write made
  * meanwhile carries the admin as `impersonator_user_id`.
  */
-export async function impersonateBox(context: PlatformContext, boxId: string) {
+export async function impersonateBox(context: PlatformContext, boxId: string, reason: string) {
   const box = await lockBox(context, boxId);
   if (box.status === 'cancelled') throw unprocessable('box_status_unchanged');
   const endsAt = await startImpersonation(
@@ -22,12 +22,12 @@ export async function impersonateBox(context: PlatformContext, boxId: string) {
     entityType: 'box',
     entityId: boxId,
     boxId,
-    changes: { endsAt: endsAt.toISOString() },
+    changes: { endsAt: endsAt.toISOString(), reason },
   });
 }
 
-export async function stopImpersonating(context: PlatformContext, boxId: string | null) {
-  await endImpersonation(context.transaction, context.sessionId);
+export async function stopImpersonating(context: PlatformContext) {
+  const boxId = await endImpersonation(context.transaction, context.sessionId);
   if (!boxId) return;
   await recordPlatformAudit(context, {
     action: 'box.impersonation_ended',

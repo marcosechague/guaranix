@@ -12,6 +12,13 @@ import { and, asc, eq, gt, isNull, ne } from 'drizzle-orm';
 import type { AuthenticatedSession } from '../env';
 import { hmacSha256, randomToken, sha256 } from '../lib/crypto';
 
+/** Revoking also drops any impersonation, so it can never come back with the session. */
+const REVOKED = () => ({
+  revokedAt: new Date(),
+  impersonatedBoxId: null,
+  impersonationEndsAt: null,
+});
+
 export const SESSION_LIFETIME_SECONDS = 30 * 24 * 60 * 60;
 
 export async function listMemberships(
@@ -31,6 +38,13 @@ export async function listMemberships(
       .where(and(eq(boxUsers.userId, userId), eq(boxUsers.isActive, true)))
       .orderBy(asc(boxUsers.createdAt)),
   );
+}
+
+export async function boxStatusOf(database: SchemaDatabase, boxId: string) {
+  const [box] = await withSystemScope(database, (transaction) =>
+    transaction.select({ status: boxes.status }).from(boxes).where(eq(boxes.id, boxId)),
+  );
+  return box?.status ?? null;
 }
 
 /** Starts a session in the user's first box; returns the token for the cookie. */
@@ -82,6 +96,15 @@ export async function findSession(
     impersonatedBoxId !== null &&
     impersonationEndsAt !== null &&
     impersonationEndsAt > new Date();
+  // A stale impersonation is dropped right away, so restoring the admin flag can't revive it.
+  if (impersonatedBoxId !== null && !impersonating) {
+    await withSystemScope(database, (transaction) =>
+      transaction
+        .update(sessions)
+        .set({ impersonatedBoxId: null, impersonationEndsAt: null })
+        .where(eq(sessions.id, session.id)),
+    );
+  }
   return {
     ...session,
     token,
@@ -106,19 +129,25 @@ export async function startImpersonation(
   return endsAt;
 }
 
+/** Clears the impersonation, even an expired one; returns the box it pointed at. */
 export async function endImpersonation(
   transaction: ScopedTransaction,
   sessionId: string,
-): Promise<void> {
+): Promise<string | null> {
+  const [before] = await transaction
+    .select({ boxId: sessions.impersonatedBoxId })
+    .from(sessions)
+    .where(eq(sessions.id, sessionId));
   await transaction
     .update(sessions)
     .set({ impersonatedBoxId: null, impersonationEndsAt: null })
     .where(eq(sessions.id, sessionId));
+  return before?.boxId ?? null;
 }
 
 export async function revokeSession(database: SchemaDatabase, sessionId: string): Promise<void> {
   await withSystemScope(database, (transaction) =>
-    transaction.update(sessions).set({ revokedAt: new Date() }).where(eq(sessions.id, sessionId)),
+    transaction.update(sessions).set(REVOKED()).where(eq(sessions.id, sessionId)),
   );
 }
 
@@ -131,7 +160,7 @@ export async function revokeUserSessions(
   await withSystemScope(database, (transaction) =>
     transaction
       .update(sessions)
-      .set({ revokedAt: new Date() })
+      .set(REVOKED())
       .where(
         and(
           eq(sessions.userId, userId),

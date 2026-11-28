@@ -42,7 +42,8 @@ export const updatePlatformBoxSchema = z
     extraLocations: z.number().int().min(0).max(50),
     trialEndsAt: z.coerce.date().nullable(),
   })
-  .partial();
+  .partial()
+  .refine((input) => Object.keys(input).length > 0);
 
 /** Suspending or removing a box needs a reason its staff will see. */
 export const boxStatusChangeSchema = z.object({ reason: z.string().trim().min(3).max(240) });

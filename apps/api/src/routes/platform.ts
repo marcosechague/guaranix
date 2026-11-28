@@ -116,14 +116,17 @@ for (const [path, action] of Object.entries(STATUS_ROUTES)) {
 
 platform.post('/boxes/:boxId/impersonate', (context) =>
   run(context, async (service) => {
-    await impersonateBox(service, idParam(context, 'boxId', 'box'));
+    const boxId = idParam(context, 'boxId', 'box');
+    // Support sees members' personal data, so the reason goes on the box's record.
+    const { reason } = await parseBody(context, boxStatusChangeSchema);
+    await impersonateBox(service, boxId, reason);
     return { ok: true };
   }),
 );
 
 platform.post('/impersonation/end', (context) =>
   run(context, async (service) => {
-    await stopImpersonating(service, context.var.session.impersonation?.boxId ?? null);
+    await stopImpersonating(service);
     return { ok: true };
   }),
 );

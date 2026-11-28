@@ -61,6 +61,10 @@ export async function changeBoxStatus(
   if (!(transition.from as readonly BoxStatus[]).includes(before.status)) {
     throw unprocessable('box_status_unchanged');
   }
+  // Removed boxes free their plan's place, so coming back must fit in it again.
+  if (before.status === 'cancelled' && before.platformPlanId) {
+    await assertPlanAvailable(context, before.platformPlanId);
+  }
   // A box back from suspension resumes its trial if there is time left.
   const to: BoxStatus =
     action === 'reactivate' && before.trialEndsAt && before.trialEndsAt > context.now
