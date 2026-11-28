@@ -33,11 +33,7 @@ export function EmptyState({
       )}
     >
       <div className="shrink-0">
-        {Icon ? (
-          <IconCircle icon={Icon} />
-        ) : (
-          <Brodi alt="" size={64} />
-        )}
+        {Icon ? <IconCircle icon={Icon} /> : <Brodi alt="" size={64} />}
       </div>
       <div className="flex flex-col items-start gap-1.5">
         <p className="font-semibold text-text">{title}</p>
