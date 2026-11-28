@@ -101,13 +101,39 @@ export async function storePaymentQr(
   if (!contentType || contentType === 'application/pdf') throw unprocessable('payment_qr_type');
   const fileKey = `boxes/${context.auth.boxId}/payment-qr/${crypto.randomUUID()}.${QR_EXTENSIONS[contentType]}`;
   await files.put(fileKey, bytes, contentType);
-  return saveBox(context, { paymentQrFileKey: fileKey }, 'box.payment_qr_updated');
+  return replaceQr(context, files, fileKey, 'box.payment_qr_updated');
 }
 
-export async function removePaymentQr(context: ServiceContext): Promise<BoxPaymentDetails> {
+export async function removePaymentQr(
+  context: ServiceContext,
+  files: FileStorage,
+): Promise<BoxPaymentDetails> {
   assertRole(context.auth.role, MANAGER_ROLES);
-  return saveBox(context, { paymentQrFileKey: null }, 'box.payment_qr_removed');
+  return replaceQr(context, files, null, 'box.payment_qr_removed');
 }
+
+/**
+ * Points the box at a new QR (or none) and deletes the old image. The audit
+ * entry keeps the old key, so the change stays traceable after the file is gone.
+ */
+async function replaceQr(
+  context: ServiceContext,
+  files: FileStorage,
+  fileKey: string | null,
+  action: `box.${string}`,
+): Promise<BoxPaymentDetails> {
+  const { paymentQrFileKey: previousKey } = await currentBox(context);
+  const details = await saveBox(context, { paymentQrFileKey: fileKey }, action);
+  // Last step of the request: nothing after it can roll the box update back.
+  if (previousKey && previousKey !== fileKey && isOwnQrKey(context, previousKey)) {
+    await files.delete(previousKey);
+  }
+  return details;
+}
+
+/** Only ever delete files under this box's QR folder, whatever the column holds. */
+const isOwnQrKey = (context: ServiceContext, key: string) =>
+  key.startsWith(`boxes/${context.auth.boxId}/payment-qr/`);
 
 /** The key is never taken from the client: it is whatever the session's box points at. */
 export async function readPaymentQr(

@@ -59,7 +59,7 @@ describe('box payment details', () => {
         'forbidden',
       );
       await expectServiceError(
-        fixture.as(fixture.boxA, role, (context) => removePaymentQr(context)),
+        fixture.as(fixture.boxA, role, (context) => removePaymentQr(context, files)),
         'forbidden',
       );
     }
@@ -140,18 +140,26 @@ describe('box payment details', () => {
     const swap = swaps.at(-1)?.changes as { qrFileKey?: { from: string; to: string } };
     expect(swap.qrFileKey?.from).toMatch(`boxes/${boxA.boxId}/payment-qr/`);
     expect(swap.qrFileKey?.to).not.toBe(swap.qrFileKey?.from);
+    // The replaced image is gone from storage; the audit entry still names it.
+    expect(files.keys()).not.toContain(swap.qrFileKey?.from);
+    expect(files.keys()).toContain(swap.qrFileKey?.to);
 
     // An owner of another box writes only their own box.
     await fixture.as(boxB, 'box_owner', (context) =>
       updatePaymentDetails(context, { ...details, alias: 'otro-box' }),
     );
-    await fixture.as(boxB, 'box_owner', (context) => removePaymentQr(context));
+    await fixture.as(boxB, 'box_owner', (context) => removePaymentQr(context, files));
     const stillA = await fixture.as(boxA, 'member', (context) => getPaymentDetails(context));
     expect(stillA.alias).toBe(details.alias);
     expect(stillA.hasQr).toBe(true);
 
-    const removed = await fixture.as(boxA, 'box_owner', (context) => removePaymentQr(context));
+    const removed = await fixture.as(boxA, 'box_owner', (context) =>
+      removePaymentQr(context, files),
+    );
     expect(removed.hasQr).toBe(false);
+    expect(files.keys().some((key) => key.startsWith(`boxes/${boxA.boxId}/payment-qr/`))).toBe(
+      false,
+    );
     await expectServiceError(
       fixture.as(boxA, 'member', (context) => readPaymentQr(context, files)),
       'payment_qr_not_found',
