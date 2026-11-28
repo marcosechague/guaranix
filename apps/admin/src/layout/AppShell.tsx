@@ -1,4 +1,4 @@
-import { ToastProvider } from '@guaranix/ui';
+import { ToastProvider, useTheme } from '@guaranix/ui';
 import { ImpersonationBanner } from '@guaranix/ui/auth';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
@@ -11,6 +11,8 @@ import { Sidebar } from './Sidebar';
 /** Sidebar on wide screens; top bar and bottom tabs on phones. Screens render their own Page. */
 export function AppShell() {
   const location = useLocation();
+  // Keeps <html data-theme> in step with the stored choice and the system setting.
+  useTheme();
   // Animate between sections only; opening /alumnos/:id keeps the list mounted under its sheet.
   const section = location.pathname.split('/')[1] ?? '';
   return (

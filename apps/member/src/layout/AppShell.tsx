@@ -1,4 +1,4 @@
-import { ToastProvider } from '@guaranix/ui';
+import { ToastProvider, useTheme } from '@guaranix/ui';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { Outlet, ScrollRestoration, useLocation } from 'react-router';
@@ -8,6 +8,8 @@ import { TabBar } from './TabBar';
 
 export function AppShell() {
   const location = useLocation();
+  // Keeps <html data-theme> in step with the stored choice and the system setting.
+  useTheme();
   return (
     <ToastProvider offsetClassName="bottom-tabbar md:bottom-6">
       <div className="flex min-h-dvh">

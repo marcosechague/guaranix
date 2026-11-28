@@ -128,11 +128,7 @@ export function ResultCard({ component, ownEntry }: ResultCardProps) {
           { value: 'scaled', label: t('common.scaledLong') },
         ]}
       />
-      <Button
-        onClick={save}
-        disabled={logResult.isPending}
-        className="bg-text text-background hover:bg-text-soft"
-      >
+      <Button onClick={save} disabled={logResult.isPending} variant="inverse">
         {logResult.isPending
           ? t('common.saving')
           : ownEntry
