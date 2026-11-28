@@ -125,6 +125,7 @@ Cada pantalla se arma con `Page` (layout `mobile`, `panel` o `centered`), `PageH
 Manejamos datos personales y dinero de terceros. La seguridad no es opcional.
 
 - **Multi-tenant estricto**: toda tabla de datos de un centro tiene `box_id`. Toda consulta filtra por el `box_id` de la sesión. Agregá tests que prueben que un box **no puede** ver datos de otro.
+- **Sedes**: un box puede tener varias sedes (`locations`), pero el límite de aislamiento sigue siendo el box. Horarios y clases tienen `location_id`; si no se pasa, la base pone la sede por defecto (ver `docs/decisions/0013`).
 - **Autorización por rol** en cada endpoint: `platform_admin`, `box_owner`, `box_admin`, `coach`, `reception`, `member`. Por defecto, denegar. Toda ruta privada pasa por `authGate` (`apps/api/src/middleware/auth-gate.ts`); las rutas de un box se arman con `createBoxRouter()`, que exige los roles permitidos y corre el pedido dentro de `withBoxScope` con el `box_id` de la sesión. "Entrar como" un box desde el superadmin es solo lectura: el router rechaza toda escritura con `impersonation_read_only`. Las del superadmin (`/platform/*`) se arman con `createPlatformRouter()`, que exige `is_platform_admin` y audita todo cambio a un box (ver `docs/decisions/0006`).
 - **Validar toda entrada** con Zod en la API, aunque el frontend ya valide.
 - **Nunca guardar datos de tarjeta.** Solo tokens del proveedor de pagos.

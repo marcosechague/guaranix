@@ -7,6 +7,7 @@ export * from './auth';
 export * from './imports';
 export * from './features';
 export * from './ai';
+export * from './locations';
 export * from './people';
 export * from './plans';
 export * from './classes';

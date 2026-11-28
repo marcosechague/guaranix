@@ -59,9 +59,31 @@ beforeAll(async () => {
         message: { title: 'WOD', body: 'Ya está' },
       });
       await seedCardPayment(transaction, box.boxId);
+      await seedPlanLocation(transaction, box.boxId);
     }
   });
 });
+
+/** Restricts one plan to the box's default location, which the demo seed leaves open. */
+async function seedPlanLocation(
+  transaction: Parameters<Parameters<typeof withSystemScope>[1]>[0],
+  boxId: string,
+) {
+  const [plan] = await transaction
+    .select()
+    .from(schema.plans)
+    .where(eq(schema.plans.boxId, boxId))
+    .limit(1);
+  const [location] = await transaction
+    .select()
+    .from(schema.locations)
+    .where(eq(schema.locations.boxId, boxId))
+    .limit(1);
+  if (!plan || !location) throw new Error('demo box has no plan or location');
+  await transaction
+    .insert(schema.planLocations)
+    .values({ boxId, planId: plan.id, locationId: location.id });
+}
 
 /** One row of each card-payment table, which the demo seed leaves empty. */
 async function seedCardPayment(
@@ -152,6 +174,7 @@ describe('tenant tables', () => {
         "class_schedules",
         "classes",
         "data_imports",
+        "locations",
         "member_plans",
         "members",
         "movements",
@@ -164,6 +187,7 @@ describe('tenant tables', () => {
         "payment_links",
         "payments",
         "personal_records",
+        "plan_locations",
         "plan_pauses",
         "plan_programs",
         "plans",

@@ -15,6 +15,7 @@ import { dataImports } from './imports';
 import { boxes } from './platform';
 import { programs } from './classes';
 import { memberPlanStatusEnum, planKindEnum } from './enums';
+import { locations } from './locations';
 import { members, boxUsers } from './people';
 import { sameBoxReference, tenantColumns, tenantIsolationPolicy, tenantKey } from './tenant';
 
@@ -74,6 +75,32 @@ export const planPrograms = pgTable(
       'plan_programs_program_fk',
       [table.boxId, table.programId],
       [programs.boxId, programs.id],
+    ),
+    tenantIsolationPolicy(table.boxId),
+  ],
+);
+
+/** Locations a plan can be used at. No rows means every location (the pass between locations). */
+export const planLocations = pgTable(
+  'plan_locations',
+  {
+    boxId: uuid()
+      .notNull()
+      .references(() => boxes.id),
+    planId: uuid().notNull(),
+    locationId: uuid().notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.planId, table.locationId] }),
+    sameBoxReference(
+      'plan_locations_plan_fk',
+      [table.boxId, table.planId],
+      [plans.boxId, plans.id],
+    ),
+    sameBoxReference(
+      'plan_locations_location_fk',
+      [table.boxId, table.locationId],
+      [locations.boxId, locations.id],
     ),
     tenantIsolationPolicy(table.boxId),
   ],
