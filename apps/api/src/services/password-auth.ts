@@ -3,7 +3,7 @@ import { passwordResetTokens, userCredentials, users } from '@guaranix/db/schema
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import { randomToken, sha256 } from '../lib/crypto';
 import { hashPassword, needsRehash, verifyAgainstDummy, verifyPassword } from '../lib/password';
-import { revokeUserSessions } from './sessions';
+import { forgetNotificationAddresses, revokeUserSessions } from './sessions';
 
 export const RESET_TOKEN_LIFETIME_MINUTES = 30;
 
@@ -149,7 +149,10 @@ export async function resetPassword(
       .where(and(eq(users.id, spent.userId), isNull(users.emailVerifiedAt)));
     return spent.userId;
   });
-  if (userId) await revokeUserSessions(database, userId);
+  if (userId) {
+    await revokeUserSessions(database, userId);
+    await forgetNotificationAddresses(database, userId);
+  }
   return userId;
 }
 

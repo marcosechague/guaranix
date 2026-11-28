@@ -23,6 +23,16 @@ describe('API app', () => {
     expect(response.headers.get('x-content-type-options')).toBe('nosniff');
   });
 
+  it('refuses oversized bodies before parsing them, even on public routes', async () => {
+    const response = await createBrowser(harness).post('/auth/login', {
+      email: 'ana@example.com',
+      password: 'x'.repeat(200 * 1024),
+      captchaToken: 'ok',
+    });
+    expect(response.status).toBe(413);
+    expect(await response.json()).toEqual({ error: 'payload_too_large' });
+  });
+
   it('denies unknown routes to anonymous callers before revealing they do not exist', async () => {
     const response = await createBrowser(harness).get('/nope');
     expect(response.status).toBe(401);

@@ -216,8 +216,11 @@ export async function leaderboard(context: ServiceContext, componentId: string) 
             ),
           )
       : [];
+  // A result's notes are private to its owner (and staff); the rest of the box sees the score.
+  const ownMemberId = isStaff(context.auth.role) ? null : (await getOwnMember(context)).id;
   const entries = rows.map(({ result, firstName, lastName }) => ({
     ...result,
+    notes: ownMemberId === null || result.memberId === ownMemberId ? result.notes : null,
     firstName,
     lastName,
     fistBumps: bumps.find((bump) => bump.resultId === result.id)?.total ?? 0,

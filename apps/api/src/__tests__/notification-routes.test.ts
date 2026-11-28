@@ -14,6 +14,12 @@ afterAll(async () => {
   await harness.close();
 });
 
+async function signedInAgain(email: string, password: string) {
+  const browser = createBrowser(harness);
+  await browser.post('/auth/login', { email, password, captchaToken: 'ok' });
+  return browser;
+}
+
 async function json<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
 }
@@ -114,6 +120,57 @@ describe('push subscriptions', () => {
     expect(await count(beto)).toBe(1);
     await beto.browser.post('/notifications/push-subscriptions/remove', { endpoint });
     expect(await count(beto)).toBe(0);
+  });
+
+  it('only accepts browser push services', async () => {
+    const { browser } = await signedUpBrowser(harness);
+    const response = await browser.post(
+      '/notifications/push-subscriptions',
+      subscription('https://attacker.example.com/push'),
+    );
+    expect(response.status).toBe(400);
+  });
+
+  it('keeps only the newest ten browsers per person', async () => {
+    const ana = await signedUpBrowser(harness);
+    for (let device = 0; device < 12; device += 1) {
+      await ana.browser.post(
+        '/notifications/push-subscriptions',
+        subscription(`https://fcm.googleapis.com/fcm/send/ana-${device}`),
+      );
+    }
+    const settings = await json<NotificationSettings>(
+      await ana.browser.get('/notifications/settings'),
+    );
+    expect(settings.push.subscriptions).toBe(10);
+  });
+
+  it('forgets linked browsers and Telegram after a password reset', async () => {
+    const ana = await signedUpBrowser(harness);
+    await ana.browser.post(
+      '/notifications/push-subscriptions',
+      subscription('https://fcm.googleapis.com/fcm/send/ana-reset'),
+    );
+    await harness.database
+      .insert(telegramLinks)
+      .values({ userId: ana.session.user.id, chatId: 'chat-of-whoever-had-the-session' });
+    const browser = createBrowser(harness);
+    await browser.post('/auth/password/forgot', { email: ana.email, captchaToken: 'ok' });
+    const token = decodeURIComponent(
+      harness.emails.sent.at(-1)?.text.match(/token=([\w%-]+)/)?.[1] ?? '',
+    );
+    expect(
+      (await browser.post('/auth/password/reset', { token, password: 'a brand new password' }))
+        .status,
+    ).toBe(200);
+    const links = await harness.database
+      .select()
+      .from(telegramLinks)
+      .where(eq(telegramLinks.userId, ana.session.user.id));
+    expect(links).toEqual([]);
+    const fresh = await signedInAgain(ana.email, 'a brand new password');
+    const settings = await json<NotificationSettings>(await fresh.get('/notifications/settings'));
+    expect(settings.push.subscriptions).toBe(0);
   });
 
   it('rejects endpoints that are not https', async () => {

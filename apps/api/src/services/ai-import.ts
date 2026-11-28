@@ -11,7 +11,7 @@ import {
   MEMBER_IMPORT_FIELDS,
   PLAN_IMPORT_FIELDS,
 } from '@guaranix/shared';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import { z } from 'zod';
 import { aiImportParts, AI_IMPORT_INSTRUCTIONS } from './ai-import-prompt';
 import { callProvider, loadConfiguredProvider } from './ai-runtime';
@@ -113,6 +113,10 @@ async function extract(
     { boxId: auth.boxId, userId: auth.userId },
     async (transaction) => {
       const context = { transaction, auth, now };
+      // Serializes check-and-count per box, so parallel requests can't all pass the monthly limit.
+      await transaction.execute(
+        sql`select pg_advisory_xact_lock(hashtext(${`ai_import:${auth.boxId}`}))`,
+      );
       await assertFeatureAvailable(context, 'ai_import');
       return recordAiUsage(context, {
         feature: 'ai_import',

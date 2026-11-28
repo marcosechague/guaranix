@@ -1120,6 +1120,8 @@
   "errors": {
     "invalid_input": "Revisá los datos: hay algo incompleto o mal escrito.",
     "forbidden": "No tenés permiso para hacer esto.",
+    "rate_limited": "Hiciste muchos intentos. Esperá unos minutos y probá de nuevo.",
+    "payload_too_large": "Lo que mandaste es demasiado grande. Probá con un archivo más chico.",
     "member_not_found": "No encontramos a ese alumno.",
     "plan_not_found": "No encontramos ese plan.",
     "member_plan_not_found": "No encontramos ese plan del alumno.",

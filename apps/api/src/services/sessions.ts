@@ -3,7 +3,9 @@ import {
   boxUsers,
   boxes,
   oauthAccounts,
+  pushSubscriptions,
   sessions,
+  telegramLinks,
   userCredentials,
   users,
 } from '@guaranix/db/schema';
@@ -152,6 +154,21 @@ export async function revokeSession(database: SchemaDatabase, sessionId: string)
 }
 
 /** Logs the user out everywhere, except `keepSessionId` when given. */
+/**
+ * After a password reset or an account takeover fix, whoever held a session may
+ * also have linked their own Telegram chat or browser: drop those too, so
+ * notifications stop reaching them. The owner links them again in Perfil.
+ */
+export async function forgetNotificationAddresses(
+  database: SchemaDatabase,
+  userId: string,
+): Promise<void> {
+  await withSystemScope(database, async (transaction) => {
+    await transaction.delete(pushSubscriptions).where(eq(pushSubscriptions.userId, userId));
+    await transaction.delete(telegramLinks).where(eq(telegramLinks.userId, userId));
+  });
+}
+
 export async function revokeUserSessions(
   database: SchemaDatabase,
   userId: string,

@@ -14,7 +14,7 @@ import {
   TOPIC_CHANNELS,
   type TelegramLinkStart,
 } from '@guaranix/shared';
-import { and, count, eq } from 'drizzle-orm';
+import { and, count, desc, eq, inArray } from 'drizzle-orm';
 import { base64UrlEncode, randomBytes, sha256 } from '../../lib/crypto';
 import { unprocessable } from '../errors';
 import type { NotificationConfig } from './queue';
@@ -97,12 +97,34 @@ export async function savePushSubscription(
   userId: string,
   input: PushSubscriptionInput,
 ): Promise<void> {
-  const values = { userId, p256dh: input.keys.p256dh, auth: input.keys.auth };
+  const values = {
+    userId,
+    p256dh: input.keys.p256dh,
+    auth: input.keys.auth,
+    updatedAt: new Date(),
+  };
   await transaction
     .insert(pushSubscriptions)
     .values({ ...values, endpoint: input.endpoint })
     .onConflictDoUpdate({ target: pushSubscriptions.endpoint, set: values });
+  // A person has a few devices, not hundreds: keep the newest ones.
+  const stale = await transaction
+    .select({ id: pushSubscriptions.id })
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.userId, userId))
+    .orderBy(desc(pushSubscriptions.updatedAt))
+    .offset(MAX_PUSH_SUBSCRIPTIONS_PER_USER);
+  if (stale.length > 0) {
+    await transaction.delete(pushSubscriptions).where(
+      inArray(
+        pushSubscriptions.id,
+        stale.map((row) => row.id),
+      ),
+    );
+  }
 }
+
+export const MAX_PUSH_SUBSCRIPTIONS_PER_USER = 10;
 
 export async function removePushSubscription(
   transaction: ScopedTransaction,
