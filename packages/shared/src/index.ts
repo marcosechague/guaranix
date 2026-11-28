@@ -11,3 +11,4 @@ export * from './imports';
 export * from './timer/workout-timer';
 export * from './guided';
 export * from './geo/paraguay-cities';
+export * from './geo/distance';

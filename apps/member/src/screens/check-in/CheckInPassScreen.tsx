@@ -1,8 +1,7 @@
 import { formatDuration, t } from '@guaranix/shared';
-import { Card, IconButton, Page, QrCode, Skeleton, useWakeLock } from '@guaranix/ui';
+import { Card, FullScreenHeader, Page, QrCode, Skeleton, useWakeLock } from '@guaranix/ui';
 import { LoadError, useBoxClock, useNow } from '@guaranix/ui/data';
 import { useSession } from '@guaranix/ui/auth';
-import { X } from 'lucide-react';
 import { useNavigate } from 'react-router';
 import { useCheckInPass, useMe } from '../../api/queries';
 
@@ -44,17 +43,12 @@ export function CheckInPassScreen() {
   const name = me ? `${me.firstName} ${me.lastName}` : session.user.fullName;
   return (
     <Page layout="centered" className="items-stretch">
-      <header className="flex items-center gap-3">
-        <IconButton label={t('member.checkIn.close')} onClick={() => void navigate('/')}>
-          <X aria-hidden="true" size={20} />
-        </IconButton>
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-semibold tracking-widest text-text-secondary uppercase">
-            {boxName ?? t('app.name')}
-          </p>
-          <h1 className="truncate font-display text-xl font-bold">{t('member.checkIn.title')}</h1>
-        </div>
-      </header>
+      <FullScreenHeader
+        eyebrow={boxName ?? t('app.name')}
+        title={t('member.checkIn.title')}
+        closeLabel={t('member.checkIn.close')}
+        onClose={() => void navigate('/')}
+      />
       <Card className="items-center">
         <p className="text-center font-display text-2xl font-bold">{name}</p>
         <PassBody />

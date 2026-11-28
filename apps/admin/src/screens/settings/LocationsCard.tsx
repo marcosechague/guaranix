@@ -2,7 +2,8 @@ import { t } from '@guaranix/shared';
 import type { Location } from '@guaranix/shared/api';
 import { Badge, Button, Card, IconButton, Skeleton } from '@guaranix/ui';
 import { LoadError, useBoxClock, useLocations } from '@guaranix/ui/data';
-import { MapPin, Pencil, Plus } from 'lucide-react';
+import { MapPin, Pencil, Plus, Printer } from 'lucide-react';
+import { useNavigate } from 'react-router';
 import { useState } from 'react';
 import { LocationFormSheet } from './LocationFormSheet';
 
@@ -18,6 +19,7 @@ function LocationRow({
   onEdit: (() => void) | null;
   needsCoordinates: boolean;
 }) {
+  const navigate = useNavigate();
   return (
     <li className="flex items-center gap-3 py-3">
       <MapPin aria-hidden="true" size={18} className="shrink-0 text-text-secondary" />
@@ -34,6 +36,15 @@ function LocationRow({
           <span className="text-sm text-text-secondary">{t('locations.noCoordinates')}</span>
         ) : null}
       </span>
+      {onEdit && needsCoordinates && location.latitude !== null ? (
+        <IconButton
+          variant="ghost"
+          label={t('locations.posterLabel', { name: location.name })}
+          onClick={() => void navigate(`/cartel/${location.id}`)}
+        >
+          <Printer aria-hidden="true" size={17} />
+        </IconButton>
+      ) : null}
       {onEdit ? (
         <IconButton
           variant="ghost"

@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { idSchema } from './common';
+import { latitudeSchema, longitudeSchema } from './location';
 
 /**
  * What the entrance device read from the member's QR. Only the shape is
@@ -23,6 +24,27 @@ export const CHECK_IN_OPENS_MINUTES_BEFORE = 30;
 export const walkInSchema = z.object({ memberId: idSchema });
 
 export type WalkInInput = z.infer<typeof walkInSchema>;
+
+/** What the member's phone sends after reading the poster on the wall: its code and where it is. */
+export const wallCheckInSchema = z.object({
+  code: z
+    .string()
+    .trim()
+    .min(1)
+    .max(120)
+    .regex(/^[A-Za-z0-9._-]+$/),
+  latitude: latitudeSchema,
+  longitude: longitudeSchema,
+  accuracyMeters: z.number().min(0).max(100_000),
+});
+
+export type WallCheckInInput = z.infer<typeof wallCheckInSchema>;
+
+/** The poster for one location: what its QR opens. */
+export interface WallQrView {
+  url: string;
+  locationName: string;
+}
 
 /** Why the entrance said no. Each one has a message under `checkIn.denied`. */
 export const CHECK_IN_DENIALS = [

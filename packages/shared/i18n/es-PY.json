@@ -368,6 +368,35 @@
       "wodResult": "Mi WOD de hoy",
       "downloaded": "Guardamos la imagen en tu celular. Subila a tu historia de Instagram.",
       "failed": "No pudimos compartir la imagen. Probá de nuevo."
+    },
+    "wallCheckIn": {
+      "title": "Marcar asistencia",
+      "close": "Cerrar",
+      "locating": "Buscando dónde estás…",
+      "locatingHint": "Usamos tu ubicación una sola vez para confirmar que estás en el box. No la guardamos.",
+      "sending": "Marcando tu asistencia…",
+      "done": "¡Listo, {name}! Ya estás presente",
+      "already": "Ya estabas presente",
+      "denied": "No pudimos marcar tu asistencia",
+      "classLine": "{program} · {time}",
+      "walkIn": "Te anotamos en {class}",
+      "retry": "Probar de nuevo",
+      "home": "Ir al inicio",
+      "askCoach": "Si no se puede, avisale al coach y te marca desde la lista de la clase.",
+      "position": {
+        "denied": {
+          "title": "Necesitamos tu ubicación",
+          "detail": "Permití la ubicación para GuaraniX en tu navegador y probá de nuevo. Solo la usamos para confirmar que estás en el box."
+        },
+        "unavailable": {
+          "title": "No pudimos ver dónde estás",
+          "detail": "Activá la ubicación del celular o acercate a una ventana y probá de nuevo."
+        },
+        "unsupported": {
+          "title": "Tu celular no comparte la ubicación",
+          "detail": "Este navegador no permite ver la ubicación. Avisale al coach para que te marque."
+        }
+      }
     }
   },
   "admin": {
@@ -999,6 +1028,17 @@
         "body": "Preguntale cuánto cobraste, quién no viene o quién te debe.",
         "action": "Preguntale a Brodi"
       }
+    },
+    "wallPoster": {
+      "back": "Volver a Ajustes",
+      "print": "Imprimir",
+      "title": "Marcá tu asistencia",
+      "subtitle": "Escaneá este código con la cámara de tu celular.",
+      "qrLabel": "Código QR para marcar asistencia en esta sede",
+      "step1": "Abrí la cámara del celular y apuntá al código.",
+      "step2": "Tocá el enlace y permití la ubicación cuando te la pida.",
+      "step3": "Listo: quedás presente en tu clase.",
+      "footer": "Funciona adentro del box y en horario de clase. Si no te deja, avisale al coach."
     }
   },
   "platform": {
@@ -1567,7 +1607,11 @@
     "check_in_pass_expired": "Ese QR ya venció. Pedile al alumno que abra su QR de nuevo.",
     "check_in_not_open": "Todavía no se puede marcar: se abre 30 minutos antes de la clase.",
     "check_in_mode_disabled": "El box no usa esta forma de marcar asistencia. Se activa en Ajustes.",
-    "class_full": "La clase se llenó. Probá con la siguiente."
+    "class_full": "La clase se llenó. Probá con la siguiente.",
+    "wall_qr_invalid": "Ese QR no es de tu box. Escaneá el cartel de la pared de tu box.",
+    "wall_qr_location_missing": "Esta sede todavía no tiene cargada su ubicación. Avisale al coach para que te marque.",
+    "wall_qr_inaccurate": "Tu celular no sabe bien dónde estás. Probá de nuevo en unos segundos o avisale al coach.",
+    "wall_qr_too_far": "Parece que no estás en el box. El QR de la pared solo sirve adentro; si ya estás ahí, avisale al coach."
   },
   "workout": {
     "kinds": {
@@ -1636,7 +1680,8 @@
     "latitude": "Latitud",
     "longitude": "Longitud",
     "coordinatesInvalid": "Completá latitud y longitud, o dejá las dos vacías.",
-    "noCoordinates": "Sin ubicación: el QR de la pared no funciona acá."
+    "noCoordinates": "Sin ubicación: el QR de la pared no funciona acá.",
+    "posterLabel": "Imprimir el cartel con el QR de {name}"
   },
   "plans": {
     "kinds": {
