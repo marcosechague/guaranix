@@ -20,7 +20,8 @@ function takeRedirectError(): string | null {
 
 function takeResetToken(): string | null {
   const url = new URL(window.location.href);
-  return url.pathname === '/reset-password' ? url.searchParams.get('token') : null;
+  // Any app may receive the link, under its own base path (`/panel/reset-password`).
+  return url.pathname.endsWith('/reset-password') ? url.searchParams.get('token') : null;
 }
 
 function GateSkeleton() {
@@ -55,7 +56,8 @@ export function AuthGate({ children, allowSignup = true }: AuthGateProps) {
       <ResetPasswordForm
         token={resetToken}
         onDone={() => {
-          window.history.replaceState(null, '', '/');
+          const appRoot = window.location.pathname.replace(/reset-password$/, '');
+          window.history.replaceState(null, '', appRoot);
           setResetToken(null);
         }}
       />

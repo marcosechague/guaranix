@@ -1,5 +1,6 @@
 import {
   boxStatusChangeSchema,
+  changeBoxOwnerSchema,
   createPlatformBoxSchema,
   platformBoxListQuerySchema,
   platformPlanInputSchema,
@@ -13,6 +14,7 @@ import {
   changeBoxStatus,
   createPlatformBox,
 } from '../services/platform-box-lifecycle';
+import { changeBoxOwner, createOwnerAccessLink } from '../services/platform-box-owner';
 import { getPlatformBox, listPlatformBoxes, updatePlatformBox } from '../services/platform-boxes';
 import { impersonateBox, stopImpersonating } from '../services/platform-impersonation';
 import { platformMetrics } from '../services/platform-metrics';
@@ -95,6 +97,21 @@ for (const [path, action] of Object.entries(STATUS_ROUTES)) {
     }),
   );
 }
+
+platform.put('/boxes/:boxId/owner', (context) =>
+  run(context, async (service) => {
+    const boxId = idParam(context, 'boxId', 'box');
+    return changeBoxOwner(service, boxId, await parseBody(context, changeBoxOwnerSchema));
+  }),
+);
+
+platform.post('/boxes/:boxId/owner-access-link', (context) =>
+  run(
+    context,
+    async (service) => createOwnerAccessLink(service, idParam(context, 'boxId', 'box')),
+    201,
+  ),
+);
 
 platform.post('/boxes/:boxId/impersonate', (context) =>
   run(context, async (service) => {
