@@ -41,22 +41,27 @@ async function userWithRole(role: BoxRole) {
   return { ...signed, memberId: member?.id ?? null };
 }
 
-async function classInTenMinutes() {
+async function classInTenMinutes(): Promise<string> {
   const boxId = harness.boxA.boxId;
   const [program] = await withSystemScope(harness.database, (transaction) =>
     transaction.select().from(programs).where(eq(programs.boxId, boxId)).limit(1),
   );
   if (!program) throw new Error('Program missing');
   const startsAt = new Date(Date.now() + 10 * 60 * 1000);
-  await withSystemScope(harness.database, (transaction) =>
-    transaction.insert(classes).values({
-      boxId,
-      programId: program.id,
-      startsAt,
-      endsAt: new Date(startsAt.getTime() + 60 * 60 * 1000),
-      capacity: 20,
-    }),
+  const [created] = await withSystemScope(harness.database, (transaction) =>
+    transaction
+      .insert(classes)
+      .values({
+        boxId,
+        programId: program.id,
+        startsAt,
+        endsAt: new Date(startsAt.getTime() + 60 * 60 * 1000),
+        capacity: 20,
+      })
+      .returning({ id: classes.id }),
   );
+  if (!created) throw new Error('Class missing');
+  return created.id;
 }
 
 describe('QR check-in routes', () => {
@@ -97,5 +102,42 @@ describe('QR check-in routes', () => {
 
     const garbage = await reception.browser.post('/box/check-ins', { pass: 'hola mundo' });
     expect(garbage.status).toBe(400);
+  });
+
+  it('the coach adds someone who came without booking, and sees them on the list', async () => {
+    const owner = await userWithRole('box_owner');
+    const coach = await userWithRole('coach');
+    const member = await userWithRole('member');
+    const plan = await owner.browser.post('/box/plans', {
+      name: 'Libre coach',
+      kind: 'unlimited',
+      priceGs: 300_000,
+      durationDays: 30,
+    });
+    const { plan: created } = (await plan.json()) as { plan: { id: string } };
+    await owner.browser.post(`/box/members/${member.memberId}/plans`, {
+      planId: created.id,
+      startsOn: calendarDateIn('America/Asuncion', new Date()),
+    });
+    const classId = await classInTenMinutes();
+
+    const bad = await coach.browser.post(`/box/classes/${classId}/walk-ins`, { memberId: 'x' });
+    expect(bad.status).toBe(400);
+    const walkIn = await coach.browser.post(`/box/classes/${classId}/walk-ins`, {
+      memberId: member.memberId,
+    });
+    expect(walkIn.status).toBe(200);
+    expect(await walkIn.json()).toMatchObject({ result: { outcome: 'checked_in', walkIn: true } });
+    expect(
+      (await member.browser.post(`/box/classes/${classId}/walk-ins`, { memberId: member.memberId }))
+        .status,
+    ).toBe(403);
+
+    const roster = (await (await coach.browser.get(`/box/classes/${classId}/roster`)).json()) as {
+      roster: { memberId: string; status: string; owedGs: number }[];
+    };
+    expect(roster.roster).toContainEqual(
+      expect.objectContaining({ memberId: member.memberId, status: 'attended' }),
+    );
   });
 });

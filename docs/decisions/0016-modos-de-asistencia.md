@@ -14,3 +14,11 @@ Con el check-in con QR en la entrada (0014) quedó una duda: no todos los boxes 
 - **Cada sede tiene su ubicación** (`locations.latitude` y `longitude`, las dos o ninguna). Se carga con "Usar mi ubicación actual" parado en la sede o copiando los números de un mapa.
 - **El QR de pared exige estar cerca**: la distancia máxima a la sede es `check_in_radius_meters` (150 m por defecto, entre 30 y 1000). Además tiene que ser durante el horario de la clase y una sola vez por alumno y clase, así una foto del cartel mandada por WhatsApp no sirve desde afuera del box. Si el alumno no da permiso de ubicación o el GPS no alcanza, la app le dice que le avise al coach.
 - **La lista del coach** usa las mismas reglas que la entrada: se puede marcar desde un rato antes de que empiece la clase, muestra los avisos de plan y cuota vencida, y permite sumar a quien llegó sin reserva si hay lugar.
+
+## Lista del coach
+
+- Las reglas compartidas viven en `apps/api/src/services/admission.ts`: ventana (desde 30 minutos antes hasta que termina la clase), alumno activo, cuota al día y plan que cubra la clase.
+- "Vino" se marca desde 30 minutos antes. "Faltó" solo cuando la clase ya empezó.
+- La lista muestra a cada alumno con lo que diría la entrada ("Debe ₲ …", "Dado de baja"). El coach decide igual, porque la persona ya está en el box.
+- "Sumar a alguien que vino sin reservar" (`POST /box/classes/:id/walk-ins`) aplica las mismas reglas que la entrada: si no puede, no escribe nada y dice por qué. A diferencia de la entrada, también funciona con la clase ya empezada.
+- Con la lista del coach apagada en Ajustes, el coach y recepción no pueden marcar. El dueño y los administradores sí, para corregir.

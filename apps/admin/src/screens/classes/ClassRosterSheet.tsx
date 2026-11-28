@@ -16,7 +16,10 @@ import { useState } from 'react';
 import { useCancelClass, useMarkAttendance } from '../../api/mutations';
 import { useRoster } from '../../api/queries';
 import { canManage } from '../../lib/roles';
+import { AttendanceHint } from './AttendanceHint';
+import { attendanceWindow } from './attendance-window';
 import { RosterRow } from './RosterRow';
+import { WalkInPanel } from './WalkInPanel';
 
 const SPOT_STATUSES = new Set(['booked', 'attended', 'no_show']);
 
@@ -26,7 +29,7 @@ export interface ClassRosterSheetProps {
 }
 
 export function ClassRosterSheet({ item, onClose }: ClassRosterSheetProps) {
-  const { timeZone, today, role } = useBoxClock();
+  const { timeZone, today, role, checkInModes } = useBoxClock();
   const now = useNow();
   const roster = useRoster(item?.id ?? null);
   const attendance = useMarkAttendance(item?.id ?? '');
@@ -40,8 +43,10 @@ export function ClassRosterSheet({ item, onClose }: ClassRosterSheetProps) {
   const waitlist = entries
     .filter((entry) => entry.status === 'waitlisted')
     .sort((a, b) => (a.waitlistPosition ?? 0) - (b.waitlistPosition ?? 0));
-  const started = item !== null && Date.parse(item.startsAt) <= now;
   const scheduled = item?.status === 'scheduled';
+  const timing = attendanceWindow(item, now);
+  const listAllowed = canManage(role) || checkInModes?.coach !== false;
+  const canMark = scheduled && timing.open && listAllowed;
 
   const mark = (bookingId: string, status: 'attended' | 'no_show') =>
     attendance.mutate([{ bookingId, status }], {
@@ -132,17 +137,18 @@ export function ClassRosterSheet({ item, onClose }: ClassRosterSheetProps) {
                   <p className="text-sm text-text-secondary">{t('admin.classes.rosterEmpty')}</p>
                 ) : (
                   <>
-                    {started && scheduled ? (
-                      <p className="text-sm text-text-secondary">
-                        {t('admin.classes.attendanceHint')}
-                      </p>
-                    ) : null}
+                    <AttendanceHint
+                      scheduled={scheduled}
+                      open={timing.open}
+                      listAllowed={listAllowed}
+                    />
                     <ul className="flex flex-col divide-y divide-divider">
                       {spots.map((entry) => (
                         <RosterRow
                           key={entry.bookingId}
                           entry={entry}
-                          canMark={started && scheduled}
+                          canMark={canMark}
+                          canMarkMissing={timing.started}
                           disabled={attendance.isPending}
                           onMark={(status) => mark(entry.bookingId, status)}
                         />
@@ -151,6 +157,12 @@ export function ClassRosterSheet({ item, onClose }: ClassRosterSheetProps) {
                   </>
                 )}
               </section>
+              {canMark && !timing.ended ? (
+                <WalkInPanel
+                  classId={item.id}
+                  takenIds={new Set(entries.map((entry) => entry.memberId))}
+                />
+              ) : null}
               {waitlist.length > 0 ? (
                 <section className="flex flex-col gap-1">
                   <h3 className="font-display text-base font-bold">

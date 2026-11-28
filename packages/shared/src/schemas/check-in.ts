@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { idSchema } from './common';
 
 /**
  * What the entrance device read from the member's QR. Only the shape is
@@ -14,6 +15,14 @@ export const checkInSchema = z.object({
 });
 
 export type CheckInInput = z.infer<typeof checkInSchema>;
+
+/** Members can be checked in from this long before a class until it ends. */
+export const CHECK_IN_OPENS_MINUTES_BEFORE = 30;
+
+/** The coach adds someone who came without booking. */
+export const walkInSchema = z.object({ memberId: idSchema });
+
+export type WalkInInput = z.infer<typeof walkInSchema>;
 
 /** Why the entrance said no. Each one has a message under `checkIn.denied`. */
 export const CHECK_IN_DENIALS = [

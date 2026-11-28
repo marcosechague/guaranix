@@ -38,11 +38,19 @@ export async function takenSpots(context: ServiceContext, classId: string): Prom
   return row?.taken ?? 0;
 }
 
-function assertBookable(context: ServiceContext, classRow: ClassRow, box: Box) {
+function assertBookable(
+  context: ServiceContext,
+  classRow: ClassRow,
+  box: Box,
+  allowStarted: boolean,
+) {
   if (classRow.status === 'cancelled') throw unprocessable('class_cancelled');
   const startsAt = classRow.startsAt.getTime();
   const now = context.now.getTime();
-  if (now >= startsAt) throw unprocessable('class_started');
+  if (now >= classRow.endsAt.getTime()) throw unprocessable('class_started');
+  if (now >= startsAt && !(allowStarted && isStaff(context.auth.role))) {
+    throw unprocessable('class_started');
+  }
   // Staff can add someone outside the window (a walk-in, a phone call).
   if (isStaff(context.auth.role)) return;
   if (now < startsAt - box.bookingOpensHoursBefore * 60 * MINUTE_MS) {
@@ -89,16 +97,17 @@ async function nextWaitlistPosition(context: ServiceContext, classId: string): P
  * it, takes a credit if it's a pack, and joins the waitlist when the class is
  * full. Waitlisted bookings don't spend a credit until they get a spot.
  * `notify: false` skips the confirmation, e.g. for a walk-in already at the door.
+ * `allowStarted` lets staff add someone who arrived after the class began.
  */
 export async function bookClass(
   context: ServiceContext,
   input: { classId: string; memberId?: string | undefined },
-  options: { notify?: boolean } = {},
+  options: { notify?: boolean; allowStarted?: boolean } = {},
 ): Promise<BookingRow> {
   const box = await currentBox(context);
   const memberId = await resolveMemberId(context, input.memberId);
   const classRow = await lockClass(context, input.classId);
-  assertBookable(context, classRow, box);
+  assertBookable(context, classRow, box, options.allowStarted ?? false);
 
   const [existing] = await context.transaction
     .select()

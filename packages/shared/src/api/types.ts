@@ -172,6 +172,9 @@ export interface RosterEntry {
   status: BookingStatus;
   waitlistPosition: number | null;
   checkedInAt: string | null;
+  /** Overdue fees; the entrance would turn them away, so the coach sees it too. */
+  owedGs: number;
+  memberInactive: boolean;
 }
 
 export interface Movement {

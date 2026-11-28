@@ -9,10 +9,11 @@ import {
   updateClassSessionSchema,
   updateProgramSchema,
   updateScheduleSchema,
+  walkInSchema,
 } from '@guaranix/shared';
 import { createBoxRouter } from '../../middleware/box-scope';
 import { idParam, parseBody, parseQuery, respond } from '../../lib/service-route';
-import { markAttendance } from '../../services/attendance';
+import { addWalkIn, takeAttendance } from '../../services/coach-attendance';
 import { cancelClass, getClassRoster, listClasses, updateClass } from '../../services/classes';
 import { updateSchedule } from '../../services/schedule-updates';
 import { createProgram, listPrograms, updateProgram } from '../../services/programs';
@@ -123,7 +124,15 @@ classes.post('/:classId/attendance', STAFF, (context) =>
   respond(context, async (service) => {
     const classId = idParam(context, 'classId', 'class');
     const { entries } = await parseBody(context, attendanceSchema);
-    return { bookings: await markAttendance(service, classId, entries) };
+    return { bookings: await takeAttendance(service, classId, entries) };
+  }),
+);
+
+classes.post('/:classId/walk-ins', STAFF, (context) =>
+  respond(context, async (service) => {
+    const classId = idParam(context, 'classId', 'class');
+    const { memberId } = await parseBody(context, walkInSchema);
+    return { result: await addWalkIn(service, classId, memberId) };
   }),
 );
 
