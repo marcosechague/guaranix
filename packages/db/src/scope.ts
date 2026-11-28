@@ -40,12 +40,22 @@ export async function withBoxScope<T>(
   assertUuid(scope.boxId, 'boxId');
   if (scope.userId) assertUuid(scope.userId, 'userId');
   return database.transaction(async (transaction) => {
-    await transaction.execute(
-      sql`select set_config('app.box_id', ${scope.boxId}, true), set_config('app.user_id', ${scope.userId ?? ''}, true)`,
-    );
-    await transaction.execute(sql`set local role guaranix_app`);
+    await enterBoxScope(transaction, scope);
     return work(transaction);
   });
+}
+
+/**
+ * Narrows an open system transaction to one box for the rest of it, e.g. right
+ * after creating the box. Irreversible until commit: do the unscoped work first.
+ */
+export async function enterBoxScope(transaction: ScopedTransaction, scope: BoxScope) {
+  assertUuid(scope.boxId, 'boxId');
+  if (scope.userId) assertUuid(scope.userId, 'userId');
+  await transaction.execute(
+    sql`select set_config('app.box_id', ${scope.boxId}, true), set_config('app.user_id', ${scope.userId ?? ''}, true)`,
+  );
+  await transaction.execute(sql`set local role guaranix_app`);
 }
 
 /**
