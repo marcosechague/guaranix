@@ -1,4 +1,4 @@
-# 0013 — Check-in con QR en la entrada
+# 0014 — Check-in con QR en la entrada
 
 Fecha: 2026-11-28 · Estado: propuesta
 
@@ -13,7 +13,7 @@ La Fase 1 pide check-in con QR en la entrada del box (tablet o celular): solo en
 - **"Cuota al día" = alumno activo, sin cargos abiertos vencidos** (lo mismo que la lista de deudores) **y con un plan que cubra la clase**. Un cargo que vence hoy todavía no frena la entrada.
 - **Qué clase**: las que empiezan dentro de los próximos 30 minutos o ya empezaron y no terminaron. Si el alumno tiene lugar reservado en una, se marca como asistió (con `checked_in_at`), con las mismas reglas de créditos que la lista del coach. Si no reservó, se lo anota en la próxima clase que todavía no empezó, tiene lugar y su plan cubre, y se marca como asistió; no entra en lista de espera ni recibe el aviso de reserva.
 - **Un "no" no escribe nada** y dice por qué (`fee_overdue` con lo que debe, `no_valid_plan`, `class_full`, `waitlisted`, `no_class_now`, …), para que la pantalla le diga al alumno qué hacer.
-- **Sin tablas nuevas**: la asistencia ya vive en `bookings` (`attended`, `checked_in_at`). Con varias sedes, la entrada podrá filtrar las clases por la sede de la clase.
+- **Sin tablas nuevas**: la asistencia ya vive en `bookings` (`attended`, `checked_in_at`). Con varias sedes (ver 0013-multi-sede), la entrada podrá filtrar las clases por `classes.location_id`.
 
 ## Rutas
 
