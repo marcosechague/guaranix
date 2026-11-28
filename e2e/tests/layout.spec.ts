@@ -1,7 +1,7 @@
 import { mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { expect, test } from '@playwright/test';
-import { APPS } from '../support/apps';
+import { expect, type Page, test } from '@playwright/test';
+import { APPS, DEMO } from '../support/apps';
 import { MIN_WIDTH_SHARE, measureLayout } from '../support/layout';
 import { SIGNED_IN } from '../support/sessions';
 
@@ -12,6 +12,20 @@ import { SIGNED_IN } from '../support/sessions';
  * captures land in .claude/screenshots/layout/ for the ux-reviewer.
  * Add a screen here when you add a route.
  */
+/** Stands for the seeded demo box's id, which changes with every seed. */
+const DEMO_BOX = ':demoBox';
+
+async function resolvePath(page: Page, path: string): Promise<string> {
+  if (!path.includes(DEMO_BOX)) return path;
+  const response = await page.request.get(`${APPS.api}/platform/boxes`, {
+    params: { status: 'all', search: DEMO.boxName },
+  });
+  const { boxes } = (await response.json()) as { boxes: { id: string }[] };
+  const id = boxes[0]?.id;
+  if (!id) throw new Error(`The demo box "${DEMO.boxName}" is not seeded`);
+  return path.replace(DEMO_BOX, id);
+}
+
 const SCREENS = {
   member: {
     session: SIGNED_IN.member,
@@ -34,7 +48,14 @@ const SCREENS = {
   },
   platform: {
     session: SIGNED_IN.platformAdmin,
-    paths: ['/', '/planes', '/ia'],
+    paths: [
+      '/',
+      '/planes',
+      '/ia',
+      `/box/${DEMO_BOX}`,
+      `/box/${DEMO_BOX}?seccion=funciones`,
+      `/box/${DEMO_BOX}?seccion=actividad`,
+    ],
   },
 } as const;
 
@@ -47,13 +68,13 @@ for (const [app, { session, paths }] of Object.entries(SCREENS)) {
 
     for (const path of paths) {
       test(`${path} fits the screen`, async ({ page }, testInfo) => {
-        await page.goto(`${APPS[app as keyof typeof SCREENS]}${path}`);
+        await page.goto(`${APPS[app as keyof typeof SCREENS]}${await resolvePath(page, path)}`);
         await expect(page.getByRole('heading', { level: 1 }).first()).toBeVisible();
         await page.waitForLoadState('networkidle');
         // Let entrance animations (≤ 250 ms) settle.
         await page.waitForTimeout(400);
 
-        const name = `${app}${path === '/' ? '-inicio' : path.replaceAll('/', '-')}`;
+        const name = `${app}${path === '/' ? '-inicio' : path.replace(DEMO_BOX, 'demo').replaceAll(/[/?=]/g, '-')}`;
         await page.screenshot({
           path: `${SCREENSHOTS}/${name}-${testInfo.project.name.replace('layout-', '')}.png`,
           fullPage: true,
