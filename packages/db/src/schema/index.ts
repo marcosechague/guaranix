@@ -12,4 +12,5 @@ export * from './plans';
 export * from './classes';
 export * from './workouts';
 export * from './billing';
+export * from './card-payments';
 export * from './audit';

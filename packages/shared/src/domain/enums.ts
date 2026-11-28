@@ -54,13 +54,26 @@ export const MOVEMENT_CATEGORIES = [
 ] as const;
 
 export const CHARGE_STATUSES = ['open', 'paid', 'void'] as const;
-export const PAYMENT_METHODS = ['cash', 'bank_transfer', 'qr'] as const;
-export const PAYMENT_STATUSES = ['pending_review', 'confirmed', 'rejected'] as const;
+export const PAYMENT_METHODS = ['cash', 'bank_transfer', 'qr', 'card'] as const;
+export const PAYMENT_STATUSES = ['pending_review', 'confirmed', 'rejected', 'refunded'] as const;
 
 /** Paid extras a GuaraniX plan includes, each overridable per box from the superadmin. */
-export const FEATURE_FLAGS = ['ai_import'] as const;
+export const FEATURE_FLAGS = ['ai_import', 'card_payments'] as const;
 /** AI providers behind `packages/ai`; the superadmin picks one and loads its key. */
 export const AI_PROVIDERS = ['anthropic', 'openai', 'gemini'] as const;
+/** Card processors behind `packages/payments`. `mock` only works outside production. */
+export const PAYMENT_PROVIDERS = ['bancard', 'mock'] as const;
+export const PAYMENT_PROVIDER_ENVIRONMENTS = ['sandbox', 'production'] as const;
+/** `autopay` charges the saved card from the cron; `link` is a member paying a link. */
+export const PAYMENT_ATTEMPT_KINDS = ['autopay', 'link'] as const;
+export const PAYMENT_ATTEMPT_STATUSES = [
+  'pending',
+  'approved',
+  'declined',
+  'failed',
+  'refunded',
+] as const;
+export const SAVED_CARD_STATUSES = ['pending', 'active', 'removed'] as const;
 
 export type PlatformRole = (typeof PLATFORM_ROLES)[number];
 export type BoxRole = (typeof BOX_ROLES)[number];
@@ -82,3 +95,8 @@ export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 export type FeatureFlag = (typeof FEATURE_FLAGS)[number];
 export type AiProviderName = (typeof AI_PROVIDERS)[number];
+export type PaymentProviderName = (typeof PAYMENT_PROVIDERS)[number];
+export type PaymentProviderEnvironment = (typeof PAYMENT_PROVIDER_ENVIRONMENTS)[number];
+export type PaymentAttemptKind = (typeof PAYMENT_ATTEMPT_KINDS)[number];
+export type PaymentAttemptStatus = (typeof PAYMENT_ATTEMPT_STATUSES)[number];
+export type SavedCardStatus = (typeof SAVED_CARD_STATUSES)[number];

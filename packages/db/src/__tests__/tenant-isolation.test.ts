@@ -40,9 +40,79 @@ beforeAll(async () => {
         provider: 'anthropic',
         model: 'claude-opus-5-5',
       });
+      await seedCardPayment(transaction, box.boxId);
     }
   });
 });
+
+/** One row of each card-payment table, which the demo seed leaves empty. */
+async function seedCardPayment(
+  transaction: Parameters<Parameters<typeof withSystemScope>[1]>[0],
+  boxId: string,
+) {
+  const [charge] = await transaction
+    .select()
+    .from(schema.charges)
+    .where(eq(schema.charges.boxId, boxId))
+    .limit(1);
+  if (!charge) throw new Error('demo box has no charges');
+  const [account] = await transaction
+    .insert(schema.paymentAccounts)
+    .values({
+      boxId,
+      provider: 'mock',
+      environment: 'sandbox',
+      publicKey: 'public',
+      encryptedPrivateKey: 'sealed',
+      privateKeyHint: 'abcd',
+    })
+    .returning();
+  if (!account) throw new Error('account not created');
+  const memberId = charge.memberId;
+  const [customer] = await transaction
+    .insert(schema.paymentCustomers)
+    .values({ boxId, accountId: account.id, memberId })
+    .returning();
+  if (!customer) throw new Error('customer not created');
+  const [card] = await transaction
+    .insert(schema.savedCards)
+    .values({
+      boxId,
+      accountId: account.id,
+      customerId: customer.id,
+      memberId,
+      autopayConsentAt: new Date(),
+    })
+    .returning();
+  const [link] = await transaction
+    .insert(schema.paymentLinks)
+    .values({
+      boxId,
+      chargeId: charge.id,
+      memberId,
+      tokenHash: `hash-${boxId}`,
+      expiresAt: new Date(),
+    })
+    .returning();
+  await transaction.insert(schema.paymentAttempts).values({
+    boxId,
+    accountId: account.id,
+    chargeId: charge.id,
+    memberId,
+    kind: 'autopay',
+    savedCardId: card?.id,
+    paymentLinkId: link?.id,
+    amountGs: charge.amountGs,
+  });
+  await transaction.insert(schema.paymentEvents).values({
+    boxId,
+    accountId: account.id,
+    provider: 'mock',
+    type: 'webhook',
+    signatureValid: false,
+    outcome: 'rejected',
+  });
+}
 
 afterAll(async () => {
   await testDatabase.close();
@@ -67,6 +137,11 @@ describe('tenant tables', () => {
         "member_plans",
         "members",
         "movements",
+        "payment_accounts",
+        "payment_attempts",
+        "payment_customers",
+        "payment_events",
+        "payment_links",
         "payments",
         "personal_records",
         "plan_pauses",
@@ -74,6 +149,7 @@ describe('tenant tables', () => {
         "plans",
         "programs",
         "result_fist_bumps",
+        "saved_cards",
         "workout_components",
         "workout_results",
         "workouts",
