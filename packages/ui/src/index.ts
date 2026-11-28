@@ -67,6 +67,8 @@ export { TextAreaField } from './components/TextAreaField';
 export type { TextAreaFieldProps } from './components/TextAreaField';
 export { ToastProvider, useToast } from './components/Toast';
 export type { ToastProviderProps } from './components/Toast';
+export { ALL_LOCATIONS, LocationChips, atLocation, locationsIn } from './components/LocationChips';
+export type { LocationChipsProps } from './components/LocationChips';
 export { ColorDot } from './components/ColorDot';
 export type { ColorDotProps } from './components/ColorDot';
 export { DayPicker } from './components/DayPicker';

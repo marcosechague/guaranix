@@ -1,5 +1,5 @@
 import { and, asc, count, eq, gte, inArray, lt } from 'drizzle-orm';
-import { bookings, classes, members, programs } from '@guaranix/db/schema';
+import { bookings, classes, locations, members, programs } from '@guaranix/db/schema';
 import { addDays, daysBetween, zonedInstant } from '@guaranix/shared';
 import { recordAudit } from './audit';
 import { currentBox } from './box-calendar';
@@ -33,9 +33,15 @@ export async function listClasses(
   if (days < 1 || days > MAX_LISTING_DAYS) throw unprocessable('date_range_invalid');
   const box = await currentBox(context);
   const rows = await context.transaction
-    .select({ class: classes, programName: programs.name, programColor: programs.color })
+    .select({
+      class: classes,
+      programName: programs.name,
+      programColor: programs.color,
+      locationName: locations.name,
+    })
     .from(classes)
     .innerJoin(programs, eq(programs.id, classes.programId))
+    .innerJoin(locations, eq(locations.id, classes.locationId))
     .where(
       and(
         gte(classes.startsAt, zonedInstant(range.from, '00:00', box.timezone)),
@@ -64,7 +70,7 @@ export async function listClasses(
           ),
         );
 
-  return rows.map(({ class: classRow, programName, programColor }) => {
+  return rows.map(({ class: classRow, programName, programColor, locationName }) => {
     const totalFor = (statuses: readonly string[]) =>
       counts
         .filter((row) => row.classId === classRow.id && statuses.includes(row.status))
@@ -75,6 +81,7 @@ export async function listClasses(
       ...classRow,
       programName,
       programColor,
+      locationName,
       takenSpots: taken,
       spotsLeft: Math.max(classRow.capacity - taken, 0),
       waitlistCount: totalFor(['waitlisted']),

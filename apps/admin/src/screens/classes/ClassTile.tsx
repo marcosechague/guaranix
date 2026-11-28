@@ -6,9 +6,10 @@ export interface ClassTileProps {
   item: ClassListItem;
   timeZone: string;
   onOpen: () => void;
+  showLocation?: boolean;
 }
 
-export function ClassTile({ item, timeZone, onOpen }: ClassTileProps) {
+export function ClassTile({ item, timeZone, onOpen, showLocation = false }: ClassTileProps) {
   const cancelled = item.status === 'cancelled';
   return (
     <TileButton onClick={onOpen} className={cancelled ? 'opacity-60' : undefined}>
@@ -26,6 +27,9 @@ export function ClassTile({ item, timeZone, onOpen }: ClassTileProps) {
         <ColorDot color={item.programColor} />
         <span className="truncate">{item.programName}</span>
       </span>
+      {showLocation ? (
+        <span className="truncate text-micro text-text-secondary">{item.locationName}</span>
+      ) : null}
       {cancelled ? null : (
         <span className="flex items-center gap-2">
           <ProgressBar

@@ -5,6 +5,7 @@ import { useBookingPolicy } from '../../api/queries';
 import { canManage } from '../../lib/roles';
 import { BookingPolicyCard } from './BookingPolicyCard';
 import { CardPaymentsCard } from './CardPaymentsCard';
+import { LocationsCard } from './LocationsCard';
 import { PaymentDetailsCard } from './PaymentDetailsCard';
 import { SchedulesCard } from './SchedulesCard';
 
@@ -27,6 +28,7 @@ export function SettingsScreen() {
       ) : (
         <BookingPolicyCard policy={policy.data} editable={editable} />
       )}
+      <LocationsCard editable={editable} />
       <SchedulesCard editable={editable} />
       {paymentDetails.isPending ? (
         <Skeleton className="h-96 rounded-xl" />

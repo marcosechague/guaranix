@@ -138,6 +138,7 @@ export interface ClassSession {
 export interface ClassListItem extends ClassSession {
   programName: string;
   programColor: string;
+  locationName: string;
   takenSpots: number;
   spotsLeft: number;
   waitlistCount: number;
