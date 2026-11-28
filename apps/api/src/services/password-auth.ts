@@ -1,5 +1,5 @@
 import { type SchemaDatabase, withSystemScope } from '@guaranix/db';
-import { passwordResetTokens, userCredentials, users } from '@guaranix/db/schema';
+import { passwordResetTokens, sessions, userCredentials, users } from '@guaranix/db/schema';
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import { randomToken, sha256 } from '../lib/crypto';
 import { hashPassword, needsRehash, verifyAgainstDummy, verifyPassword } from '../lib/password';
@@ -156,7 +156,27 @@ export async function resetPassword(
   return userId;
 }
 
-export type SetPasswordError = 'current_password_required' | 'invalid_credentials';
+export type SetPasswordError =
+  'current_password_required' | 'invalid_credentials' | 'recent_sign_in_required';
+
+/** How fresh a Google sign-in must be to add a first password to the account. */
+export const RECENT_SIGN_IN_MINUTES = 10;
+
+/**
+ * A Google-only account has no password to confirm, so creating the first one
+ * asks for a sign-in from the last few minutes instead: a stolen or forgotten
+ * open session can't add a permanent way into the account.
+ */
+async function signedInRecently(database: SchemaDatabase, sessionId: string): Promise<boolean> {
+  const [session] = await withSystemScope(database, (transaction) =>
+    transaction
+      .select({ createdAt: sessions.createdAt })
+      .from(sessions)
+      .where(eq(sessions.id, sessionId)),
+  );
+  if (!session) return false;
+  return Date.now() - session.createdAt.getTime() <= RECENT_SIGN_IN_MINUTES * 60_000;
+}
 
 /** Changes the password, or creates one for an account that only used Google. */
 export async function setPassword(
@@ -174,6 +194,8 @@ export async function setPassword(
     if (!input.currentPassword) return 'current_password_required';
     const matches = await verifyPassword(input.currentPassword, existing.passwordHash, pepper);
     if (!matches) return 'invalid_credentials';
+  } else if (!(await signedInRecently(database, input.sessionId))) {
+    return 'recent_sign_in_required';
   }
   await storePassword(database, input.userId, input.newPassword, pepper);
   await revokeUserSessions(database, input.userId, input.sessionId);

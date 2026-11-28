@@ -10,6 +10,8 @@ export interface MembersListProps {
   query: UseQueryResult<Member[]>;
   searching: boolean;
   onCreate: (() => void) | undefined;
+  /** Coaches don't see cédulas, so the column is left out for them. */
+  showDocument: boolean;
 }
 
 function StatusBadge({ member }: { member: Member }) {
@@ -21,7 +23,7 @@ function StatusBadge({ member }: { member: Member }) {
 }
 
 /** Table on wide screens, tappable rows on phones; both open the member's sheet. */
-export function MembersList({ query, searching, onCreate }: MembersListProps) {
+export function MembersList({ query, searching, onCreate, showDocument }: MembersListProps) {
   if (query.isPending) {
     return (
       <Card aria-busy="true">
@@ -51,9 +53,11 @@ export function MembersList({ query, searching, onCreate }: MembersListProps) {
               <th scope="col" className="px-5 py-3 font-medium">
                 {t('admin.members.columns.name')}
               </th>
-              <th scope="col" className="px-5 py-3 font-medium">
-                {t('admin.members.columns.document')}
-              </th>
+              {showDocument ? (
+                <th scope="col" className="px-5 py-3 font-medium">
+                  {t('admin.members.columns.document')}
+                </th>
+              ) : null}
               <th scope="col" className="px-5 py-3 font-medium">
                 {t('admin.members.columns.phone')}
               </th>
@@ -77,9 +81,11 @@ export function MembersList({ query, searching, onCreate }: MembersListProps) {
                     {member.firstName} {member.lastName}
                   </Link>
                 </td>
-                <td className="px-5 py-3 text-text-soft tabular-nums">
-                  {member.documentNumber ?? '—'}
-                </td>
+                {showDocument ? (
+                  <td className="px-5 py-3 text-text-soft tabular-nums">
+                    {member.documentNumber ?? '—'}
+                  </td>
+                ) : null}
                 <td className="px-5 py-3 text-text-soft tabular-nums">{member.phone ?? '—'}</td>
                 <td className="px-5 py-3 text-text-soft tabular-nums">
                   {formatShortDate(member.joinedOn)}/{member.joinedOn.slice(2, 4)}

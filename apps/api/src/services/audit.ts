@@ -8,7 +8,11 @@ interface AuditEntry {
   changes?: Record<string, unknown>;
 }
 
-/** Who changed prices, plans, payments, permissions or member data (CLAUDE.md, Seguridad). */
+/**
+ * Who changed prices, plans, payments, permissions or member data (CLAUDE.md,
+ * Seguridad). Actions starting with `support.` record what platform support
+ * looked at while "entering as" a box; only the platform reads them.
+ */
 export async function recordAudit(context: ServiceContext, entry: AuditEntry): Promise<void> {
   await context.transaction.insert(auditLogs).values({
     boxId: context.auth.boxId,

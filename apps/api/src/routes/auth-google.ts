@@ -18,7 +18,7 @@ import {
 } from '../lib/crypto';
 import { allowedOrigins } from '../lib/http';
 import { linkGoogle, signInWithGoogle } from '../services/google-auth';
-import { createSession } from '../services/sessions';
+import { createSession, revokeSession } from '../services/sessions';
 
 const oauthStateSchema = z.object({
   state: z.string(),
@@ -130,6 +130,8 @@ export const googleAuthRoutes = new Hono<AppEnv>()
 
     const result = await signInWithGoogle(database, identity);
     if ('error' in result) return backToApp(context, saved.returnTo, result.error);
+    // Signing in again from this browser replaces its old session instead of leaving it open.
+    if (context.var.session) await revokeSession(database, context.var.session.id);
     writeSessionCookie(context, await createSession(database, result.userId));
     return backToApp(context, saved.returnTo);
   });

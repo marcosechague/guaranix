@@ -1,4 +1,4 @@
-import { oauthAccounts, userCredentials, users } from '@guaranix/db/schema';
+import { oauthAccounts, sessions, userCredentials, users } from '@guaranix/db/schema';
 import type { Session } from '@guaranix/shared';
 import { eq } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -156,6 +156,33 @@ describe('linking Google from the account', () => {
     await browser.get('/auth/session');
     const response = await browser.post('/auth/password', { newPassword: 'my first password' });
     expect(((await response.json()) as Session).hasPassword).toBe(true);
+  });
+
+  it('asks a Google user to sign in again before a first password on an old session', async () => {
+    const browser = createBrowser(harness);
+    const identity = googleIdentity(uniqueEmail('google'));
+    harness.google.nextIdentity = identity;
+    await googleFlow(browser);
+    const before = (await (await browser.get('/auth/session')).json()) as Session;
+    await harness.database
+      .update(sessions)
+      .set({ createdAt: new Date(Date.now() - 11 * 60_000) })
+      .where(eq(sessions.userId, before.user.id));
+    const stale = await browser.post('/auth/password', { newPassword: 'my first password' });
+    expect(stale.status).toBe(403);
+    expect(await stale.json()).toEqual({ error: 'recent_sign_in_required' });
+
+    harness.google.nextIdentity = identity;
+    await googleFlow(browser);
+    await browser.get('/auth/session');
+    const fresh = await browser.post('/auth/password', { newPassword: 'my first password' });
+    expect(((await fresh.json()) as Session).hasPassword).toBe(true);
+    const open = await harness.database
+      .select()
+      .from(sessions)
+      .where(eq(sessions.userId, before.user.id));
+    // Signing in again replaced the old session of this browser.
+    expect(open.filter((row) => row.revokedAt === null)).toHaveLength(1);
   });
 
   it('refuses to unlink Google when it is the only way in', async () => {

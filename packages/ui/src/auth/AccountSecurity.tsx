@@ -1,5 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { passwordSchema, t } from '@guaranix/shared';
+import { AuthApiError } from '@guaranix/shared/auth-client';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -8,6 +9,7 @@ import { Card } from '../components/Card';
 import { FormMessage } from '../components/FormMessage';
 import { GoogleButton } from '../components/GoogleButton';
 import { TextField } from '../components/TextField';
+import { unsubscribeThisBrowser } from '../notifications/browser-push';
 import { useAuth, useSession } from './AuthProvider';
 import { currentPageUrl, errorMessage } from './shared';
 
@@ -19,6 +21,7 @@ function PasswordForm() {
   const { client, setSession } = useAuth();
   const { hasPassword } = useSession();
   const [message, setMessage] = useState<{ tone: 'error' | 'success'; text: string } | null>(null);
+  const [needsGoogle, setNeedsGoogle] = useState(false);
   const form = useForm<PasswordValues>({
     resolver: zodResolver(hasPassword ? changeSchema : createSchema),
   });
@@ -31,6 +34,7 @@ function PasswordForm() {
       form.reset();
       setMessage({ tone: 'success', text: t('auth.account.saved') });
     } catch (caught) {
+      setNeedsGoogle(caught instanceof AuthApiError && caught.code === 'recent_sign_in_required');
       setMessage({ tone: 'error', text: errorMessage(caught) });
     }
   });
@@ -58,6 +62,12 @@ function PasswordForm() {
         {...form.register('newPassword')}
       />
       {message ? <FormMessage tone={message.tone}>{message.text}</FormMessage> : null}
+      {needsGoogle ? (
+        <GoogleButton
+          href={client.googleUrl('login', currentPageUrl())}
+          label={t('auth.google.signInAgain')}
+        />
+      ) : null}
       <Button type="submit" variant="secondary" disabled={isSubmitting}>
         {hasPassword ? t('auth.account.changePassword') : t('auth.account.createPassword')}
       </Button>
@@ -104,7 +114,8 @@ function GoogleLink() {
 export function AccountSecurity() {
   const { client, setSession } = useAuth();
   const logout = async () => {
-    await client.logout().catch(() => undefined);
+    const pushEndpoint = await unsubscribeThisBrowser();
+    await client.logout(pushEndpoint ? { pushEndpoint } : {}).catch(() => undefined);
     setSession(null);
   };
 

@@ -30,19 +30,58 @@ export async function listMembers(context: ServiceContext, query: ListMembersQue
       ilike(members.firstName, pattern),
       ilike(members.lastName, pattern),
       ilike(sql`${members.firstName} || ' ' || ${members.lastName}`, pattern),
-      ilike(members.documentNumber, pattern),
+      // A coach can't see cédulas, so searching by one would leak them.
+      canSeeDocument(context) ? ilike(members.documentNumber, pattern) : undefined,
       ilike(members.email, pattern),
       ilike(members.phone, pattern),
     );
     if (matches) filters.push(matches);
   }
-  return context.transaction
+  const rows = await context.transaction
     .select()
     .from(members)
     .where(and(...filters))
     .orderBy(asc(members.lastName), asc(members.firstName), asc(members.id))
     .limit(query.limit)
     .offset(query.offset);
+  return rows.map((row) => memberForViewer(context, row));
+}
+
+/** Coaches don't handle identity documents; front desk and managers do. */
+function canSeeDocument(context: ServiceContext): boolean {
+  return context.auth.role !== 'coach';
+}
+
+/**
+ * What the signed-in role may read of a member: a coach never gets the
+ * cédula, and the member never gets the box's internal notes about them.
+ */
+export function memberForViewer(context: ServiceContext, member: MemberRow): MemberRow {
+  if (context.auth.role === 'member') return { ...member, notes: null };
+  if (!canSeeDocument(context)) return { ...member, documentNumber: null };
+  return member;
+}
+
+/**
+ * The member profile as the signed-in staff member or the member may see it.
+ * When support opens it while "entering as" the box, that is logged for the
+ * platform only: `support.*` entries are never shown to the box.
+ */
+export async function viewMember(context: ServiceContext, memberId: string): Promise<MemberRow> {
+  const member = await getMember(context, memberId);
+  if (context.auth.impersonatorUserId) {
+    await recordAudit(context, {
+      action: 'support.member_viewed',
+      entityType: 'member',
+      entityId: member.id,
+    });
+  }
+  return memberForViewer(context, member);
+}
+
+/** The signed-in member's own profile, without the box's internal notes. */
+export async function viewOwnMember(context: ServiceContext): Promise<MemberRow> {
+  return memberForViewer(context, await getOwnMember(context));
 }
 
 /** Row Level Security already limits the count to the session's box. */

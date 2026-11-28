@@ -16,10 +16,17 @@ import {
   resetPassword,
   setPassword,
   signup,
+  type SetPasswordError,
 } from '../services/password-auth';
 import { RATE_LIMITS } from '../services/rate-limit';
 import { createSession } from '../services/sessions';
 import { captchaFailed, ipSubject, rateLimited, respondWithSession } from './auth-helpers';
+
+const SET_PASSWORD_STATUS = {
+  current_password_required: 400,
+  invalid_credentials: 401,
+  recent_sign_in_required: 403,
+} as const satisfies Record<SetPasswordError, number>;
 
 export const passwordAuthRoutes = new Hono<AppEnv>()
   .post('/signup', async (context) => {
@@ -111,6 +118,6 @@ export const passwordAuthRoutes = new Hono<AppEnv>()
       newPassword: input.newPassword,
       ...(input.currentPassword === undefined ? {} : { currentPassword: input.currentPassword }),
     });
-    if (error) return fail(context, error === 'invalid_credentials' ? 401 : 400, error);
+    if (error) return fail(context, SET_PASSWORD_STATUS[error], error);
     return respondWithSession(context, session.token);
   });

@@ -82,7 +82,9 @@ export function MemberDetailSheet({ memberId, onClose }: MemberDetailSheetProps)
           <section className="flex flex-col gap-3">
             <Eyebrow>{t('admin.members.contact')}</Eyebrow>
             <dl className="grid grid-cols-2 gap-4">
-              <Detail label={t('admin.members.document')} value={data.documentNumber} />
+              {frontDesk ? (
+                <Detail label={t('admin.members.document')} value={data.documentNumber} />
+              ) : null}
               <Detail label={t('admin.members.columns.phone')} value={data.phone} />
               <Detail label={t('admin.members.email')} value={data.email} />
             </dl>

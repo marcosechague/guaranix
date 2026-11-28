@@ -34,8 +34,8 @@ export function MemberPlansList({ memberId }: { memberId: string }) {
               {t('member.profile.validity', {
                 from: formatShortDate(memberPlan.startsOn),
                 to: formatShortDate(memberPlan.endsOn),
-              })}{' '}
-              · {formatGuarani(memberPlan.priceGs)}
+              })}
+              {memberPlan.priceGs === null ? null : ` · ${formatGuarani(memberPlan.priceGs)}`}
             </span>
           </span>
           <Badge tone={PLAN_STATE_TONES[memberPlan.state]} dot>

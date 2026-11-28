@@ -76,7 +76,8 @@ export interface MemberPlan {
   planId: string;
   startsOn: string;
   endsOn: string;
-  priceGs: number;
+  /** Null when a coach reads it: prices and payments are for the front desk. */
+  priceGs: number | null;
   classesRemaining: number | null;
   state: MemberPlanState;
   pauses: PlanPause[];

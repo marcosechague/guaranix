@@ -116,6 +116,36 @@ describe('manual payments', () => {
     );
   });
 
+  it('shows the member their payments without the notes staff wrote', async () => {
+    const owing = await memberOwing(200_000);
+    await world.as('reception', (context) =>
+      recordPayment(
+        context,
+        payment({ memberId: owing.member.id, amountGs: 50_000, notes: 'Pagó con billete roto' }),
+      ),
+    );
+    referenceCounter += 1;
+    await owing.act((context) =>
+      recordPayment(
+        context,
+        payment({
+          memberId: owing.member.id,
+          amountGs: 20_000,
+          method: 'bank_transfer',
+          reference: `OP-${referenceCounter}`,
+          receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'jpg'),
+          notes: 'Transferí desde la cuenta de mi mamá',
+        }),
+      ),
+    );
+    const account = await owing.act((context) => ownAccount(context));
+    expect(account.payments.map((entry) => entry.notes)).toEqual([
+      null,
+      'Transferí desde la cuenta de mi mamá',
+    ]);
+    expect(account.payments.every((entry) => entry.recordedByUserId === null)).toBe(true);
+  });
+
   it('refuses the same bank reference twice, but allows it again after a rejection', async () => {
     const owing = await memberOwing(100_000);
     const report = () =>

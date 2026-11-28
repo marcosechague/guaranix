@@ -4,6 +4,7 @@ import {
   type AuthErrorCode,
   type ForgotPasswordInput,
   type LoginInput,
+  type LogoutInput,
   type ResetPasswordInput,
   type Session,
   type SetPasswordInput,
@@ -85,8 +86,8 @@ export function createAuthClient({ baseUrl, fetch: fetchImpl = fetch }: AuthClie
     setPassword: (input: SetPasswordInput) => sessionRequest('POST', '/auth/password', input),
     selectBox: (boxId: string) => sessionRequest('POST', '/auth/session/box', { boxId }),
     unlinkGoogle: () => sessionRequest('DELETE', '/auth/google'),
-    async logout(): Promise<void> {
-      await request<null>('POST', '/auth/logout');
+    async logout(input: LogoutInput = {}): Promise<void> {
+      await request<null>('POST', '/auth/logout', input);
       csrfToken = null;
     },
     /** Full-page navigation to Google; it comes back to `returnTo`. */

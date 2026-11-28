@@ -4,7 +4,7 @@ import { idParam, parseBody, respond } from '../../lib/service-route';
 import { bookClass, cancelBooking, listOwnBookings } from '../../services/bookings';
 import { listMemberPlans } from '../../services/member-plans';
 import { ownAccount } from '../../services/charges';
-import { getOwnMember } from '../../services/members';
+import { getOwnMember, viewOwnMember } from '../../services/members';
 import { listOwnPersonalRecords } from '../../services/workout-results';
 import { ANY_ROLE, MEMBERS_ONLY } from './roles';
 
@@ -34,7 +34,7 @@ export const bookingRoutes = bookings.router;
 const me = createBoxRouter();
 
 me.get('/', MEMBERS_ONLY, (context) =>
-  respond(context, async (service) => ({ member: await getOwnMember(service) })),
+  respond(context, async (service) => ({ member: await viewOwnMember(service) })),
 );
 
 me.get('/plans', MEMBERS_ONLY, (context) =>
