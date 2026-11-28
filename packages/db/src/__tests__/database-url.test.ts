@@ -17,6 +17,15 @@ describe('readLocalDatabaseUrl', () => {
   it('refuses in production', () => {
     expect(() =>
       readLocalDatabaseUrl({ DATABASE_URL: local, NODE_ENV: 'production' }, 'Seed'),
-    ).toThrow(/only runs against a local database/);
+    ).toThrow(/only runs on a development machine/);
+  });
+
+  it('refuses a shell that carries the deploy settings, even with a local database', () => {
+    expect(() =>
+      readLocalDatabaseUrl(
+        { DATABASE_URL: local, PROD_DATABASE_URL: 'postgres://user:pass@db.example.com/app' },
+        'Seed',
+      ),
+    ).toThrow(/production settings \(PROD_DATABASE_URL\)/);
   });
 });
