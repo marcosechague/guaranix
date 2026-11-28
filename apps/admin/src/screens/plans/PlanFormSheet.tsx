@@ -45,17 +45,26 @@ export interface PlanFormSheetProps {
   open: boolean;
   plan: Plan | null;
   onOpenChange: (open: boolean) => void;
+  /** Name for a new plan, e.g. one an import found missing. */
+  defaultName?: string | undefined;
+  onSaved?: (() => void) | undefined;
 }
 
 const numberOrNull = (value: string) => (value === '' ? null : Number(value));
 
-export function PlanFormSheet({ open, plan, onOpenChange }: PlanFormSheetProps) {
+export function PlanFormSheet({
+  open,
+  plan,
+  onOpenChange,
+  defaultName,
+  onSaved,
+}: PlanFormSheetProps) {
   const save = useSavePlan(plan?.id ?? null);
   const toast = useToast();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: plan?.name ?? '',
+      name: plan?.name ?? defaultName ?? '',
       kind: plan?.kind ?? 'unlimited',
       priceGs: plan?.priceGs ?? 0,
       durationDays: plan?.durationDays ?? 30,
@@ -75,6 +84,7 @@ export function PlanFormSheet({ open, plan, onOpenChange }: PlanFormSheetProps) 
       onSuccess: () => {
         toast.show(t('admin.plans.saved'));
         onOpenChange(false);
+        onSaved?.();
       },
     }),
   );

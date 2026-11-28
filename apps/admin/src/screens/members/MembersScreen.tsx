@@ -2,11 +2,11 @@ import { t } from '@guaranix/shared';
 import type { MemberStatus } from '@guaranix/shared/domain';
 import { Button, ChipGroup, Page, PageHeader, TextField } from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
-import { UserPlus } from 'lucide-react';
+import { FileUp, UserPlus } from 'lucide-react';
 import { useDeferredValue, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router';
 import { useMemberCount, useMembers } from '../../api/queries';
-import { canFrontDesk } from '../../lib/roles';
+import { canFrontDesk, canManage } from '../../lib/roles';
 import { MemberDetailSheet } from './MemberDetailSheet';
 import { MemberFormSheet } from './MemberFormSheet';
 import { MembersList } from './MembersList';
@@ -35,10 +35,20 @@ export function MembersScreen() {
         }
         actions={
           canFrontDesk(role) ? (
-            <Button onClick={() => setSearchParams({ nuevo: '1' })}>
-              <UserPlus aria-hidden="true" size={18} />
-              {t('admin.members.new')}
-            </Button>
+            <div className="flex flex-wrap gap-3">
+              {canManage(role) ? (
+                <Button asChild variant="secondary">
+                  <Link to="/importar">
+                    <FileUp aria-hidden="true" size={18} />
+                    {t('admin.imports.open')}
+                  </Link>
+                </Button>
+              ) : null}
+              <Button onClick={() => setSearchParams({ nuevo: '1' })}>
+                <UserPlus aria-hidden="true" size={18} />
+                {t('admin.members.new')}
+              </Button>
+            </div>
           ) : null
         }
       />
