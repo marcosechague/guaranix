@@ -56,7 +56,16 @@
     },
     "optional": "(opcional)",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "weekdaysInitial": {
+      "0": "D",
+      "1": "L",
+      "2": "M",
+      "3": "X",
+      "4": "J",
+      "5": "V",
+      "6": "S"
+    }
   },
   "member": {
     "home": {
@@ -921,6 +930,112 @@
       "plan_drop_in_above_monthly": "La clase suelta sale más que un plan mensual.",
       "plan_weekly_above_unlimited": "Este plan sale más que el ilimitado.",
       "plan_pack_above_drop_in": "Cada clase del pack sale más que la clase suelta."
+    },
+    "eyebrow": "Creá tu box en GuaraniX",
+    "stepCount": "Paso {current} de {total}",
+    "next": "Siguiente",
+    "back": "Atrás",
+    "logout": "Salir",
+    "steps": {
+      "type": "Rubro",
+      "details": "Datos",
+      "schedule": "Horarios",
+      "plans": "Planes",
+      "review": "Revisión"
+    },
+    "type": {
+      "title": "¿Qué tipo de centro tenés?",
+      "subtitle": "Te cargamos horarios y planes de ejemplo para que arranques en minutos. Después cambiás lo que quieras.",
+      "options": {
+        "functional_box": {
+          "title": "Box de CrossFit o funcional",
+          "description": "CrossFit y Open Box, de lunes a sábado."
+        },
+        "pilates_studio": {
+          "title": "Estudio de pilates",
+          "description": "Reformer y mat, en grupos chicos."
+        },
+        "combat_gym": {
+          "title": "Boxeo y artes marciales",
+          "description": "Boxeo y kickboxing, mañana y noche."
+        }
+      },
+      "sample": "{programs} · {slots} horarios · {plans} planes"
+    },
+    "details": {
+      "title": "Contanos de tu box",
+      "subtitle": "Así lo van a ver tus alumnos en la app.",
+      "name": "Nombre del box",
+      "namePlaceholder": "Ej.: Box Mburuvicha",
+      "nameRequired": "Poné el nombre del box.",
+      "city": "Ciudad",
+      "cityRequired": "Poné la ciudad.",
+      "phone": "WhatsApp del box",
+      "phoneHint": "Opcional. Para que tus alumnos te escriban.",
+      "phonePlaceholder": "0981 123 456",
+      "phoneInvalid": "Revisá el número, por ejemplo 0981 123 456.",
+      "bookingTitle": "¿Con cuánta anticipación se reserva?",
+      "bookingHint": "Tus alumnos pueden reservar desde {window} antes de cada clase. Lo cambiás cuando quieras en Ajustes.",
+      "bookingOptions": {
+        "12": "12 h",
+        "24": "24 h",
+        "48": "48 h",
+        "168": "1 semana"
+      },
+      "bookingWindow": {
+        "12": "12 horas",
+        "24": "24 horas",
+        "48": "48 horas",
+        "168": "una semana"
+      }
+    },
+    "schedule": {
+      "title": "Tus horarios",
+      "subtitle": "Cada fila es una clase que se repite los días que marques. El cupo es cuántos alumnos entran.",
+      "start": "Hora",
+      "duration": "Minutos",
+      "capacity": "Cupo",
+      "weekdays": "Días de la clase de las {time}",
+      "add": "Sumar horario",
+      "remove": "Quitar la clase de las {time}",
+      "perWeek": "{count} clases por semana",
+      "empty": "Sin horarios. Sumá uno o dejalo vacío si este programa arranca después."
+    },
+    "plans": {
+      "title": "Tus planes",
+      "subtitle": "Son precios de referencia para Gran Asunción. Ajustalos a los tuyos.",
+      "name": "Nombre",
+      "kind": "Tipo",
+      "price": "Precio",
+      "classesPerWeek": "Clases por semana",
+      "classCount": "Clases del pack",
+      "durationDays": "Vigencia en días",
+      "add": "Sumar plan",
+      "remove": "Quitar el plan {name}",
+      "newName": "Plan nuevo"
+    },
+    "review": {
+      "title": "Revisá y creá tu box",
+      "subtitle": "Todo esto lo podés cambiar después desde el panel.",
+      "where": "{city}",
+      "booking": "Se reserva desde {window} antes",
+      "classes": "{count} clases por semana",
+      "plansCount": "{count} planes",
+      "errorsTitle": "Antes de crear tu box, corregí esto",
+      "warningsTitle": "Revisá estos avisos",
+      "fix": "Corregir",
+      "accept": "Revisé los avisos y está bien así",
+      "acceptHint": "Podés crear el box igual: son cosas raras, no errores.",
+      "allGood": "Todo en orden. Tus horarios y precios tienen sentido.",
+      "trial": "Tenés 30 días de prueba gratis. No te pedimos tarjeta.",
+      "create": "Crear mi box",
+      "creating": "Creando tu box…"
+    },
+    "where": {
+      "slot": "Clase de las {time}",
+      "plan": "{name}",
+      "program": "Programa {name}",
+      "general": "General"
     }
   }
 }
