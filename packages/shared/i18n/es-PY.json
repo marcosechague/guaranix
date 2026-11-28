@@ -1386,6 +1386,7 @@
     "ai_answer_too_long": "El archivo tiene demasiados datos para leerlo de una vez. Dividilo en partes.",
     "ai_invalid_answer": "La IA respondió algo que no pudimos usar. Probá de nuevo.",
     "ai_import_unavailable": "La lectura con IA no está disponible en este momento. Probá más tarde o importá una planilla.",
+    "brodi_unavailable": "Brodi no está disponible en este momento. Probá de nuevo en un rato.",
     "ai_file_rejected": "La IA no aceptó este archivo. Probá con una foto más clara o un archivo más chico.",
     "payment_account_not_found": "Todavía no conectaste una cuenta para cobrar con tarjeta.",
     "payment_attempt_not_found": "No encontramos ese intento de cobro.",

@@ -17,3 +17,4 @@ export * from './card-payments';
 export * from './payment-details';
 export * from './notifications';
 export * from './check-in';
+export * from './brodi';
