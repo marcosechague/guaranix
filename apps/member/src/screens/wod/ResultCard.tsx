@@ -1,5 +1,5 @@
 import { t } from '@guaranix/shared';
-import type { LeaderboardEntry, WorkoutComponent } from '@guaranix/shared/api';
+import type { LeaderboardEntry, WorkoutComponent, WorkoutResult } from '@guaranix/shared/api';
 import type { Scaling } from '@guaranix/shared/domain';
 import { Button, Card, Eyebrow, ScoreField, SegmentedControl, useToast } from '@guaranix/ui';
 import { errorText } from '@guaranix/ui/data';
@@ -14,13 +14,18 @@ import {
   takesUsedLoad,
 } from './score-form';
 
+export interface SavedResult {
+  result: WorkoutResult;
+  isPersonalRecord: boolean;
+}
+
 export interface ResultCardProps {
   component: WorkoutComponent;
   ownEntry: LeaderboardEntry | undefined;
   /** What the timer measured; it wins over an older saved result. */
   fromTimer?: Partial<ScoreText> | undefined;
-  /** Called after a save, with whether it was a new personal record. */
-  onSaved?: ((isPersonalRecord: boolean) => void) | undefined;
+  /** Called after a save with the saved result and whether it was a new personal record. */
+  onSaved?: ((saved: SavedResult) => void) | undefined;
 }
 
 /** One screen, one save: score, Rx or scaled, done. */
@@ -48,10 +53,10 @@ export function ResultCard({ component, ownEntry, fromTimer, onSaved }: ResultCa
     logResult.mutate(
       { componentId: component.id, scaling, notes: null, ...parsed.score },
       {
-        onSuccess: ({ isPersonalRecord }) => {
+        onSuccess: ({ isPersonalRecord, result }) => {
           if (isPersonalRecord) setCelebrate(true);
           else toast.show(t('member.wod.saved'));
-          onSaved?.(isPersonalRecord);
+          onSaved?.({ result, isPersonalRecord });
         },
         onError: (error) => toast.show(errorText(error), 'error'),
       },

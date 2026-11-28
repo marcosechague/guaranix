@@ -359,6 +359,13 @@
       "capReached": "Llegaste al cap de {time} con {done} de {total} ejercicios",
       "notFoundTitle": "Este WOD no se puede guiar",
       "notFoundBody": "Puede que el coach lo haya cambiado. Volvé al WOD de hoy y abrilo de nuevo."
+    },
+    "share": {
+      "instagram": "Compartir en Instagram",
+      "newPr": "Nuevo PR",
+      "wodResult": "Mi WOD de hoy",
+      "downloaded": "Guardamos la imagen en tu celular. Subila a tu historia de Instagram.",
+      "failed": "No pudimos compartir la imagen. Probá de nuevo."
     }
   },
   "admin": {

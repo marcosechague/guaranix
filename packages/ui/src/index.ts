@@ -94,3 +94,4 @@ export * from './notifications';
 export { QrCode } from './components/QrCode';
 export type { QrCodeProps } from './components/QrCode';
 export { useWakeLock } from './lib/use-wake-lock';
+export * from './share';
