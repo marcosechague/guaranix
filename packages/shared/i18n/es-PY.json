@@ -706,7 +706,7 @@
       "usedUnlimited": "Este mes: {used} usos",
       "override": "Para este box",
       "overrides": {
-        "plan": "Como su plan",
+        "plan": "Del plan",
         "on": "Activada",
         "off": "Desactivada"
       },
