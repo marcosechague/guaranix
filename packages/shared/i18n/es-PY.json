@@ -418,7 +418,8 @@
       "account": "Cuenta",
       "settings": "Ajustes",
       "payments": "Cobros",
-      "checkIn": "Entrada"
+      "checkIn": "Entrada",
+      "brodi": "Brodi"
     },
     "members": {
       "title": "Alumnos",
@@ -924,6 +925,49 @@
       "retryCamera": "Volver a intentar",
       "recentIn": "Entró",
       "recentDenied": "No entró"
+    },
+    "brodi": {
+      "title": "Brodi",
+      "subtitle": "Preguntale lo que quieras saber de tu box: cobros, alumnos, asistencia.",
+      "you": "Vos",
+      "conversation": "Conversación con Brodi",
+      "thinking": "Brodi está mirando los números…",
+      "askLabel": "Tu pregunta",
+      "askPlaceholder": "Ej.: ¿quién no viene hace 10 días?",
+      "ask": "Preguntar",
+      "readOnly": "Brodi solo mira los datos de tu box, no cambia nada.",
+      "unlimited": "Preguntas ilimitadas este mes.",
+      "remaining": "Te quedan {count} preguntas este mes.",
+      "remainingOne": "Te queda 1 pregunta este mes.",
+      "limitReached": "Ya usaste las {limit} preguntas de este mes. Se renuevan el 1.°.",
+      "emptyTitle": "¡Hola! Soy Brodi.",
+      "emptyBody": "Conozco los números de tu box. Preguntame en tus palabras o tocá una de estas.",
+      "suggestionsLabel": "Preguntas para empezar",
+      "suggestions": {
+        "collected": "¿Cuánto cobré este mes?",
+        "absent": "¿Quién no viene hace 10 días?",
+        "debtors": "¿Quién me debe?",
+        "expiring": "¿A quién se le vence el plan esta semana?"
+      },
+      "managersOnlyTitle": "Brodi es para dueños y administradores",
+      "managersOnlyBody": "Muestra plata y datos de todos los alumnos. Pedile acceso al dueño del box.",
+      "notIncludedTitle": "Brodi no está incluido en tu plan",
+      "notIncludedBody": "Escribinos y lo activamos para tu box.",
+      "weekly": {
+        "title": "Resumen de la semana",
+        "hint": "Cada lunes a la mañana te dejo acá cómo te fue la semana anterior.",
+        "range": "Del {from} al {to}",
+        "none": "Todavía no hay resumen. El primero llega el próximo lunes.",
+        "collected": "Cobrado",
+        "occupancy": "Ocupación",
+        "active": "Alumnos activos",
+        "absent": "No vinieron"
+      },
+      "home": {
+        "title": "Brodi",
+        "body": "Preguntale cuánto cobraste, quién no viene o quién te debe.",
+        "action": "Preguntale a Brodi"
+      }
     }
   },
   "platform": {

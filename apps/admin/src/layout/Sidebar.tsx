@@ -10,7 +10,8 @@ import {
 import { useBoxClock } from '@guaranix/ui/data';
 import { type LucideIcon, Settings, UserRound } from 'lucide-react';
 import { NavLink } from 'react-router';
-import { NAV_ITEMS } from './nav-items';
+import { canManage } from '../lib/roles';
+import { BRODI_NAV_ITEM, NAV_ITEMS } from './nav-items';
 
 const FOOTER_ITEMS: { to: string; label: string; icon: LucideIcon }[] = [
   { to: '/ajustes', label: t('admin.nav.settings'), icon: Settings },
@@ -52,7 +53,8 @@ function SidebarLink({
 }
 
 export function Sidebar() {
-  const { boxName } = useBoxClock();
+  const { boxName, role } = useBoxClock();
+  const items = canManage(role) ? [...NAV_ITEMS, BRODI_NAV_ITEM] : NAV_ITEMS;
   const [collapsed, setCollapsed] = useStoredFlag('gx-admin-nav-collapsed');
   return (
     <aside
@@ -73,7 +75,7 @@ export function Sidebar() {
         )}
       </div>
       <nav aria-label={t('admin.nav.label')} className="flex flex-1 flex-col gap-1">
-        {NAV_ITEMS.map((item) => (
+        {items.map((item) => (
           <SidebarLink key={item.to} {...item} collapsed={collapsed} />
         ))}
       </nav>

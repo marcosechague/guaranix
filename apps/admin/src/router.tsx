@@ -58,6 +58,12 @@ export const router = createBrowserRouter(
           }),
         },
         {
+          path: 'brodi',
+          lazy: async () => ({
+            Component: (await import('./screens/brodi/BrodiScreen')).BrodiScreen,
+          }),
+        },
+        {
           path: 'cuenta',
           lazy: async () => ({
             Component: (await import('./screens/account/AccountScreen')).AccountScreen,

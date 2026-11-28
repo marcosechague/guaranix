@@ -4,6 +4,7 @@ import {
   Dumbbell,
   LayoutDashboard,
   ScanLine,
+  MessageCircleQuestion,
   Ticket,
   Users,
   Wallet,
@@ -25,3 +26,10 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { to: '/cobros', label: t('admin.nav.payments'), icon: Wallet },
   { to: '/planes', label: t('admin.nav.plans'), icon: Ticket },
 ];
+
+/** Brodi shows the box's money, so only owners and administrators get the link. */
+export const BRODI_NAV_ITEM: NavItem = {
+  to: '/brodi',
+  label: t('admin.nav.brodi'),
+  icon: MessageCircleQuestion,
+};
