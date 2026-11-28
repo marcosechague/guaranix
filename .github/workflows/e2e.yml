@@ -1,0 +1,57 @@
+name: E2E
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  critical-flows:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: guaranix
+          POSTGRES_PASSWORD: guaranix
+          POSTGRES_DB: guaranix
+          TZ: America/Asuncion
+        ports: ['54329:5432']
+        options: >-
+          --health-cmd "pg_isready -U guaranix -d guaranix"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+    env:
+      CI: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Local configuration (no real secrets)
+        run: |
+          cp .env.example .env
+          cp apps/api/.dev.vars.example apps/api/.dev.vars
+      - name: Database with the demo box
+        run: |
+          pnpm db:migrate
+          pnpm db:seed
+      - name: Browser
+        run: pnpm --filter @guaranix/e2e exec playwright install --with-deps chromium
+      - name: Critical flows
+        run: pnpm --filter @guaranix/e2e e2e
+      - if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            e2e/playwright-report
+            e2e/test-results
+          retention-days: 7

@@ -183,7 +183,7 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 1. Antes de una tarea grande, proponé un plan corto y esperá confirmación.
 2. Construí por partes: esquema de datos → API con tests → UI.
 3. Reutilizá componentes de `packages/ui`; si falta uno, crealo ahí.
-4. Al terminar, corré lint, typecheck y tests (`pnpm lint && pnpm typecheck && pnpm test`).
+4. Al terminar, corré lint, typecheck y tests (`pnpm lint && pnpm typecheck && pnpm test`). Si tocaste un flujo crítico (login, alta del box, reservas, WOD, pagos, importación, "entrar como"), corré también `pnpm e2e` y actualizá su test en `e2e/tests`.
 
 ### Guardas automáticas
 
