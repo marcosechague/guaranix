@@ -53,6 +53,7 @@ for (const environment of ENVIRONMENTS) {
       expectEqual(`${where} APP_ENV`, vars.APP_ENV, environment);
       expectEqual(`${where} PUBLIC_API_URL`, vars.PUBLIC_API_URL, appUrls.api);
       expectEqual(`${where} ADMIN_APP_URL`, vars.ADMIN_APP_URL, appUrls.admin);
+      expectEqual(`${where} MEMBER_APP_URL`, vars.MEMBER_APP_URL, appUrls.member);
       expectEqual(
         `${where} ALLOWED_ORIGINS`,
         vars.ALLOWED_ORIGINS,

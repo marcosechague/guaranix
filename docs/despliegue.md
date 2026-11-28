@@ -73,7 +73,7 @@ O en GitHub, **Actions > Deploy production > Run workflow**, eligiendo la rama o
 
 ### 1. Cuentas
 
-- **Cloudflare**: plan Workers Paid (USD 5 por mes, recomendado). El plan gratis corta cada pedido a 10 ms de CPU (el login con contraseña lo pasa) y permite solo 5 cron por cuenta (la API usa 4 por ambiente).
+- **Cloudflare**: plan Workers Paid (USD 5 por mes, recomendado). El plan gratis corta cada pedido a 10 ms de CPU (el login con contraseña lo pasa) y permite solo 5 cron por cuenta (la API usa 5 por ambiente, así que staging y producción juntos no entran).
 - **Neon**: dos proyectos, `guaranix-staging` y `guaranix-production`, Postgres 17, región **AWS São Paulo (sa-east-1)**, la más cerca de Paraguay. El plan gratis alcanza para el piloto; para producción con datos reales conviene uno pago por el historial para restaurar.
 - **Resend** (emails), **Google Cloud** (login con Google) y el dominio. Turnstile viene con Cloudflare.
 
