@@ -1,8 +1,7 @@
 import { t, timerPlanFor } from '@guaranix/shared';
 import { Button, EmptyState, Page, Skeleton } from '@guaranix/ui';
-import { useBoxClock } from '@guaranix/ui/data';
-import { Link, useParams } from 'react-router';
-import { useWorkouts } from '../../api/queries';
+import { Link } from 'react-router';
+import { useTodayComponent } from './use-today-component';
 import { TimerRunner } from './TimerRunner';
 
 function TimerSkeleton() {
@@ -19,15 +18,10 @@ function TimerSkeleton() {
 
 /** Opened from the WOD of the day; reads the part from the cached WOD so it also opens offline. */
 export function TimerScreen() {
-  const { componentId } = useParams();
-  const { today } = useBoxClock();
-  const workouts = useWorkouts(today);
-  const component = workouts.data
-    ?.flatMap((workout) => workout.components)
-    .find((item) => item.id === componentId);
+  const { isPending, component } = useTodayComponent();
   const plan = component ? timerPlanFor(component) : null;
 
-  if (workouts.isPending) return <TimerSkeleton />;
+  if (isPending) return <TimerSkeleton />;
   if (!component || !plan) {
     return (
       <Page layout="centered">

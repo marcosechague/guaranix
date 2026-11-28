@@ -16,6 +16,12 @@ export const router = createBrowserRouter([
     }),
   },
   {
+    path: '/wod/guiado/:componentId',
+    lazy: async () => ({
+      Component: (await import('./screens/guided/GuidedScreen')).GuidedScreen,
+    }),
+  },
+  {
     path: '/',
     Component: AppShell,
     children: [

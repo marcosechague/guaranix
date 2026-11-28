@@ -180,7 +180,8 @@
       "fistBumpUndo": "Sacar el choque de puños a {name}",
       "prTitle": "¡Nuevo PR!",
       "prBody": "Superaste tu mejor marca. Brodi está orgulloso.",
-      "whichPart": "Parte del WOD"
+      "whichPart": "Parte del WOD",
+      "usedLoad": "Peso usado (kg)"
     },
     "progress": {
       "title": "Progreso",
@@ -321,6 +322,43 @@
       "qrLabel": "Código QR para entrar al box",
       "renews": "Se renueva solo · vale {time}",
       "hint": "Mostralo en la tablet de la entrada. Si no reservaste, te anotamos en la próxima clase con lugar."
+    },
+    "guided": {
+      "open": "Modo guiado",
+      "title": "Modo guiado",
+      "close": "Salir del modo guiado",
+      "movements": "Ejercicios",
+      "roundsTimes": "{rounds} rondas de",
+      "suggestedLoad": "Tu peso sugerido",
+      "yourLoad": "Tu peso",
+      "suggestedFrom": "{percent}% de tu 1RM de {movement} ({best})",
+      "noRecord": "Todavía no tenés una marca en {movement}. Elegí tu peso con + y −.",
+      "lessLoad": "Bajar 2,5 kg",
+      "moreLoad": "Subir 2,5 kg",
+      "start": "Empezar",
+      "hint": {
+        "steps": "Arranca con 10 segundos para prepararte. Al terminar cada ejercicio, tocá la pantalla en cualquier parte.",
+        "rounds": "Arranca con 10 segundos para prepararte. Al terminar cada ronda, tocá la pantalla en cualquier parte.",
+        "intervals": "Arranca con 10 segundos para prepararte. El reloj te va marcando el ejercicio de cada intervalo."
+      },
+      "first": "Primero: {step}",
+      "now": "Ahora",
+      "next": "Después: {step}",
+      "lastStep": "¡Último ejercicio!",
+      "tapHint": {
+        "steps": "Tocá en cualquier parte al terminar",
+        "rounds": "Tocá en cualquier parte al terminar la ronda",
+        "intervals": "El reloj cambia de ejercicio solo"
+      },
+      "markStep": "Terminé este ejercicio",
+      "addRound": "Sumar una ronda",
+      "followClock": "Ejercicio actual",
+      "undo": "Deshacer",
+      "progress": "Avance del WOD",
+      "stepOf": "Ejercicio {current} de {total}",
+      "capReached": "Llegaste al cap de {time} con {done} de {total} ejercicios",
+      "notFoundTitle": "Este WOD no se puede guiar",
+      "notFoundBody": "Puede que el coach lo haya cambiado. Volvé al WOD de hoy y abrilo de nuevo."
     }
   },
   "admin": {
