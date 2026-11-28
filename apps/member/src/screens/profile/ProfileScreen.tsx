@@ -12,7 +12,7 @@ import {
 } from '@guaranix/ui';
 import { AccountSecurity, useSession } from '@guaranix/ui/auth';
 import { useMe, useMyPlans, usePlans } from '../../api/queries';
-import { useBoxClock } from '../../lib/use-box-clock';
+import { useBoxClock } from '@guaranix/ui/data';
 
 const STATE_TONES: Record<MemberPlan['state'], BadgeTone> = {
   active: 'success',

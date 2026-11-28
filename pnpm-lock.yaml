@@ -53,6 +53,9 @@ importers:
       '@guaranix/ui':
         specifier: workspace:*
         version: link:../../packages/ui
+      '@hookform/resolvers':
+        specifier: ^7.0.9
+        version: 7.0.9(ajv@8.20.0)(react-hook-form@7.92.0(@types/react@19.3.3)(react@19.3.1))(zod@4.6.7)
       '@tanstack/react-query':
         specifier: ^5.108.4
         version: 5.108.4(@types/react@19.3.3)(react@19.3.1)
@@ -68,9 +71,15 @@ importers:
       react-dom:
         specifier: ^19.3.1
         version: 19.3.1(react@19.3.1)
+      react-hook-form:
+        specifier: ^7.92.0
+        version: 7.92.0(@types/react@19.3.3)(react@19.3.1)
       react-router:
         specifier: ^7.18.7
         version: 7.18.7(@types/react@19.3.3)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
+      zod:
+        specifier: ^4.6.7
+        version: 4.6.7
     devDependencies:
       '@tailwindcss/vite':
         specifier: ^4.3.5

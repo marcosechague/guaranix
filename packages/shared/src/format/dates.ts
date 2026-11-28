@@ -22,6 +22,11 @@ export function weekdayShort(date: string): string {
   return t(`common.weekdaysShort.${String(weekdayOf(date)) as Weekday}`);
 }
 
+/** Name of a weekday number (0 = domingo), as weekly schedules store it. */
+export function weekdayName(weekday: number): string {
+  return t(`common.weekdaysLong.${String(weekday) as Weekday}`);
+}
+
 export function weekdayLong(date: string): string {
   return t(`common.weekdaysLong.${String(weekdayOf(date)) as Weekday}`);
 }

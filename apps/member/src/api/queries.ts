@@ -1,28 +1,15 @@
 import type {
   ClassListItem,
-  CurrentBoxResponse,
   Leaderboard,
   Member,
   MemberPlan,
-  Movement,
   OwnBooking,
   PersonalRecord,
-  Plan,
-  Program,
   Workout,
 } from '@guaranix/shared/api';
 import { useApi } from '@guaranix/ui/data';
 import { useQuery } from '@tanstack/react-query';
 import { queryKeys } from './keys';
-
-export function useCurrentBox() {
-  const api = useApi();
-  return useQuery({
-    queryKey: queryKeys.box,
-    queryFn: () => api.get<CurrentBoxResponse>('/box/current'),
-    staleTime: 10 * 60_000,
-  });
-}
 
 export function useMe() {
   const api = useApi();
@@ -57,24 +44,6 @@ export function useMyRecords() {
   });
 }
 
-export function usePlans() {
-  const api = useApi();
-  return useQuery({
-    queryKey: queryKeys.plans,
-    queryFn: async () => (await api.get<{ plans: Plan[] }>('/box/plans')).plans,
-    staleTime: 10 * 60_000,
-  });
-}
-
-export function useMovements() {
-  const api = useApi();
-  return useQuery({
-    queryKey: queryKeys.movements,
-    queryFn: async () => (await api.get<{ movements: Movement[] }>('/box/movements')).movements,
-    staleTime: 30 * 60_000,
-  });
-}
-
 export function useClasses(from: string, to: string, enabled = true) {
   const api = useApi();
   return useQuery({
@@ -105,11 +74,4 @@ export function useLeaderboard(componentId: string | undefined) {
   });
 }
 
-export function usePrograms() {
-  const api = useApi();
-  return useQuery({
-    queryKey: queryKeys.programs,
-    queryFn: async () => (await api.get<{ programs: Program[] }>('/box/programs')).programs,
-    staleTime: 30 * 60_000,
-  });
-}
+export { useMovements, usePlans, usePrograms } from '@guaranix/ui/data';

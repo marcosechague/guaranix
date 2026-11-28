@@ -8,11 +8,13 @@ import {
   listClassesQuerySchema,
   updateClassSessionSchema,
   updateProgramSchema,
+  updateScheduleSchema,
 } from '@guaranix/shared';
 import { createBoxRouter } from '../../middleware/box-scope';
 import { idParam, parseBody, parseQuery, respond } from '../../lib/service-route';
 import { markAttendance } from '../../services/attendance';
 import { cancelClass, getClassRoster, listClasses, updateClass } from '../../services/classes';
+import { updateSchedule } from '../../services/schedule-updates';
 import { createProgram, listPrograms, updateProgram } from '../../services/programs';
 import {
   createSchedule,
@@ -69,6 +71,14 @@ schedules.post('/:scheduleId/end', MANAGERS, (context) =>
     const scheduleId = idParam(context, 'scheduleId', 'schedule');
     const { lastDate } = await parseBody(context, endScheduleSchema);
     return { schedule: await endSchedule(service, scheduleId, lastDate) };
+  }),
+);
+
+schedules.patch('/:scheduleId', MANAGERS, (context) =>
+  respond(context, async (service) => {
+    const scheduleId = idParam(context, 'scheduleId', 'schedule');
+    const input = await parseBody(context, updateScheduleSchema);
+    return updateSchedule(service, scheduleId, input);
   }),
 );
 

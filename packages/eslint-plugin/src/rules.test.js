@@ -80,9 +80,11 @@ tester.run('icon-button-label', rules['icon-button-label'], {
     "<Button><Plus />{t('member.home.bookClass')}</Button>",
     '<button><X /><span className="sr-only">{t(\'common.close\')}</span></button>',
     '<Button {...props}><X /></Button>',
+    "<IconButton label={t('common.close')}><X /></IconButton>",
   ],
   invalid: [
     { code: '<Button><X /></Button>', errors: [{ messageId: 'missing' }] },
+    { code: '<Button label="x"><X /></Button>', errors: [{ messageId: 'missing' }] },
     { code: '<a href="/settings"><Settings /></a>', errors: [{ messageId: 'missing' }] },
   ],
 });

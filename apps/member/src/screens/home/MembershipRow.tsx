@@ -4,7 +4,7 @@ import { ChevronRight } from 'lucide-react';
 import { Link } from 'react-router';
 import { useMyPlans, usePlans } from '../../api/queries';
 import { currentPlanHealth, type PlanHealth } from '../../lib/plan-status';
-import { useBoxClock } from '../../lib/use-box-clock';
+import { useBoxClock } from '@guaranix/ui/data';
 
 function headline(health: PlanHealth): string {
   switch (health.kind) {

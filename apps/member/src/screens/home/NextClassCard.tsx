@@ -3,7 +3,7 @@ import { Badge, Button, Card, EmptyState, Eyebrow, ProgressBar, Skeleton } from 
 import { Link } from 'react-router';
 import { useState } from 'react';
 import { useClasses, useMyBookings } from '../../api/queries';
-import { useBoxClock } from '../../lib/use-box-clock';
+import { useBoxClock } from '@guaranix/ui/data';
 import { CancelBookingSheet } from '../book/CancelBookingSheet';
 
 export function NextClassCard() {

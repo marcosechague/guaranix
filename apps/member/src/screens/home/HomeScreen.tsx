@@ -3,7 +3,7 @@ import { Avatar, Page, PageHeader } from '@guaranix/ui';
 import { useSession } from '@guaranix/ui/auth';
 import { Link } from 'react-router';
 import { useMe } from '../../api/queries';
-import { useBoxClock } from '../../lib/use-box-clock';
+import { useBoxClock } from '@guaranix/ui/data';
 import { MembershipRow } from './MembershipRow';
 import { NextClassCard } from './NextClassCard';
 import { StatsRow } from './StatsRow';
