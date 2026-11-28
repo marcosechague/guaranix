@@ -7,6 +7,8 @@ export const queryKeys = {
   myPlans: ['me', 'plans'] as const,
   myBookings: ['me', 'bookings'] as const,
   myRecords: ['me', 'records'] as const,
+  // Short-lived and never offline: an old pass can't open the door.
+  checkInPass: ['me', 'check-in-pass'] as const,
   // Money stays off the phone's offline cache: see keepOffline.
   myAccount: ['me', 'account'] as const,
   plans: catalogKeys.plans,

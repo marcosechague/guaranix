@@ -86,6 +86,7 @@
   --color-scrim: rgb(14 15 17 / 0.55);
   /* QR codes scan reliably only on white, in either theme. */
   --color-qr-backdrop: #ffffff;
+  --color-qr-ink: #000000;
 }
 
 @theme {

@@ -313,6 +313,14 @@
       "notes": "Nota para recepción (opcional)",
       "send": "Enviar",
       "sent": "Listo. Recepción va a revisar tu comprobante."
+    },
+    "checkIn": {
+      "open": "Mostrar mi QR para entrar",
+      "title": "Tu QR para entrar",
+      "close": "Cerrar",
+      "qrLabel": "Código QR para entrar al box",
+      "renews": "Se renueva solo · vale {time}",
+      "hint": "Mostralo en la tablet de la entrada. Si no reservaste, te anotamos en la próxima clase con lugar."
     }
   },
   "admin": {
@@ -364,7 +372,8 @@
       "plans": "Planes",
       "account": "Cuenta",
       "settings": "Ajustes",
-      "payments": "Cobros"
+      "payments": "Cobros",
+      "checkIn": "Entrada"
     },
     "members": {
       "title": "Alumnos",
@@ -837,6 +846,39 @@
         "noMembersLeft": "Quitaste todas las filas. Volvé a subir el archivo para empezar de nuevo.",
         "back": "Cambiar archivo"
       }
+    },
+    "checkIn": {
+      "title": "Entrada",
+      "eyebrow": "Check-in con QR",
+      "exit": "Salir de la entrada",
+      "switchCamera": "Cambiar de cámara",
+      "cameraLabel": "Vista de la cámara para leer el QR",
+      "waitingTitle": "Mostrá tu QR",
+      "waitingBody": "Abrí GuaraniX, tocá el ícono del QR y acercá el celular a la cámara.",
+      "checking": "Revisando…",
+      "welcome": "¡Adelante, {name}!",
+      "already": "{name}, ya estás anotado",
+      "denied": "{name}, pasá por recepción",
+      "classLine": "{program} · {time}",
+      "walkIn": "Te anotamos en {class}",
+      "reasons": {
+        "member_inactive": "Tu cuenta en el box está dada de baja.",
+        "fee_overdue": "Tenés {amount} de cuota vencida.",
+        "no_class_now": "No hay ninguna clase por empezar ahora.",
+        "class_full": "La clase {class} está llena.",
+        "waitlisted": "Estás en lista de espera para {class}.",
+        "no_valid_plan": "No tenés un plan vigente.",
+        "plan_excludes_program": "Tu plan no incluye {class}.",
+        "no_credits_left": "No te quedan clases en tu plan.",
+        "weekly_limit_reached": "Ya usaste todas las clases de esta semana."
+      },
+      "recentTitle": "Últimos ingresos",
+      "recentEmpty": "Todavía nadie pasó por la entrada.",
+      "cameraDenied": "No tenemos permiso para usar la cámara. Habilitalo en el navegador y volvé a intentar.",
+      "cameraMissing": "No encontramos una cámara en este aparato.",
+      "retryCamera": "Volver a intentar",
+      "recentIn": "Entró",
+      "recentDenied": "No entró"
     }
   },
   "platform": {

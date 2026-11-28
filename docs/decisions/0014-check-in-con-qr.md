@@ -19,3 +19,9 @@ La Fase 1 pide check-in con QR en la entrada del box (tablet o celular): solo en
 
 - `GET /box/me/check-in-pass` (alumno): el pase y cuándo vence.
 - `POST /box/check-ins` (staff) `{ pass }`: el resultado (`checked_in`, `already_checked_in` o `denied` con el motivo).
+
+## Pantallas
+
+- **Alumno**: botón de QR en Inicio (y "Mostrar mi QR para entrar" en la próxima clase si es hoy) que abre `/entrar`, a pantalla completa, con la pantalla siempre encendida. El pase no se guarda para usar sin conexión.
+- **Panel del box**: "Entrada" (`/panel/entrada`), a pantalla completa para una tablet en un soporte. Usa la cámara de adelante por defecto (se puede cambiar), lee con `BarcodeDetector` donde existe y con `jsQR` en Safari, muestra verde o naranja con el motivo durante 4 segundos, con sonido y vibración, y la lista de los últimos ingresos.
+- El QR se dibuja con `<QrCode />` de `packages/ui`, siempre negro sobre blanco para que se lea en modo oscuro.

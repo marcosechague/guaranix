@@ -12,7 +12,7 @@ export function useWakeLock(active: boolean) {
         if (cancelled) void next.release();
         else lock = next;
       } catch {
-        // Denied (low battery, unsupported context): the timer still works.
+        // Denied (low battery, unsupported context): the screen still works, it may just dim.
       }
     };
     const onVisible = () => {

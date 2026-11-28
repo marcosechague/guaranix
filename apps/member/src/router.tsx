@@ -9,6 +9,13 @@ export const router = createBrowserRouter([
     lazy: async () => ({ Component: (await import('./screens/timer/TimerScreen')).TimerScreen }),
   },
   {
+    // Full screen too: the code is shown to the entrance scanner, nothing else on screen.
+    path: '/entrar',
+    lazy: async () => ({
+      Component: (await import('./screens/check-in/CheckInPassScreen')).CheckInPassScreen,
+    }),
+  },
+  {
     path: '/',
     Component: AppShell,
     children: [

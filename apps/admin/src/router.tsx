@@ -10,6 +10,13 @@ const members = async () => ({
 export const router = createBrowserRouter(
   [
     {
+      // Entrance mode: full screen on a tablet at the door, without the panel's menus.
+      path: '/entrada',
+      lazy: async () => ({
+        Component: (await import('./screens/check-in/CheckInScreen')).CheckInScreen,
+      }),
+    },
+    {
       path: '/',
       Component: AppShell,
       children: [
