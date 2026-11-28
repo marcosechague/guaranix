@@ -59,7 +59,7 @@ Rutas del superadmin (`apps/platform`). Solo para cuentas con `users.is_platform
 | `GET /platform/ai` · `PATCH`                   | Proveedor y modelo de IA; qué claves hay cargadas (solo su final)       |
 | `PUT /platform/ai/keys/:provider` · `DELETE`   | Cargar (se guarda cifrada) o quitar la clave de un proveedor            |
 | `POST /platform/ai/test`                       | Pedido mínimo al proveedor configurado para probar clave y modelo       |
-| `GET /platform/plans/:id/features`             | Funciones que incluye un plan de GuaraniX (`ai_import`) y su límite     |
+| `GET /platform/plans/:id/features`             | Funciones que incluye un plan (`ai_import`, `whatsapp`) y su límite     |
 | `PUT /platform/plans/:id/features/:feature`    | `{ enabled, monthlyLimit }`; `null` = sin límite                        |
 | `GET /platform/boxes/:id/features`             | Lo que da su plan, la excepción del box, lo efectivo y los usos del mes |
 | `PUT /platform/boxes/:id/features/:feature`    | Excepción para el box; `null` en los dos campos vuelve a su plan        |
@@ -67,3 +67,16 @@ Rutas del superadmin (`apps/platform`). Solo para cuentas con `users.is_platform
 ## Alta del box
 
 `POST /onboarding/box` (con sesión, sin box). Cuerpo: `boxSignupSchema` (nombre, ciudad, teléfono, rubro, `setup` con programas, horarios y planes, `bookingOpensHoursBefore`, `acceptWarnings`). Responde `201` con el box, el plan de GuaraniX y el fin de la prueba; `422 setup_invalid` o `setup_needs_confirmation` con `issues`; `429 rate_limited` después de 3 altas en el día. Ver `docs/decisions/0007-alta-del-box-y-plantillas.md`.
+
+## Notificaciones
+
+Ajustes de cada persona, fuera del box (siguen a la persona en todos sus boxes). Con sesión; ver `docs/notificaciones.md`.
+
+| Ruta                                            | Para qué                                                                   |
+| ----------------------------------------------- | -------------------------------------------------------------------------- |
+| `GET /notifications/settings`                   | Preferencias por tema y canal, si hay push (clave VAPID) y Telegram        |
+| `PUT /notifications/preferences`                | `{ topic, channel, enabled }`; solo combinaciones que existen              |
+| `POST /notifications/push-subscriptions`        | Guarda la suscripción push de este navegador (`PushSubscription.toJSON()`) |
+| `POST /notifications/push-subscriptions/remove` | `{ endpoint }`: la saca                                                    |
+| `POST /notifications/telegram/link` · `DELETE`  | Enlace `t.me/<bot>?start=<código>` de un solo uso (15 min) · desvincular   |
+| `POST /integrations/telegram/webhook`           | Lo llama Telegram, con `X-Telegram-Bot-Api-Secret-Token`; sin sesión       |

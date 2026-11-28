@@ -1,6 +1,6 @@
 {
-  "id": "196e4aae-560d-4d54-9e74-1753d66c0e5b",
-  "prevId": "ff9d7016-0d32-4365-833c-a38db2bfd7c9",
+  "id": "3f25966e-625c-4579-9f86-ed9c9292f6c1",
+  "prevId": "a2bc3944-d24d-4cac-a7af-dddb64f7d152",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -170,48 +170,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": true
-        },
-        "payment_bank_name": {
-          "name": "payment_bank_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "payment_account_number": {
-          "name": "payment_account_number",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "payment_alias": {
-          "name": "payment_alias",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "payment_holder_name": {
-          "name": "payment_holder_name",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "payment_holder_document": {
-          "name": "payment_holder_document",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "payment_qr_file_key": {
-          "name": "payment_qr_file_key",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "payment_note": {
-          "name": "payment_note",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
         },
         "created_at": {
           "name": "created_at",
@@ -4378,6 +4336,691 @@
       },
       "checkConstraints": {},
       "isRLSEnabled": false
+    },
+    "public.notification_deliveries": {
+      "name": "notification_deliveries",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "box_id": {
+          "name": "box_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "notification_id": {
+          "name": "notification_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "notification_channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "recipient_key": {
+          "name": "recipient_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "member_id": {
+          "name": "member_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "notification_delivery_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'queued'"
+        },
+        "status_reason": {
+          "name": "status_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "address": {
+          "name": "address",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "message": {
+          "name": "message",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_message_id": {
+          "name": "provider_message_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sent_at": {
+          "name": "sent_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "notification_deliveries_box_id_channel_created_at_idx": {
+          "name": "notification_deliveries_box_id_channel_created_at_idx",
+          "columns": [
+            {
+              "expression": "box_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "channel",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        },
+        "notification_deliveries_status_updated_at_idx": {
+          "name": "notification_deliveries_status_updated_at_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "notification_deliveries_box_id_boxes_id_fk": {
+          "name": "notification_deliveries_box_id_boxes_id_fk",
+          "tableFrom": "notification_deliveries",
+          "columnsFrom": ["box_id"],
+          "tableTo": "boxes",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "notification_deliveries_user_id_users_id_fk": {
+          "name": "notification_deliveries_user_id_users_id_fk",
+          "tableFrom": "notification_deliveries",
+          "columnsFrom": ["user_id"],
+          "tableTo": "users",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "notification_deliveries_notification_fk": {
+          "name": "notification_deliveries_notification_fk",
+          "tableFrom": "notification_deliveries",
+          "columnsFrom": ["box_id", "notification_id"],
+          "tableTo": "notifications",
+          "columnsTo": ["box_id", "id"],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "notification_deliveries_member_fk": {
+          "name": "notification_deliveries_member_fk",
+          "tableFrom": "notification_deliveries",
+          "columnsFrom": ["box_id", "member_id"],
+          "tableTo": "members",
+          "columnsTo": ["box_id", "id"],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "notification_deliveries_once": {
+          "name": "notification_deliveries_once",
+          "columns": ["notification_id", "recipient_key", "channel"],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant_isolation": {
+          "name": "tenant_isolation",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["guaranix_app"],
+          "using": "\"notification_deliveries\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
+          "withCheck": "\"notification_deliveries\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
+        }
+      },
+      "checkConstraints": {
+        "notification_deliveries_whatsapp_address": {
+          "name": "notification_deliveries_whatsapp_address",
+          "value": "\"notification_deliveries\".\"channel\" <> 'whatsapp' or \"notification_deliveries\".\"address\" is not null"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.notification_preferences": {
+      "name": "notification_preferences",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "topic": {
+          "name": "topic",
+          "type": "notification_topic",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "channel": {
+          "name": "channel",
+          "type": "notification_channel",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "enabled": {
+          "name": "enabled",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "notification_preferences_user_id_users_id_fk": {
+          "name": "notification_preferences_user_id_users_id_fk",
+          "tableFrom": "notification_preferences",
+          "columnsFrom": ["user_id"],
+          "tableTo": "users",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "notification_preferences_user_id_topic_channel_pk": {
+          "name": "notification_preferences_user_id_topic_channel_pk",
+          "columns": ["user_id", "topic", "channel"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "deny_app_role": {
+          "name": "deny_app_role",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["guaranix_app"],
+          "using": "false",
+          "withCheck": "false"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.notifications": {
+      "name": "notifications",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "box_id": {
+          "name": "box_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "kind": {
+          "name": "kind",
+          "type": "notification_kind",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "audience": {
+          "name": "audience",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "params": {
+          "name": "params",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "actor_user_id": {
+          "name": "actor_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expanded_at": {
+          "name": "expanded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "notifications_expanded_at_created_at_idx": {
+          "name": "notifications_expanded_at_created_at_idx",
+          "columns": [
+            {
+              "expression": "expanded_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "notifications_box_id_boxes_id_fk": {
+          "name": "notifications_box_id_boxes_id_fk",
+          "tableFrom": "notifications",
+          "columnsFrom": ["box_id"],
+          "tableTo": "boxes",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "notifications_actor_user_id_users_id_fk": {
+          "name": "notifications_actor_user_id_users_id_fk",
+          "tableFrom": "notifications",
+          "columnsFrom": ["actor_user_id"],
+          "tableTo": "users",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "notifications_box_id_id_unique": {
+          "name": "notifications_box_id_id_unique",
+          "columns": ["box_id", "id"],
+          "nullsNotDistinct": false
+        },
+        "notifications_box_id_idempotency_key_unique": {
+          "name": "notifications_box_id_idempotency_key_unique",
+          "columns": ["box_id", "idempotency_key"],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant_isolation": {
+          "name": "tenant_isolation",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["guaranix_app"],
+          "using": "\"notifications\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
+          "withCheck": "\"notifications\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.push_subscriptions": {
+      "name": "push_subscriptions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "endpoint": {
+          "name": "endpoint",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "p256dh": {
+          "name": "p256dh",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "auth": {
+          "name": "auth",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "last_success_at": {
+          "name": "last_success_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "push_subscriptions_user_id_idx": {
+          "name": "push_subscriptions_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "push_subscriptions_user_id_users_id_fk": {
+          "name": "push_subscriptions_user_id_users_id_fk",
+          "tableFrom": "push_subscriptions",
+          "columnsFrom": ["user_id"],
+          "tableTo": "users",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "push_subscriptions_endpoint_unique": {
+          "name": "push_subscriptions_endpoint_unique",
+          "columns": ["endpoint"],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "deny_app_role": {
+          "name": "deny_app_role",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["guaranix_app"],
+          "using": "false",
+          "withCheck": "false"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.telegram_link_codes": {
+      "name": "telegram_link_codes",
+      "schema": "",
+      "columns": {
+        "code_hash": {
+          "name": "code_hash",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "telegram_link_codes_user_id_idx": {
+          "name": "telegram_link_codes_user_id_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "telegram_link_codes_user_id_users_id_fk": {
+          "name": "telegram_link_codes_user_id_users_id_fk",
+          "tableFrom": "telegram_link_codes",
+          "columnsFrom": ["user_id"],
+          "tableTo": "users",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "deny_app_role": {
+          "name": "deny_app_role",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["guaranix_app"],
+          "using": "false",
+          "withCheck": "false"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.telegram_links": {
+      "name": "telegram_links",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "chat_id": {
+          "name": "chat_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "telegram_links_user_id_users_id_fk": {
+          "name": "telegram_links_user_id_users_id_fk",
+          "tableFrom": "telegram_links",
+          "columnsFrom": ["user_id"],
+          "tableTo": "users",
+          "columnsTo": ["id"],
+          "onUpdate": "no action",
+          "onDelete": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "telegram_links_chatId_unique": {
+          "name": "telegram_links_chatId_unique",
+          "columns": ["chat_id"],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "deny_app_role": {
+          "name": "deny_app_role",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["guaranix_app"],
+          "using": "false",
+          "withCheck": "false"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
     }
   },
   "enums": {
@@ -4419,7 +5062,7 @@
     "public.feature_flag": {
       "name": "feature_flag",
       "schema": "public",
-      "values": ["ai_import"]
+      "values": ["ai_import", "whatsapp"]
     },
     "public.import_source": {
       "name": "import_source",
@@ -4440,6 +5083,35 @@
       "name": "movement_category",
       "schema": "public",
       "values": ["weightlifting", "gymnastics", "monostructural", "other"]
+    },
+    "public.notification_channel": {
+      "name": "notification_channel",
+      "schema": "public",
+      "values": ["push", "telegram", "whatsapp"]
+    },
+    "public.notification_delivery_status": {
+      "name": "notification_delivery_status",
+      "schema": "public",
+      "values": ["queued", "sending", "sent", "failed", "skipped"]
+    },
+    "public.notification_kind": {
+      "name": "notification_kind",
+      "schema": "public",
+      "values": [
+        "booking_confirmed",
+        "waitlist_promoted",
+        "class_cancelled",
+        "workout_published",
+        "membership_due",
+        "membership_overdue",
+        "staff_class_cancelled",
+        "staff_overdue_digest"
+      ]
+    },
+    "public.notification_topic": {
+      "name": "notification_topic",
+      "schema": "public",
+      "values": ["bookings", "workouts", "billing", "staff"]
     },
     "public.payment_method": {
       "name": "payment_method",

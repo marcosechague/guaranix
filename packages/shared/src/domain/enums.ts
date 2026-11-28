@@ -58,7 +58,29 @@ export const PAYMENT_METHODS = ['cash', 'bank_transfer', 'qr'] as const;
 export const PAYMENT_STATUSES = ['pending_review', 'confirmed', 'rejected'] as const;
 
 /** Paid extras a GuaraniX plan includes, each overridable per box from the superadmin. */
-export const FEATURE_FLAGS = ['ai_import'] as const;
+export const FEATURE_FLAGS = ['ai_import', 'whatsapp'] as const;
+/** Push and Telegram are free; WhatsApp costs per message, so it is a plan feature with a quota. */
+export const NOTIFICATION_CHANNELS = ['push', 'telegram', 'whatsapp'] as const;
+/** What a person can turn on or off, per channel. */
+export const NOTIFICATION_TOPICS = ['bookings', 'workouts', 'billing', 'staff'] as const;
+export const NOTIFICATION_KINDS = [
+  'booking_confirmed',
+  'waitlist_promoted',
+  'class_cancelled',
+  'workout_published',
+  'membership_due',
+  'membership_overdue',
+  'staff_class_cancelled',
+  'staff_overdue_digest',
+] as const;
+export const NOTIFICATION_DELIVERY_STATUSES = [
+  'queued',
+  'sending',
+  'sent',
+  'failed',
+  'skipped',
+] as const;
+
 /** AI providers behind `packages/ai`; the superadmin picks one and loads its key. */
 export const AI_PROVIDERS = ['anthropic', 'openai', 'gemini'] as const;
 
@@ -81,4 +103,8 @@ export type ChargeStatus = (typeof CHARGE_STATUSES)[number];
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
 export type FeatureFlag = (typeof FEATURE_FLAGS)[number];
+export type NotificationChannel = (typeof NOTIFICATION_CHANNELS)[number];
+export type NotificationTopic = (typeof NOTIFICATION_TOPICS)[number];
+export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
+export type NotificationDeliveryStatus = (typeof NOTIFICATION_DELIVERY_STATUSES)[number];
 export type AiProviderName = (typeof AI_PROVIDERS)[number];

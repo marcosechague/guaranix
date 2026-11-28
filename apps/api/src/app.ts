@@ -10,8 +10,10 @@ import { sessionRoutes } from './routes/auth-session';
 import { boxRoutes } from './routes/box';
 import { mountBoxRoutes } from './routes/box/index';
 import { healthRoutes } from './routes/health';
+import { notificationRoutes } from './routes/notifications';
 import { onboardingRoutes } from './routes/onboarding';
 import { platformRoutes } from './routes/platform';
+import { telegramWebhookRoutes } from './routes/telegram-webhook';
 import { createRuntimeServices } from './services/runtime';
 
 export interface AppOptions {
@@ -53,6 +55,8 @@ export function createApp(options: AppOptions = {}) {
   // Before `/box`: its catch-all box scope would otherwise open a second, nested transaction.
   app.route('/platform', platformRoutes);
   app.route('/onboarding', onboardingRoutes);
+  app.route('/notifications', notificationRoutes);
+  app.route('/integrations/telegram', telegramWebhookRoutes);
   mountBoxRoutes(app);
   app.route('/box', boxRoutes);
 

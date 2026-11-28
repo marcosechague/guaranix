@@ -155,6 +155,7 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 - Cada integración externa (pagos, WhatsApp, Telegram, SIFEN, IA) detrás de una interfaz propia, con su adaptador. Así se cambia o se testea con mocks.
 - Feature flags por box y por plan (ej. `ai_import`, `sifen`, `whatsapp`, `branded_app`), configurables desde el superadmin: `platform_plan_features` y `box_feature_overrides`, con `assertFeatureAvailable()` en la API (ver `docs/decisions/0009`).
 - Configuración en datos, no en código: planes, precios y límites se editan desde el superadmin.
+- **Notificaciones** (ver `docs/decisions/0011` y `docs/notificaciones.md`): un servicio que quiere avisar algo llama a `recordNotification()` (outbox en `notifications`, misma transacción); el router lo encola en Cloudflare Queues después del commit y el consumidor arma una entrega por persona y canal. Nunca mandes push, Telegram o WhatsApp directo desde una ruta o un servicio. Textos en `notifications.*` de `es-PY.json`.
 - Documentar decisiones importantes en `docs/decisions/` (un archivo corto por decisión).
 - Mantener este `CLAUDE.md` actualizado cuando cambie algo de arquitectura.
 

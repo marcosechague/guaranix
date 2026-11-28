@@ -12,6 +12,7 @@ import {
   Eyebrow,
   Skeleton,
   Columns,
+  NotificationsCard,
 } from '@guaranix/ui';
 import { AccountSecurity, useSession } from '@guaranix/ui/auth';
 import { Link } from 'react-router';
@@ -25,6 +26,9 @@ const STATE_TONES: Record<MemberPlan['state'], BadgeTone> = {
   expired: 'outline',
   cancelled: 'outline',
 };
+
+const MEMBER_TOPICS = ['bookings', 'workouts', 'billing'] as const;
+const MEMBER_CHANNELS = ['push', 'whatsapp'] as const;
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -120,6 +124,7 @@ export function ProfileScreen() {
           <>
             <AppearanceCard />
             <AccountSecurity />
+            <NotificationsCard topics={MEMBER_TOPICS} channels={MEMBER_CHANNELS} />
           </>
         }
       />

@@ -5,6 +5,8 @@ import {
   auditLogs,
   boxes,
   boxFeatureOverrides,
+  notificationDeliveries,
+  notifications,
   platformPlanFeatures,
   platformPlans,
   users,
@@ -154,6 +156,65 @@ describe('AI and feature tables', () => {
     const reset = asBoxA((transaction) => transaction.update(aiUsage).set({ inputTokens: 0 }));
     expect(await causeOf(remove)).toMatch(permissionDenied);
     expect(await causeOf(reset)).toMatch(permissionDenied);
+  });
+});
+
+describe('notification tables', () => {
+  it.each([
+    'push_subscriptions',
+    'telegram_links',
+    'telegram_link_codes',
+    'notification_preferences',
+  ])('%s is unreachable from a box', async (table) => {
+    const read = asBoxA((transaction) => transaction.execute(sql.raw(`select * from ${table}`)));
+    expect(await causeOf(read)).toMatch(permissionDenied);
+  });
+
+  it('a box records events but cannot rewrite them or invent deliveries', async () => {
+    const [event] = await asBoxA((transaction) =>
+      transaction
+        .insert(notifications)
+        .values({
+          boxId: boxA.boxId,
+          kind: 'class_cancelled',
+          idempotencyKey: 'class_cancelled:global-test',
+          audience: { type: 'members', memberIds: [] },
+          params: {},
+        })
+        .returning(),
+    );
+    const expand = asBoxA((transaction) =>
+      transaction.update(notifications).set({ expandedAt: new Date() }),
+    );
+    const deliver = asBoxA((transaction) =>
+      transaction.insert(notificationDeliveries).values({
+        boxId: boxA.boxId,
+        notificationId: event?.id ?? '',
+        channel: 'whatsapp',
+        recipientKey: 'member:x',
+        address: '+595981000000',
+        message: { title: 't', body: 'b' },
+      }),
+    );
+    const erase = asBoxA((transaction) => transaction.delete(notificationDeliveries));
+    expect(await causeOf(expand)).toMatch(permissionDenied);
+    expect(await causeOf(deliver)).toMatch(permissionDenied);
+    expect(await causeOf(erase)).toMatch(permissionDenied);
+  });
+
+  it('the same event cannot be recorded twice', async () => {
+    const record = () =>
+      asBoxA((transaction) =>
+        transaction.insert(notifications).values({
+          boxId: boxA.boxId,
+          kind: 'workout_published',
+          idempotencyKey: 'workout_published:twice',
+          audience: { type: 'active_members' },
+          params: {},
+        }),
+      );
+    await record();
+    expect(await causeOf(record())).toMatch(/duplicate key|unique/);
   });
 });
 
