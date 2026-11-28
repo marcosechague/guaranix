@@ -151,6 +151,9 @@ async function buildDeliveries(
         statusReason,
         address: channel === 'whatsapp' ? recipient.phone : null,
         message,
+        // The monthly WhatsApp count goes by this date.
+        createdAt: now,
+        updatedAt: now,
       });
     }
   }

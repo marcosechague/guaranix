@@ -1,3 +1,4 @@
+import type { ScopedTransaction } from '@guaranix/db';
 import type { classes } from '@guaranix/db/schema';
 import { boxUsers, programs, workouts } from '@guaranix/db/schema';
 import {
@@ -12,7 +13,7 @@ import {
 import { and, eq, inArray, ne } from 'drizzle-orm';
 import { currentBox } from '../box-calendar';
 import { isStaff, MANAGER_ROLES, type ServiceContext } from '../context';
-import { recordNotification } from './record';
+import { type NotificationEvent, recordNotification } from './record';
 
 type ClassRow = typeof classes.$inferSelect;
 type BookingLike = { id: string; memberId: string };
@@ -22,8 +23,8 @@ export function dayLabel(date: string): string {
   return `${weekdayLong(date).toLowerCase()} ${formatDayMonth(date)}`;
 }
 
-async function programName(context: ServiceContext, programId: string): Promise<string> {
-  const [program] = await context.transaction
+async function programName(transaction: ScopedTransaction, programId: string): Promise<string> {
+  const [program] = await transaction
     .select({ name: programs.name })
     .from(programs)
     .where(eq(programs.id, programId));
@@ -36,7 +37,7 @@ async function classParams(
 ): Promise<NotificationParams> {
   const box = await currentBox(context);
   return {
-    program: await programName(context, classRow.programId),
+    program: await programName(context.transaction, classRow.programId),
     day: dayLabel(dateOfInstant(box.timezone, classRow.startsAt)),
     time: formatTimeIn(box.timezone, classRow.startsAt),
     tag: `class-${classRow.id}`,
@@ -135,24 +136,27 @@ export async function notifyWorkoutPublished(
   if (!workout) return;
   const today = calendarDateIn((await currentBox(context)).timezone, context.now);
   if (workout.date < today || workout.date > addDays(today, 1)) return;
-  await announceWorkout(context, workoutId, workout);
+  await recordNotification(
+    context,
+    await workoutAnnouncement(context.transaction, workoutId, workout),
+  );
 }
 
-/** Records the WOD announcement; its key makes a second call for the same WOD a no-op. */
-export async function announceWorkout(
-  context: ServiceContext,
+/** The WOD announcement; its key makes a second one for the same WOD a no-op. */
+export async function workoutAnnouncement(
+  transaction: ScopedTransaction,
   workoutId: string,
   workout: { programId: string; date: string; title: string | null },
-): Promise<void> {
-  await recordNotification(context, {
+): Promise<NotificationEvent> {
+  return {
     kind: 'workout_published',
     key: workoutId,
     audience: { type: 'active_members' },
     params: {
-      program: await programName(context, workout.programId),
+      program: await programName(transaction, workout.programId),
       day: dayLabel(workout.date),
       title: workout.title,
       tag: `workout-${workout.date}`,
     },
-  });
+  };
 }

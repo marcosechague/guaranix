@@ -24,7 +24,7 @@ function isEmpty(audience: NotificationAudience): boolean {
  */
 export async function insertNotification(
   transaction: ScopedTransaction,
-  origin: { boxId: string; actorUserId: string | null },
+  origin: { boxId: string; actorUserId: string | null; now: Date },
   event: NotificationEvent,
 ): Promise<string | null> {
   if (isEmpty(event.audience)) return null;
@@ -37,6 +37,8 @@ export async function insertNotification(
       audience: event.audience,
       params: event.params,
       actorUserId: origin.actorUserId,
+      createdAt: origin.now,
+      updatedAt: origin.now,
     })
     .onConflictDoNothing({ target: [notifications.boxId, notifications.idempotencyKey] })
     .returning({ id: notifications.id });
@@ -50,7 +52,7 @@ export async function recordNotification(
 ): Promise<string | null> {
   const id = await insertNotification(
     context.transaction,
-    { boxId: context.auth.boxId, actorUserId: context.auth.userId },
+    { boxId: context.auth.boxId, actorUserId: context.auth.userId, now: context.now },
     event,
   );
   if (id) context.outbox?.push(id);

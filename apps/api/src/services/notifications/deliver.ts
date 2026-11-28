@@ -1,7 +1,7 @@
 import { type SchemaDatabase, withSystemScope } from '@guaranix/db';
 import { notificationDeliveries } from '@guaranix/db/schema';
 import { ChannelError, type ChannelAddress, type OutgoingMessage } from '@guaranix/messaging';
-import { and, eq, lt, ne, or, sql } from 'drizzle-orm';
+import { and, eq, gt, lt, ne, or, sql } from 'drizzle-orm';
 import type { NotificationChannels } from './queue';
 import { type Target, targetsOf } from './targets';
 
@@ -184,19 +184,24 @@ export async function sendDelivery(
 export async function findStalledDeliveries(database: SchemaDatabase, now: Date, limit: number) {
   const before = new Date(now.getTime() - 2 * MAX_BACKOFF_SECONDS * 1000);
   const staleSending = new Date(now.getTime() - STALE_SENDING_MS);
+  // A day-old notice is stale news; it stays unsent rather than arriving late.
+  const oldest = new Date(now.getTime() - 24 * 60 * 60_000);
   const rows = await withSystemScope(database, (transaction) =>
     transaction
       .select({ id: notificationDeliveries.id })
       .from(notificationDeliveries)
       .where(
-        or(
-          and(
-            eq(notificationDeliveries.status, 'queued'),
-            lt(notificationDeliveries.updatedAt, before),
-          ),
-          and(
-            eq(notificationDeliveries.status, 'sending'),
-            lt(notificationDeliveries.updatedAt, staleSending),
+        and(
+          gt(notificationDeliveries.createdAt, oldest),
+          or(
+            and(
+              eq(notificationDeliveries.status, 'queued'),
+              lt(notificationDeliveries.updatedAt, before),
+            ),
+            and(
+              eq(notificationDeliveries.status, 'sending'),
+              lt(notificationDeliveries.updatedAt, staleSending),
+            ),
           ),
         ),
       )

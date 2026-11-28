@@ -46,9 +46,7 @@ export const notificationPreferenceInputSchema = z
 
 /** What the browser's `PushSubscription.toJSON()` returns. */
 export const pushSubscriptionInputSchema = z.object({
-  endpoint: z
-    .url({ protocol: /^https$/ })
-    .max(1000),
+  endpoint: z.url({ protocol: /^https$/ }).max(1000),
   keys: z.object({
     p256dh: z
       .string()
@@ -64,6 +62,21 @@ export const pushSubscriptionInputSchema = z.object({
 });
 
 export const pushUnsubscribeInputSchema = pushSubscriptionInputSchema.pick({ endpoint: true });
+
+/**
+ * A Telegram webhook update. Only `message` matters and every field is
+ * optional, so updates of kinds we ignore still validate (and get a 200).
+ */
+export const telegramUpdateSchema = z.looseObject({
+  update_id: z.number().optional(),
+  message: z
+    .looseObject({
+      text: z.string().max(4096).optional(),
+      chat: z.looseObject({ id: z.union([z.number(), z.string()]), type: z.string() }).optional(),
+      from: z.looseObject({ username: z.string().max(64).optional() }).optional(),
+    })
+    .optional(),
+});
 
 export type NotificationPreferenceInput = z.input<typeof notificationPreferenceInputSchema>;
 export type PushSubscriptionInput = z.input<typeof pushSubscriptionInputSchema>;

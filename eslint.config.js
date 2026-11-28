@@ -22,6 +22,8 @@ const PUBLIC_ROUTE_FILES = [
   'apps/api/src/middleware/account-scope.ts',
   'apps/api/src/routes/auth-*.ts',
   'apps/api/src/routes/health.ts',
+  // Called by Telegram's servers; authenticated by the webhook secret header.
+  'apps/api/src/routes/telegram-webhook.ts',
 ];
 // Code allowed to read the request directly: the Zod helpers, and the Google callback's OAuth params.
 const RAW_INPUT_FILES = [
@@ -50,7 +52,7 @@ const SYSTEM_SCOPE_FILES = [
   'apps/api/src/services/notifications/targets.ts',
   'apps/api/src/services/notifications/telegram-webhook.ts',
   'apps/api/src/jobs/notification-sweeper.ts',
-  'apps/api/src/jobs/membership-reminders.ts',
+  'apps/api/src/jobs/notifying-boxes.ts',
 ];
 
 export default tseslint.config(

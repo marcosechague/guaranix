@@ -21,7 +21,7 @@ const accountScope: MiddlewareHandler<AccountEnv> = async (context, next) => {
   await runRequestInTransaction(context, next, (work) => withSystemScope(database, work));
 };
 
-/** Router for a signed-in person's own account, outside any box (`/onboarding/...`). */
+/** Router for a signed-in person's own account, outside any box (`/onboarding`, `/notifications`). */
 export function createAccountRouter() {
   const router = new Hono<AccountEnv>();
   router.use('*', accountScope);
@@ -29,5 +29,7 @@ export function createAccountRouter() {
     router,
     get: (path: string, handler: Handler<AccountEnv>) => router.get(path, handler),
     post: (path: string, handler: Handler<AccountEnv>) => router.post(path, handler),
+    put: (path: string, handler: Handler<AccountEnv>) => router.put(path, handler),
+    delete: (path: string, handler: Handler<AccountEnv>) => router.delete(path, handler),
   };
 }
