@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { bookingPolicySchema, t } from '@guaranix/shared';
 import type { BookingPolicy } from '@guaranix/shared/schemas';
-import { Button, Card, FormMessage, SegmentedControl, TextField, useToast } from '@guaranix/ui';
+import { Card, FormSaveActions, SegmentedControl, TextField, useToast } from '@guaranix/ui';
 import { errorText } from '@guaranix/ui/data';
 import { type Control, Controller, useForm } from 'react-hook-form';
 import { useSaveBookingPolicy } from '../../api/mutations';
@@ -122,12 +122,12 @@ export function BookingPolicyCard({ policy, editable }: BookingPolicyCardProps) 
             />
           </div>
         </fieldset>
-        {save.isError ? <FormMessage tone="error">{errorText(save.error)}</FormMessage> : null}
-        {editable ? (
-          <Button type="submit" className="self-end" disabled={!isDirty || save.isPending}>
-            {save.isPending ? t('common.saving') : t('common.save')}
-          </Button>
-        ) : null}
+        <FormSaveActions
+          editable={editable}
+          dirty={isDirty}
+          pending={save.isPending}
+          error={save.isError ? errorText(save.error) : null}
+        />
       </form>
     </Card>
   );

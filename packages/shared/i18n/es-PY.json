@@ -485,7 +485,7 @@
     },
     "settings": {
       "title": "Ajustes del box",
-      "subtitle": "Reglas de reserva y cupos por horario",
+      "subtitle": "Reglas de reserva, cupos y datos de cobro",
       "bookingTitle": "Reservas y cancelaciones",
       "bookingHint": "Estas reglas valen para todos los alumnos del box.",
       "opensHours": "Se puede reservar desde (horas antes)",
@@ -506,7 +506,25 @@
       "capacitySaved": "Cupo actualizado en {count} clases.",
       "spots": "{count} lugares",
       "durationMinutes": "{count} min",
-      "readOnly": "Solo el dueño o un administrador pueden cambiar estos ajustes."
+      "readOnly": "Solo el dueño o un administrador pueden cambiar estos ajustes.",
+      "paymentTitle": "Datos de cobro",
+      "paymentHint": "Tus alumnos los ven al informar un pago, con botones para copiar.",
+      "bankName": "Banco",
+      "accountNumber": "Número de cuenta",
+      "alias": "Alias de transferencia",
+      "aliasHint": "Celular, cédula, RUC o email registrado en el banco.",
+      "holderName": "Titular de la cuenta",
+      "holderDocument": "RUC o cédula del titular",
+      "holderDocumentHint": "RUC con dígito (80012345-6) o cédula sin puntos.",
+      "paymentNote": "Indicaciones (opcional)",
+      "paymentNotePlaceholder": "Ej.: poné tu nombre en el concepto de la transferencia.",
+      "qr": "QR de cobro",
+      "qrPrompt": "Imagen del QR de tu banco o billetera",
+      "qrHint": "JPG, PNG o WebP, hasta 2 MB.",
+      "qrRemove": "Quitar el QR",
+      "qrSaved": "QR actualizado.",
+      "qrRemoved": "QR quitado.",
+      "qrEmpty": "Todavía no subiste un QR."
     },
     "payments": {
       "title": "Cobros",
@@ -920,7 +938,7 @@
       "editShort": "Editar"
     },
     "impersonation": {
-      "banner": "Estás dentro de {box} como soporte de GuaraniX, hasta las {time}.",
+      "banner": "Estás viendo {box} como soporte de GuaraniX, en modo solo lectura, hasta las {time}.",
       "leave": "Salir del box"
     },
     "activity": {
@@ -1105,7 +1123,8 @@
       "validation_failed": "Revisá los datos e intentá de nuevo.",
       "internal_error": "Algo salió mal de nuestro lado. Probá de nuevo en un rato.",
       "box_suspended": "Tu box está suspendido. Escribile al dueño para reactivarlo.",
-      "box_cancelled": "Este box ya no usa GuaraniX."
+      "box_cancelled": "Este box ya no usa GuaraniX.",
+      "impersonation_read_only": "Como soporte solo podés mirar: no se pueden guardar cambios dentro de un box."
     },
     "email": {
       "resetSubject": "Creá tu nueva contraseña de GuaraniX",
@@ -1122,6 +1141,7 @@
     "forbidden": "No tenés permiso para hacer esto.",
     "rate_limited": "Hiciste muchos intentos. Esperá unos minutos y probá de nuevo.",
     "payload_too_large": "Lo que mandaste es demasiado grande. Probá con un archivo más chico.",
+    "impersonation_read_only": "Como soporte solo podés mirar: no se pueden guardar cambios dentro de un box.",
     "member_not_found": "No encontramos a ese alumno.",
     "plan_not_found": "No encontramos ese plan.",
     "member_plan_not_found": "No encontramos ese plan del alumno.",
@@ -1185,6 +1205,10 @@
     "receipt_too_large": "El comprobante pesa más de 5 MB. Sacale una captura o una foto más liviana.",
     "receipt_type": "El comprobante tiene que ser una foto (JPG, PNG o WebP) o un PDF.",
     "receipt_not_found": "No encontramos ese comprobante. Volvé a subirlo.",
+    "payment_qr_empty": "El archivo está vacío. Probá con otra imagen del QR.",
+    "payment_qr_too_large": "La imagen del QR pesa más de 2 MB. Subí una captura más liviana.",
+    "payment_qr_type": "El QR tiene que ser una imagen JPG, PNG o WebP.",
+    "payment_qr_not_found": "Este box todavía no subió su QR.",
     "internal_error": "Algo salió mal. Probá de nuevo en un rato.",
     "platform_plan_not_found": "No encontramos ese plan de GuaraniX.",
     "platform_plan_code_taken": "Ya hay un plan con ese código.",
@@ -1271,6 +1295,20 @@
     "perMonth": "por {days} días"
   },
   "payments": {
+    "details": {
+      "title": "Datos para pagar",
+      "bankName": "Banco",
+      "accountNumber": "Número de cuenta",
+      "alias": "Alias",
+      "holderName": "Titular",
+      "holderDocument": "RUC o cédula del titular",
+      "copy": "Copiar {label}",
+      "copied": "Copiado",
+      "qrAlt": "Código QR para pagar al box",
+      "saveQr": "Guardar el QR",
+      "noTransfer": "El box todavía no cargó su cuenta. Consultá en recepción.",
+      "noQr": "El box todavía no subió su QR. Consultá en recepción o pagá por transferencia."
+    },
     "methods": {
       "cash": "Efectivo",
       "bank_transfer": "Transferencia",
