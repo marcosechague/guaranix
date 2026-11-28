@@ -1,6 +1,13 @@
 import type { Charge, OwnAccount } from '@guaranix/shared/api';
 import { describe, expect, it } from 'vitest';
-import { feeState, inReviewGs, leftToPayGs, openCharges } from './fees';
+import {
+  feeState,
+  inReviewGs,
+  leftToPayGs,
+  openCharges,
+  payableGs,
+  reportableCharges,
+} from './fees';
 
 const charge = (overrides: Partial<Charge>): Charge => ({
   id: 'c1',
@@ -68,5 +75,15 @@ describe('fees', () => {
     expect(inReviewGs(state)).toBe(300_000);
     expect(leftToPayGs({ ...state, outstandingGs: 600_000 })).toBe(300_000);
     expect(leftToPayGs({ ...state, outstandingGs: 100_000 })).toBe(0);
+  });
+
+  it('offers only what is left after receipts waiting for review', () => {
+    const partly = charge({ id: 'c1' });
+    const other = charge({ id: 'c2', dueOn: '2026-12-10' });
+    const state = account([partly, other], [payment({ chargeId: 'c1', amountGs: 100_000 })]);
+    expect(payableGs(partly, state)).toBe(200_000);
+    expect(reportableCharges(state).map((item) => item.id)).toEqual(['c1', 'c2']);
+    const covered = account([partly], [payment({ chargeId: 'c1' })]);
+    expect(reportableCharges(covered)).toEqual([]);
   });
 });

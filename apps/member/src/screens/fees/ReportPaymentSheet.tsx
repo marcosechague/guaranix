@@ -20,7 +20,7 @@ import {
 import { errorText } from '@guaranix/ui/data';
 import { useState } from 'react';
 import { useReportPayment } from '../../api/mutations';
-import { openCharges } from '../../lib/fees';
+import { payableGs, reportableCharges } from '../../lib/fees';
 
 type MemberMethod = 'bank_transfer' | 'qr';
 
@@ -35,7 +35,7 @@ const PENDING_UPLOAD = 'pending-upload';
 
 /** Transfer or QR with its receipt; the front desk confirms it afterwards. */
 export function ReportPaymentSheet({ memberId, account, onClose }: ReportPaymentSheetProps) {
-  const charges = openCharges(account);
+  const charges = reportableCharges(account);
   const [chargeId, setChargeId] = useState(charges[0]?.id ?? '');
   const [amount, setAmount] = useState<number | null>(null);
   const [method, setMethod] = useState<MemberMethod>('bank_transfer');
@@ -47,7 +47,7 @@ export function ReportPaymentSheet({ memberId, account, onClose }: ReportPayment
   const toast = useToast();
 
   const charge = charges.find((item) => item.id === chargeId);
-  const amountValue = amount ?? charge?.outstandingGs ?? null;
+  const amountValue = amount ?? (charge ? payableGs(charge, account) : null);
   const receiptProblem = receipt ? receiptFileProblem(receipt) : 'receipt_required';
 
   const submit = () => {
@@ -105,7 +105,7 @@ export function ReportPaymentSheet({ memberId, account, onClose }: ReportPayment
               <option key={item.id} value={item.id}>
                 {t('member.fees.chargeOption', {
                   description: item.description,
-                  amount: formatGuarani(item.outstandingGs),
+                  amount: formatGuarani(payableGs(item, account)),
                 })}
               </option>
             ))}

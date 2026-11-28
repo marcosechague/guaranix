@@ -274,7 +274,7 @@
       "receiptPrompt": "Captura o foto del comprobante",
       "receiptHint": "JPG, PNG, WebP o PDF, hasta 5 MB.",
       "notes": "Nota para recepción (opcional)",
-      "send": "Enviar comprobante",
+      "send": "Enviar",
       "sent": "Listo. Recepción va a revisar tu comprobante."
     }
   },

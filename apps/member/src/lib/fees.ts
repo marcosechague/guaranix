@@ -34,3 +34,16 @@ export function inReviewGs(account: OwnAccount): number {
 export function leftToPayGs(account: OwnAccount): number {
   return Math.max(account.outstandingGs - inReviewGs(account), 0);
 }
+
+/** What is still left on a fee once the receipts waiting for review are counted. */
+export function payableGs(charge: Charge, account: OwnAccount): number {
+  const pending = account.payments
+    .filter((payment) => payment.chargeId === charge.id && payment.status === 'pending_review')
+    .reduce((total, payment) => total + payment.amountGs, 0);
+  return Math.max(charge.outstandingGs - pending, 0);
+}
+
+/** Fees a new receipt can go to: open, oldest first, with something left after pending ones. */
+export function reportableCharges(account: OwnAccount): Charge[] {
+  return openCharges(account).filter((charge) => payableGs(charge, account) > 0);
+}

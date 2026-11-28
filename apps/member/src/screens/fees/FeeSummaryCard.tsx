@@ -55,28 +55,35 @@ export function FeeSummaryCard({ account, today, onReport }: FeeSummaryCardProps
   const Icon = reviewing ? Hourglass : CircleCheck;
   const next = openCharges(account).find((charge) => charge.dueOn >= today);
   return (
-    <Card className="flex flex-row items-start gap-4">
-      <span
-        aria-hidden="true"
-        className="flex size-11 shrink-0 items-center justify-center rounded-pill bg-success-soft text-success"
-      >
-        <Icon size={22} strokeWidth={1.75} />
-      </span>
-      <span className="flex min-w-0 flex-col gap-1">
-        <span className="font-display text-xl font-bold">
-          {t(reviewing ? 'member.fees.inReviewTitle' : 'member.fees.allPaid')}
+    <Card className="flex flex-col gap-4">
+      <div className="flex items-start gap-4">
+        <span
+          aria-hidden="true"
+          className="flex size-11 shrink-0 items-center justify-center rounded-pill bg-success-soft text-success"
+        >
+          <Icon size={22} strokeWidth={1.75} />
         </span>
-        <span className="text-sm text-text-secondary">
-          {reviewing
-            ? t('member.fees.inReviewMeta', { amount: formatGuarani(inReview) })
-            : next
-              ? t('member.fees.nextDue', {
-                  amount: formatGuarani(next.outstandingGs),
-                  date: formatShortDate(next.dueOn),
-                })
-              : t('member.fees.allPaidMeta')}
+        <span className="flex min-w-0 flex-col gap-1">
+          <span className="font-display text-xl font-bold">
+            {t(reviewing ? 'member.fees.inReviewTitle' : 'member.fees.allPaid')}
+          </span>
+          <span className="text-sm text-text-secondary">
+            {reviewing
+              ? t('member.fees.inReviewMeta', { amount: formatGuarani(inReview) })
+              : next
+                ? t('member.fees.nextDue', {
+                    amount: formatGuarani(next.outstandingGs),
+                    date: formatShortDate(next.dueOn),
+                  })
+                : t('member.fees.allPaidMeta')}
+          </span>
         </span>
-      </span>
+      </div>
+      {/* Paying ahead, or a second transfer, is still possible. */}
+      <Button variant="secondary" onClick={onReport}>
+        <Upload aria-hidden="true" size={18} />
+        {t('member.fees.report')}
+      </Button>
     </Card>
   );
 }
