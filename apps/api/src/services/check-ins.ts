@@ -1,6 +1,11 @@
 import { and, asc, eq, gt, lte } from 'drizzle-orm';
 import { bookings, classes, type members, programs } from '@guaranix/db/schema';
-import type { CheckInDenial, CheckInPassView, CheckInResult } from '@guaranix/shared/schemas';
+import type {
+  CheckInDenial,
+  CheckInPassView,
+  CheckInResult,
+  EntranceResult,
+} from '@guaranix/shared/schemas';
 import {
   type Candidate,
   admit,
@@ -12,10 +17,11 @@ import {
 } from './admission';
 import { assertCheckInModeEnabled } from './box-settings';
 import { SPOT_STATUSES, bookClass, takenSpots } from './bookings';
-import { signCheckInPass, verifyCheckInPass } from './check-in-pass';
+import { isStaffPass, signCheckInPass, verifyCheckInPass } from './check-in-pass';
 import { CLASS_STAFF_ROLES, assertRole, type ServiceContext } from './context';
 import { unprocessable } from './errors';
 import { getMember, getOwnMember } from './members';
+import { recordStaffArrival } from './staff-arrivals';
 
 type MemberRow = typeof members.$inferSelect;
 
@@ -110,9 +116,10 @@ export async function checkInWithPass(
   context: ServiceContext,
   secret: string,
   pass: string,
-): Promise<CheckInResult> {
+): Promise<EntranceResult> {
   assertRole(context.auth.role, CLASS_STAFF_ROLES);
   await assertCheckInModeEnabled(context, 'desk');
+  if (isStaffPass(pass)) return recordStaffArrival(context, secret, pass);
   const memberId = await verifyCheckInPass(secret, context.auth.boxId, pass, context.now);
   return checkInMember(context, await getMember(context, memberId), null);
 }

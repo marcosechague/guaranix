@@ -19,6 +19,7 @@ const CHECK_IN_FIELDS = [
   'checkInDeskEnabled',
   'checkInCoachEnabled',
   'checkInWallQrEnabled',
+  'checkInStaffEnabled',
   'checkInRadiusMeters',
 ] as const satisfies readonly (keyof CheckInPolicy)[];
 
@@ -92,6 +93,8 @@ export function checkInModesOf(row: Omit<CheckInPolicy, 'checkInRadiusMeters'>):
     desk: row.checkInDeskEnabled,
     coach: row.checkInCoachEnabled,
     wallQr: row.checkInWallQrEnabled,
+    // Staff arrive through the same entrance device, so without it there is nowhere to scan.
+    staff: row.checkInDeskEnabled && row.checkInStaffEnabled,
   };
 }
 

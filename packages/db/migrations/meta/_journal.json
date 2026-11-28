@@ -176,6 +176,20 @@
       "when": 1795874327642,
       "tag": "0024_check_in_modes_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1795876709594,
+      "tag": "0025_staff_arrivals",
+      "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1795876710479,
+      "tag": "0026_staff_arrivals_grants",
+      "breakpoints": true
     }
   ]
 }

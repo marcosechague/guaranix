@@ -10,6 +10,7 @@ import {
   getCheckInPolicy,
   updateBookingPolicy,
   updateCheckInPolicy,
+  checkInModesOf,
 } from './box-settings';
 
 let fixture: ServiceFixture;
@@ -85,6 +86,7 @@ describe('check-in settings', () => {
     checkInDeskEnabled: false,
     checkInCoachEnabled: false,
     checkInWallQrEnabled: true,
+    checkInStaffEnabled: true,
     checkInRadiusMeters: 200,
   };
 
@@ -94,9 +96,22 @@ describe('check-in settings', () => {
         checkInDeskEnabled: false,
         checkInCoachEnabled: true,
         checkInWallQrEnabled: false,
+        checkInStaffEnabled: false,
         checkInRadiusMeters: 150,
       },
     );
+  });
+
+  it('counts the staff mode only while the entrance device is on', () => {
+    const modes = {
+      checkInDeskEnabled: false,
+      checkInCoachEnabled: true,
+      checkInWallQrEnabled: false,
+    };
+    expect(checkInModesOf({ ...modes, checkInStaffEnabled: true }).staff).toBe(false);
+    expect(
+      checkInModesOf({ ...modes, checkInDeskEnabled: true, checkInStaffEnabled: true }).staff,
+    ).toBe(true);
   });
 
   it('only owners and admins change it, for their box only, audited', async () => {

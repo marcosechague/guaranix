@@ -39,6 +39,7 @@ export const checkInPolicySchema = z.object({
   checkInDeskEnabled: z.boolean(),
   checkInCoachEnabled: z.boolean(),
   checkInWallQrEnabled: z.boolean(),
+  checkInStaffEnabled: z.boolean(),
   checkInRadiusMeters: z
     .number()
     .int()
@@ -99,4 +100,6 @@ export interface CheckInModes {
   desk: boolean;
   coach: boolean;
   wallQr: boolean;
+  /** Staff scan their own QR at the entrance when they arrive. */
+  staff: boolean;
 }

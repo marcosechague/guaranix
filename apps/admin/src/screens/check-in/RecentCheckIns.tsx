@@ -22,7 +22,11 @@ export function RecentCheckIns({ entries }: { entries: RecentEntry[] }) {
                 <span className="text-sm text-text-secondary tabular-nums">
                   {formatTimeIn(timeZone, new Date(at))}
                 </span>
-                {result.outcome === 'denied' ? (
+                {result.outcome === 'staff_arrived' ? (
+                  <Badge tone="neutral" dot>
+                    {t('admin.checkIn.recentStaff')}
+                  </Badge>
+                ) : result.outcome === 'denied' ? (
                   <Badge tone="warning" dot>
                     {t('admin.checkIn.recentDenied')}
                   </Badge>

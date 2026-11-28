@@ -99,6 +99,7 @@ export async function seedShowcase(
         // The demo shows every way of checking in.
         checkInDeskEnabled: true,
         checkInWallQrEnabled: true,
+        checkInStaffEnabled: true,
       })
       .where(eq(boxes.id, boxId));
     // Downtown Asunción, so the wall QR can be tried with a phone placed there (e2e does).

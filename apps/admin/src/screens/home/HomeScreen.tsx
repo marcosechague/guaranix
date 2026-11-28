@@ -9,11 +9,12 @@ import { BrodiHomeCard } from './BrodiHomeCard';
 import { DebtorsCard } from './DebtorsCard';
 import { KpiRow } from './KpiRow';
 import { TodayClassesCard } from './TodayClassesCard';
+import { StaffArrivalsCard } from './StaffArrivalsCard';
 import { TodayWodCard } from './TodayWodCard';
 
 export function HomeScreen() {
   const session = useSession();
-  const { today, role } = useBoxClock();
+  const { today, role, checkInModes } = useBoxClock();
   const firstName = session.user.fullName.split(' ')[0] ?? '';
   return (
     <Page layout="panel">
@@ -45,6 +46,7 @@ export function HomeScreen() {
         <TodayClassesCard className="lg:col-span-2" />
         <div className="flex flex-col gap-6">
           {canManage(role) ? <BrodiHomeCard /> : null}
+          {canManage(role) && checkInModes?.staff ? <StaffArrivalsCard /> : null}
           <TodayWodCard />
           {canFrontDesk(role) ? <DebtorsCard /> : null}
         </div>

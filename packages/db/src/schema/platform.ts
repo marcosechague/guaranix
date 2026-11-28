@@ -76,6 +76,8 @@ export const boxes = pgTable(
     checkInDeskEnabled: boolean().notNull().default(false),
     checkInCoachEnabled: boolean().notNull().default(true),
     checkInWallQrEnabled: boolean().notNull().default(false),
+    /** Coaches and front desk scan their own QR at the entrance tablet when they arrive. */
+    checkInStaffEnabled: boolean().notNull().default(false),
     /** How close to a location a phone must be for the wall QR to count. */
     checkInRadiusMeters: integer().notNull().default(150),
     // Where members pay by transfer or QR, shown in the member app. The QR image is in R2.

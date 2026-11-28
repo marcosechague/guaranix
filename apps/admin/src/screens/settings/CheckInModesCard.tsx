@@ -6,13 +6,16 @@ import { useSaveCheckInPolicy } from '../../api/check-in-settings';
 import { SettingsFormCard } from './SettingsFormCard';
 import { useSettingsForm } from './use-settings-form';
 
-type ModeField = 'checkInDeskEnabled' | 'checkInCoachEnabled' | 'checkInWallQrEnabled';
+type ModeField =
+  'checkInDeskEnabled' | 'checkInCoachEnabled' | 'checkInWallQrEnabled' | 'checkInStaffEnabled';
 
-const MODES: { field: ModeField; key: 'desk' | 'coach' | 'wallQr' }[] = [
+const MODES: { field: ModeField; key: 'desk' | 'coach' | 'wallQr' | 'staff' }[] = [
   { field: 'checkInDeskEnabled', key: 'desk' },
   { field: 'checkInCoachEnabled', key: 'coach' },
   { field: 'checkInWallQrEnabled', key: 'wallQr' },
 ];
+
+const STAFF_MODE = { field: 'checkInStaffEnabled', key: 'staff' } as const;
 
 function ModeSwitch({
   control,
@@ -53,6 +56,7 @@ export function CheckInModesCard({ policy, editable }: CheckInModesCardProps) {
   const { form, cardProps } = useSettingsForm(checkInPolicySchema, policy, save);
   const { errors } = form.formState;
   const wallQr = useWatch({ control: form.control, name: 'checkInWallQrEnabled' });
+  const desk = useWatch({ control: form.control, name: 'checkInDeskEnabled' });
 
   return (
     <SettingsFormCard
@@ -71,6 +75,15 @@ export function CheckInModesCard({ policy, editable }: CheckInModesCardProps) {
             disabled={!editable}
           />
         ))}
+        {/* Staff scan their QR at the entrance device, so the option only exists alongside it. */}
+        {desk ? (
+          <ModeSwitch
+            control={form.control}
+            field={STAFF_MODE.field}
+            modeKey={STAFF_MODE.key}
+            disabled={!editable}
+          />
+        ) : null}
         {wallQr ? (
           <TextField
             label={t('admin.settings.checkIn.radius')}

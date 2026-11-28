@@ -429,6 +429,9 @@
       "noOccupancy": "Sin clases todavía",
       "debtors": "Cuotas vencidas",
       "debtorsHint": "Avisales por WhatsApp con un toque.",
+      "staffArrivals": "Llegadas del staff hoy",
+      "staffArrivalsHint": "Quién del equipo ya pasó su QR por la Entrada.",
+      "noStaffArrivals": "Todavía no llegó nadie del equipo. Cada uno abre «Mi QR de llegada» en el menú y lo muestra en la Entrada.",
       "noDebtors": "Nadie debe cuotas. Buen trabajo.",
       "owed": "{amount} · desde el {date}",
       "whatsapp": "WhatsApp",
@@ -450,6 +453,7 @@
       "settings": "Ajustes",
       "payments": "Cobros",
       "checkIn": "Entrada",
+      "myQr": "Mi QR de llegada",
       "brodi": "Brodi",
       "more": "Más"
     },
@@ -721,6 +725,8 @@
         "coachHint": "El coach marca quién vino desde la clase, en su celular.",
         "wallQr": "QR impreso en la pared",
         "wallQrHint": "El alumno escanea el cartel con su celular. Solo cuenta si está en el box y en horario de clase.",
+        "staff": "Llegada del staff",
+        "staffHint": "Coaches y recepción muestran su propio QR en la Entrada al llegar, y vos ves a qué hora llegó cada uno.",
         "radius": "Distancia máxima a la sede (metros)",
         "radiusHint": "Cargá la ubicación de cada sede en Sedes. 150 m alcanza para la mayoría de los boxes.",
         "radiusInvalid": "Poné un número entre 30 y 1000."
@@ -984,7 +990,10 @@
       "cameraMissing": "No encontramos una cámara en este aparato.",
       "retryCamera": "Volver a intentar",
       "recentIn": "Entró",
-      "recentDenied": "No entró"
+      "recentDenied": "No entró",
+      "recentStaff": "Staff",
+      "staffArrived": "¡Hola, {name}!",
+      "staffArrivedAt": "Llegada registrada a las {time}."
     },
     "brodi": {
       "title": "Brodi",
@@ -1028,6 +1037,13 @@
         "body": "Preguntale cuánto cobraste, quién no viene o quién te debe.",
         "action": "Preguntale a Brodi"
       }
+    },
+    "staffPass": {
+      "title": "Mi QR de llegada",
+      "close": "Cerrar",
+      "qrLabel": "Código QR para registrar tu llegada al box",
+      "renews": "Se renueva solo · vale {time}",
+      "hint": "Mostralo en la tablet de la Entrada cuando llegues al box."
     },
     "wallPoster": {
       "back": "Volver a Ajustes",
@@ -1607,6 +1623,7 @@
     "check_in_pass_expired": "Ese QR ya venció. Pedile al alumno que abra su QR de nuevo.",
     "check_in_not_open": "Todavía no se puede marcar: se abre 30 minutos antes de la clase.",
     "check_in_mode_disabled": "El box no usa esta forma de marcar asistencia. Se activa en Ajustes.",
+    "staff_inactive": "Ese QR es de alguien que ya no trabaja en el box.",
     "class_full": "La clase se llenó. Probá con la siguiente.",
     "wall_qr_invalid": "Ese QR no es de tu box. Escaneá el cartel de la pared de tu box.",
     "wall_qr_location_missing": "Esta sede todavía no tiene cargada su ubicación. Avisale al coach para que te marque.",

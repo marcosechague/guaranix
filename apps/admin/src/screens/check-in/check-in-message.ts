@@ -1,4 +1,4 @@
-import { formatGuarani, formatTimeIn, t, type CheckInResult } from '@guaranix/shared';
+import { formatGuarani, formatTimeIn, t, type EntranceResult } from '@guaranix/shared';
 
 export interface CheckInMessage {
   tone: 'success' | 'warning';
@@ -7,8 +7,15 @@ export interface CheckInMessage {
 }
 
 /** What the entrance screen says, big enough to read from a step away. */
-export function checkInMessage(result: CheckInResult, timeZone: string): CheckInMessage {
+export function checkInMessage(result: EntranceResult, timeZone: string): CheckInMessage {
   const name = result.member.firstName;
+  if (result.outcome === 'staff_arrived') {
+    return {
+      tone: 'success',
+      title: t('admin.checkIn.staffArrived', { name }),
+      detail: t('admin.checkIn.staffArrivedAt', { time: formatTimeIn(timeZone, result.arrivedAt) }),
+    };
+  }
   const classLine = result.class
     ? t('admin.checkIn.classLine', {
         program: result.class.programName,
