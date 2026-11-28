@@ -1,13 +1,16 @@
 import { translateApiError } from '@guaranix/shared';
 import { ApiError, type ApiClient, createApiClient } from '@guaranix/shared/api';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { onlineManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MotionConfig } from 'motion/react';
-import { createContext, type ReactNode, use, useMemo, useState } from 'react';
+import { createContext, type ReactNode, use, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthProvider';
+import { persistQueryCache, restoreQueryCache } from './offline-cache';
 
 const ApiContext = createContext<ApiClient | null>(null);
 
 function createQueryClient() {
+  // TanStack only listens for online/offline events; opening the app already offline needs the current value.
+  onlineManager.setOnline(navigator.onLine);
   return new QueryClient({
     defaultOptions: {
       queries: {
@@ -24,17 +27,30 @@ function createQueryClient() {
 export interface ApiProviderProps {
   apiUrl: string;
   children: ReactNode;
+  /** Keep the last answers on the device so the app opens without connection (member app). */
+  offline?: boolean;
 }
 
 /** Box API client and query cache for screens behind `<AuthGate>`. */
-export function ApiProvider({ apiUrl, children }: ApiProviderProps) {
+export function ApiProvider({ apiUrl, children, offline = false }: ApiProviderProps) {
   const { session } = useAuth();
   const csrfToken = session?.csrfToken ?? null;
+  // One cache per person and box, so switching account never shows someone else's data.
+  const storageKey =
+    offline && session ? `queries:${session.user.id}:${session.activeBoxId ?? 'none'}` : null;
   const client = useMemo(
     () => createApiClient({ baseUrl: apiUrl, getCsrfToken: () => csrfToken }),
     [apiUrl, csrfToken],
   );
-  const [queryClient] = useState(createQueryClient);
+  const [queryClient] = useState(() => {
+    const created = createQueryClient();
+    if (storageKey) restoreQueryCache(created, storageKey);
+    return created;
+  });
+  useEffect(
+    () => (storageKey ? persistQueryCache(queryClient, storageKey) : undefined),
+    [queryClient, storageKey],
+  );
   return (
     <ApiContext value={client}>
       <QueryClientProvider client={queryClient}>

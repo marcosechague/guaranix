@@ -178,3 +178,10 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* The workout timer's clock: readable from the floor on a phone, capped on desktop. */
+@utility text-clock {
+  font-size: clamp(5.5rem, 28vw, 17rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}

@@ -115,7 +115,7 @@ Cada pantalla se arma con `Page` (layout `mobile`, `panel` o `centered`), `PageH
 
 - La app del alumno tiene que abrir rápido con 3G y en celulares de gama baja.
 - Code splitting por ruta, imágenes optimizadas, fuentes con `font-display: swap`.
-- **Offline**: el WOD del día, el timer y la próxima reserva funcionan sin conexión (service worker + cache).
+- **Offline**: el WOD del día, el timer y la próxima reserva funcionan sin conexión (service worker + cache). La app del alumno usa `AuthProvider offline` y `ApiProvider offline`; los datos guardados se borran al cerrar sesión (ver `docs/decisions/0010`).
 
 ---
 
