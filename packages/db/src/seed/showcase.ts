@@ -75,6 +75,13 @@ export async function seedShowcase(
       .returning({ id: users.id });
     if (!user) throw new Error('Showcase member user was not created');
     await transaction.insert(boxUsers).values({ boxId, userId: user.id, role: 'member' });
+    // Front desk login for the demo, so the payments screens can be tried as reception.
+    const [frontDesk] = await transaction
+      .insert(users)
+      .values({ email: `recepcion@${slug}.local`, fullName: 'Recepción Demo' })
+      .returning({ id: users.id });
+    if (!frontDesk) throw new Error('Showcase reception user was not created');
+    await transaction.insert(boxUsers).values({ boxId, userId: frontDesk.id, role: 'reception' });
     return user.id;
   });
 

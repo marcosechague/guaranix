@@ -25,8 +25,8 @@ pnpm install
 pnpm db:up                  # levanta Postgres 17 en Docker y espera a que esté listo
 pnpm db:check               # confirma que llegás a la base
 pnpm db:migrate             # aplica las migraciones de Drizzle
-pnpm db:seed                # crea un box demo con la plantilla paraguaya
-cp apps/api/.dev.vars.example apps/api/.dev.vars   # variables de la API (ajustá el puerto de la base)
+cp apps/api/.dev.vars.example apps/api/.dev.vars   # variables de la API
+pnpm db:seed                # crea un box demo y les pone contraseña a las cuentas demo
 pnpm dev                    # levanta las 3 apps y la API en paralelo
 ```
 
@@ -36,9 +36,19 @@ Para levantar una sola app: `pnpm --filter @guaranix/member dev`.
 
 ### Login
 
-En desarrollo el login anda sin cuentas externas: sin captcha, sin botón de Google, y los emails de "Olvidé mi contraseña" se imprimen en la terminal de la API (`[dev email] ...`) con el link para abrir. Los usuarios del seed no tienen contraseña: entrá a http://localhost:5174, tocá "Olvidé mi contraseña" con `owner@box-demo-asuncion.local` y abrí el link de la terminal. O creá una cuenta nueva desde "Creá una".
+En desarrollo el login anda sin cuentas externas: sin captcha, sin botón de Google, y los emails de "Olvidé mi contraseña" se imprimen en la terminal de la API (`[dev email] ...`) con el link para abrir.
 
-El seed también crea un alumno de muestra, `alumno@box-demo-asuncion.local` (Daniel Rojas), con plan, reservas, resultados en la pizarra y PRs: activalo igual, con "Olvidé mi contraseña" desde http://localhost:5173.
+`pnpm db:seed` deja estas cuentas listas, todas con la contraseña `guaranix-demo-2026`:
+
+| Cuenta                              | Rol                    | Dónde entrar                       |
+| ----------------------------------- | ---------------------- | ---------------------------------- |
+| `owner@box-demo-asuncion.local`     | Dueño del box          | http://localhost:5174 (box)        |
+| `coach@box-demo-asuncion.local`     | Coach                  | http://localhost:5174 (box)        |
+| `recepcion@box-demo-asuncion.local` | Recepción              | http://localhost:5174 (box)        |
+| `alumno@box-demo-asuncion.local`    | Alumno (Daniel Rojas)  | http://localhost:5173 (alumno)     |
+| `admin@guaranix.local`              | Superadmin de GuaraniX | http://localhost:5175 (plataforma) |
+
+La contraseña la pone `apps/api/scripts/demo-passwords.ts` con el `AUTH_SECRET` de `apps/api/.dev.vars`, y se niega a correr si `DATABASE_URL` no apunta a `localhost`: nunca llega a staging ni a producción. Si cambiás `AUTH_SECRET`, corré `pnpm --filter @guaranix/api demo:passwords` otra vez.
 
 Para probar Turnstile, descomentá las claves de prueba en `apps/api/.dev.vars`. Para Google, seguí los pasos de abajo.
 
@@ -65,7 +75,7 @@ En staging y producción la API no arranca si falta alguna de estas: `AUTH_SECRE
 | `pnpm db:seed`                | Carga planes de GuaraniX, un admin y un box demo con alumnos y clases    |
 | `pnpm db:studio`              | Abre Drizzle Studio para mirar los datos                                 |
 
-Si el puerto 5432 está ocupado, cambiá `POSTGRES_PORT` y el puerto de `DATABASE_URL` en `.env`.
+Postgres de Docker escucha en el puerto `54329` (no en 5432), así no choca con otro Postgres que tengas instalado. Si lo cambiás, cambiá `POSTGRES_PORT` y el puerto de `DATABASE_URL` en `.env` y en `apps/api/.dev.vars`.
 
 ## Calidad
 

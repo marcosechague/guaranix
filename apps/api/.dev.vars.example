@@ -1,7 +1,8 @@
 # Copy to `.dev.vars` (git-ignored) for `wrangler dev`. Never put real production values here.
 
-# Same database as the root .env (change the port if you moved Postgres, e.g. 54329).
-DATABASE_URL=postgres://guaranix:guaranix@localhost:5432/guaranix
+# Same database as the root .env: docker-compose publishes Postgres on POSTGRES_PORT (54329),
+# not 5432, so it never collides with another Postgres already running on this machine.
+DATABASE_URL=postgres://guaranix:guaranix@localhost:54329/guaranix
 
 # Any long random string locally. In Cloudflare: `wrangler secret put AUTH_SECRET`
 # with `openssl rand -base64 48`. Changing it invalidates every password.

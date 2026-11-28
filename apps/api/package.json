@@ -7,7 +7,8 @@
     "dev": "wrangler dev",
     "build": "wrangler deploy --dry-run --outdir dist",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "demo:passwords": "tsx scripts/demo-passwords.ts"
   },
   "dependencies": {
     "@guaranix/db": "workspace:*",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261127.1",
     "@types/node": "^26.6.11",
+    "tsx": "^4.23.15",
     "typescript": "~6.0.3",
     "vitest": "^5.1.2",
     "wrangler": "^4.169.0"
