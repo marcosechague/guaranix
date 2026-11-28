@@ -1,6 +1,11 @@
 import { translateApiError } from '@guaranix/shared';
 import { ApiError, type ApiClient, createApiClient } from '@guaranix/shared/api';
-import { onlineManager, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {
+  onlineManager,
+  QueryClient,
+  QueryClientProvider,
+  type QueryKey,
+} from '@tanstack/react-query';
 import { MotionConfig } from 'motion/react';
 import { createContext, type ReactNode, use, useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../auth/AuthProvider';
@@ -27,17 +32,22 @@ function createQueryClient() {
 export interface ApiProviderProps {
   apiUrl: string;
   children: ReactNode;
-  /** Keep the last answers on the device so the app opens without connection (member app). */
-  offline?: boolean;
+  /**
+   * Member app: which queries to keep on the device so the app opens without
+   * connection. Keep it to what offline needs; never sensitive profile data.
+   */
+  offlineQueries?: (queryKey: QueryKey) => boolean;
 }
 
 /** Box API client and query cache for screens behind `<AuthGate>`. */
-export function ApiProvider({ apiUrl, children, offline = false }: ApiProviderProps) {
+export function ApiProvider({ apiUrl, children, offlineQueries }: ApiProviderProps) {
   const { session } = useAuth();
   const csrfToken = session?.csrfToken ?? null;
   // One cache per person and box, so switching account never shows someone else's data.
   const storageKey =
-    offline && session ? `queries:${session.user.id}:${session.activeBoxId ?? 'none'}` : null;
+    offlineQueries && session
+      ? `queries:${session.user.id}:${session.activeBoxId ?? 'none'}`
+      : null;
   const client = useMemo(
     () => createApiClient({ baseUrl: apiUrl, getCsrfToken: () => csrfToken }),
     [apiUrl, csrfToken],
@@ -48,8 +58,11 @@ export function ApiProvider({ apiUrl, children, offline = false }: ApiProviderPr
     return created;
   });
   useEffect(
-    () => (storageKey ? persistQueryCache(queryClient, storageKey) : undefined),
-    [queryClient, storageKey],
+    () =>
+      storageKey && offlineQueries
+        ? persistQueryCache(queryClient, storageKey, offlineQueries)
+        : undefined,
+    [queryClient, storageKey, offlineQueries],
   );
   return (
     <ApiContext value={client}>

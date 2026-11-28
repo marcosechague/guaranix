@@ -1,4 +1,10 @@
-import { dehydrate, type DehydratedState, hydrate, type QueryClient } from '@tanstack/react-query';
+import {
+  dehydrate,
+  type DehydratedState,
+  hydrate,
+  type QueryClient,
+  type QueryKey,
+} from '@tanstack/react-query';
 import { readOffline, writeOffline } from '../lib/offline-storage';
 
 // A week covers "I trained Monday, the gym has no signal Tuesday"; older data is more confusing than useful.
@@ -21,13 +27,19 @@ export function restoreQueryCache(queryClient: QueryClient, storageKey: string) 
 }
 
 /** Saves after each successful fetch, debounced; returns the unsubscribe. */
-export function persistQueryCache(queryClient: QueryClient, storageKey: string): () => void {
+export function persistQueryCache(
+  queryClient: QueryClient,
+  storageKey: string,
+  shouldPersist: (queryKey: QueryKey) => boolean,
+): () => void {
   let pending: number | undefined;
   const save = () => {
     pending = undefined;
     const state = dehydrate(queryClient, {
       shouldDehydrateQuery: (query) =>
-        query.state.status === 'success' && Date.now() - query.state.dataUpdatedAt < MAX_AGE_MS,
+        query.state.status === 'success' &&
+        Date.now() - query.state.dataUpdatedAt < MAX_AGE_MS &&
+        shouldPersist(query.queryKey),
     });
     writeOffline(storageKey, { savedAt: Date.now(), state } satisfies StoredCache);
   };

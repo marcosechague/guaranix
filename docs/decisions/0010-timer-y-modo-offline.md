@@ -17,7 +17,7 @@ El PRD pide que el WOD del día, el timer y la próxima reserva funcionen sin co
 **Offline**
 
 - El service worker de `vite-plugin-pwa` (generateSW) precachea la app y responde las navegaciones con `index.html`, así la app abre sin red.
-- Los datos no los cachea el service worker: `ApiProvider offline` guarda la última respuesta buena de cada consulta de TanStack Query en `localStorage` (máx. 7 días) y la restaura antes del primer render. Primero se ve lo guardado y, con red, se actualiza.
+- Los datos no los cachea el service worker: `ApiProvider offlineQueries` guarda en `localStorage` (máx. 7 días) la última respuesta buena **solo de las consultas que offline necesita**: box, programas, WOD, clases y reservas y planes propios (`keepOffline` en `apps/member/src/api/keys.ts`). Nunca la ficha del alumno (notas médicas, cédula), sus marcas ni resultados de otros. Se restaura antes del primer render: primero se ve lo guardado y, con red, se actualiza.
 - La clave incluye usuario y box, y **todo se borra al cerrar sesión** (`clearOfflineData`).
 - `AuthProvider offline` guarda la última sesión (sin el token CSRF) y la usa solo si falla la red, nunca si la API responde 401. No es una credencial: la cookie `HttpOnly` sigue autorizando cada pedido. Al volver la red se pide la sesión real.
 - `OfflineNotice` avisa "Sin conexión" y de cuándo son los datos que se ven.
