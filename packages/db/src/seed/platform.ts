@@ -1,28 +1,13 @@
 import { platformPlanFeatures, platformPlans, users } from '../schema';
 import { withSystemScope, type SchemaDatabase } from '../scope';
+import { PLATFORM_PLAN_CATALOG } from './platform-catalog';
 
 /** GuaraniX's own price list (PRD §5) and a platform admin account. */
 export async function seedPlatform(database: SchemaDatabase) {
   return withSystemScope(database, async (transaction) => {
     const [base, founders] = await transaction
       .insert(platformPlans)
-      .values([
-        {
-          code: 'base',
-          name: 'Plan base',
-          monthlyPriceGs: 199_000,
-          extraLocationMonthlyPriceGs: 99_000,
-          description: 'Alumnos ilimitados, todo el núcleo y Brodi con límite.',
-        },
-        {
-          code: 'founders',
-          name: 'Precio fundador',
-          monthlyPriceGs: 169_000,
-          extraLocationMonthlyPriceGs: 99_000,
-          description: 'De por vida para los primeros centros.',
-          boxLimit: 20,
-        },
-      ])
+      .values([...PLATFORM_PLAN_CATALOG])
       .returning({ id: platformPlans.id });
     const [admin] = await transaction
       .insert(users)

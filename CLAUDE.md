@@ -124,7 +124,7 @@ Cada pantalla se arma con `Page` (layout `mobile`, `panel` o `centered`), `PageH
 Manejamos datos personales y dinero de terceros. La seguridad no es opcional.
 
 - **Multi-tenant estricto**: toda tabla de datos de un centro tiene `box_id`. Toda consulta filtra por el `box_id` de la sesión. Agregá tests que prueben que un box **no puede** ver datos de otro.
-- **Autorización por rol** en cada endpoint: `platform_admin`, `box_owner`, `box_admin`, `coach`, `reception`, `member`. Por defecto, denegar. Toda ruta privada pasa por `authGate` (`apps/api/src/middleware/auth-gate.ts`); las rutas de un box se arman con `createBoxRouter()`, que exige los roles permitidos y corre el pedido dentro de `withBoxScope` con el `box_id` de la sesión. Las del superadmin (`/platform/*`) se arman con `createPlatformRouter()`, que exige `is_platform_admin` y audita todo cambio a un box (ver `docs/decisions/0006`).
+- **Autorización por rol** en cada endpoint: `platform_admin`, `box_owner`, `box_admin`, `coach`, `reception`, `member`. Por defecto, denegar. Toda ruta privada pasa por `authGate` (`apps/api/src/middleware/auth-gate.ts`); las rutas de un box se arman con `createBoxRouter()`, que exige los roles permitidos y corre el pedido dentro de `withBoxScope` con el `box_id` de la sesión. "Entrar como" un box desde el superadmin es solo lectura: el router rechaza toda escritura con `impersonation_read_only`. Las del superadmin (`/platform/*`) se arman con `createPlatformRouter()`, que exige `is_platform_admin` y audita todo cambio a un box (ver `docs/decisions/0006`).
 - **Validar toda entrada** con Zod en la API, aunque el frontend ya valide.
 - **Nunca guardar datos de tarjeta.** Solo tokens del proveedor de pagos.
 - **Webhooks de pagos**: verificar firma, ser idempotentes (no cobrar ni marcar pagado dos veces), registrar cada evento.
@@ -166,6 +166,14 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 - Requisitos: Node 22+, pnpm (vía `corepack enable`) y Docker.
 - `cp .env.example .env`, `pnpm install` y `pnpm db:up` (Postgres 17 en Docker). Detalles en `README.md`.
 - La base local reemplaza a Neon + Hyperdrive solo en desarrollo; nunca apuntes `.env` a la base de producción.
+
+## Despliegue
+
+- Ambientes `staging` y `production` en el `env` de cada `wrangler.jsonc`; el nivel de arriba es desarrollo local. Las apps son Workers de archivos estáticos.
+- Staging se publica solo con CI en verde en `main`; producción con un tag `v*` (`.github/workflows/deploy-*.yml`). Cada deploy corre migraciones, `db:bootstrap`, API, apps y una prueba de humo.
+- Secretos solo en los environments de GitHub; el deploy los sube con `--secrets-file`. Un secreto nuevo de la API se suma en `apps/api/src/env.ts`, `scripts/deploy/write-secrets-file.mjs` y `docs/despliegue.md`.
+- Las migraciones tienen que dejar andando la versión anterior del código (se corren antes del deploy y no se revierten).
+- Los dominios están en `deploy/environments.json` y en los `wrangler.jsonc`; `pnpm check:deploy` revisa que coincidan. Runbook: `docs/despliegue.md`, decisión: `docs/decisions/0012`.
 
 ---
 

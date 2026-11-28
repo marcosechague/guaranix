@@ -1,0 +1,172 @@
+# Deploys one environment: migrations, bootstrap, API Worker and the three apps.
+# Called by deploy-staging.yml and deploy-production.yml; runbook in docs/despliegue.md.
+name: Deploy (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: staging or production
+        required: true
+        type: string
+      ref:
+        description: Commit to deploy
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+      url: ${{ steps.urls.outputs.member }}
+    # Never two deploys of the same environment at once; a newer one waits.
+    concurrency:
+      group: deploy-${{ inputs.environment }}
+      cancel-in-progress: false
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - name: Check that the environment is set up
+        id: ready
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          HYPERDRIVE_ID: ${{ vars.HYPERDRIVE_ID }}
+        run: |
+          missing=()
+          [ -n "$CLOUDFLARE_API_TOKEN" ] || missing+=(CLOUDFLARE_API_TOKEN)
+          [ -n "$CLOUDFLARE_ACCOUNT_ID" ] || missing+=(CLOUDFLARE_ACCOUNT_ID)
+          [ -n "$DATABASE_URL" ] || missing+=(DATABASE_URL)
+          [ -n "$HYPERDRIVE_ID" ] || missing+=(HYPERDRIVE_ID)
+          if [ ${#missing[@]} -gt 0 ]; then
+            # Until Marcos sets up the environment, merges to main stay green.
+            echo "::warning::Environment '${{ inputs.environment }}' not set up yet (missing: ${missing[*]}). Skipping deploy; see docs/despliegue.md."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -n "$HYPERDRIVE_ID" ] && ! [[ "$HYPERDRIVE_ID" =~ ^[0-9a-f]{32}$ ]]; then
+            echo "::error::HYPERDRIVE_ID must be the 32-character id from the setup workflow."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+        if: steps.ready.outputs.ok == 'true'
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: pnpm/action-setup@v4
+        if: steps.ready.outputs.ok == 'true'
+      - uses: actions/setup-node@v4
+        if: steps.ready.outputs.ok == 'true'
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - if: steps.ready.outputs.ok == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: App URLs
+        id: urls
+        if: steps.ready.outputs.ok == 'true'
+        run: |
+          node scripts/deploy/check-config.mjs
+          node -e '
+            const urls = require("./deploy/environments.json")[process.argv[1]];
+            for (const [app, url] of Object.entries(urls)) console.log(`${app}=${url}`);
+          ' '${{ inputs.environment }}' >> "$GITHUB_OUTPUT"
+
+      # Migrations first: the new code may need the new columns, and every
+      # migration keeps the previous Worker version working (expand, then contract).
+      - name: Database migrations
+        if: steps.ready.outputs.ok == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: pnpm db:migrate
+
+      - name: Platform plans and admin
+        if: steps.ready.outputs.ok == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PLATFORM_ADMIN_EMAIL: ${{ vars.PLATFORM_ADMIN_EMAIL }}
+        run: pnpm --filter @guaranix/db db:bootstrap
+
+      - name: Deploy API
+        if: steps.ready.outputs.ok == 'true'
+        working-directory: apps/api
+        env:
+          HYPERDRIVE_ID: ${{ vars.HYPERDRIVE_ID }}
+          GITHUB_SECRETS: ${{ toJSON(secrets) }}
+          GITHUB_VARS: ${{ toJSON(vars) }}
+        run: |
+          secrets_file="$RUNNER_TEMP/api-secrets.json"
+          trap 'rm -f "$secrets_file"' EXIT
+          node ../../scripts/deploy/write-secrets-file.mjs "$secrets_file"
+          sed -i "s/\"id\": \"HYPERDRIVE_ID\"/\"id\": \"$HYPERDRIVE_ID\"/" wrangler.jsonc
+          pnpm exec wrangler deploy --env '${{ inputs.environment }}' --secrets-file "$secrets_file"
+
+      - name: Build and deploy apps
+        if: steps.ready.outputs.ok == 'true'
+        env:
+          VITE_API_URL: ${{ steps.urls.outputs.api }}
+          VITE_ADMIN_URL: ${{ steps.urls.outputs.admin }}
+          VITE_PLATFORM_URL: ${{ steps.urls.outputs.platform }}
+        run: |
+          for app in member admin platform; do
+            pnpm --filter "@guaranix/$app" build
+            (cd "apps/$app" && ../api/node_modules/.bin/wrangler deploy --env '${{ inputs.environment }}')
+          done
+
+      - name: Telegram webhook
+        if: steps.ready.outputs.ok == 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_WEBHOOK_SECRET: ${{ secrets.TELEGRAM_WEBHOOK_SECRET }}
+          API_URL: ${{ steps.urls.outputs.api }}
+        run: |
+          if [ -z "$TELEGRAM_BOT_TOKEN" ] || [ -z "$TELEGRAM_WEBHOOK_SECRET" ]; then
+            echo "Telegram not configured; skipping."
+            exit 0
+          fi
+          curl --fail --silent --show-error -o /dev/null \
+            "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/setWebhook" \
+            --data-urlencode "url=${API_URL}/integrations/telegram/webhook" \
+            --data-urlencode "secret_token=${TELEGRAM_WEBHOOK_SECRET}" \
+            --data-urlencode 'allowed_updates=["message"]'
+          echo "Telegram webhook set."
+
+      - name: Smoke test
+        if: steps.ready.outputs.ok == 'true'
+        env:
+          API_URL: ${{ steps.urls.outputs.api }}
+          MEMBER_URL: ${{ steps.urls.outputs.member }}
+          ADMIN_URL: ${{ steps.urls.outputs.admin }}
+          PLATFORM_URL: ${{ steps.urls.outputs.platform }}
+        run: |
+          # A new custom domain can take a few minutes to get its certificate.
+          check() {
+            for attempt in $(seq 1 20); do
+              if body=$(curl --fail --silent --show-error --max-time 10 "$1") &&
+                printf '%s' "$body" | grep -q "$2"; then
+                echo "OK $1"
+                return 0
+              fi
+              sleep 15
+            done
+            echo "::error::$1 did not answer as expected"
+            return 1
+          }
+          check "$API_URL/health" '"environment":"${{ inputs.environment }}"'
+          check "$MEMBER_URL" '<div id="root">'
+          check "$ADMIN_URL" '<div id="root">'
+          check "$PLATFORM_URL" '<div id="root">'
+          {
+            echo "### ${{ inputs.environment }} deployed"
+            echo "- Alumno: $MEMBER_URL"
+            echo "- Panel del box: $ADMIN_URL"
+            echo "- Plataforma: $PLATFORM_URL"
+            echo "- API: $API_URL/health"
+          } >> "$GITHUB_STEP_SUMMARY"

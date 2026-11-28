@@ -16,7 +16,8 @@
     "db:studio": "drizzle-kit studio",
     "db:check": "node --env-file-if-exists=../../.env scripts/check-connection.ts",
     "db:seed": "tsx --env-file-if-exists=../../.env scripts/seed.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "db:bootstrap": "tsx --env-file-if-exists=../../.env scripts/bootstrap.ts"
   },
   "dependencies": {
     "@guaranix/shared": "workspace:*",

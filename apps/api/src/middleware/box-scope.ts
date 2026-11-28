@@ -29,9 +29,20 @@ export interface BoxEnv extends AppEnv {
 
 type BoxAuthResult = BoxAuth | { error: 'not_a_member' | 'box_suspended' | 'box_cancelled' };
 
+const READ_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
+
 /**
- * A platform admin impersonating a box acts as its owner (support needs to see
- * everything) without being on its staff. Everyone else needs an active
+ * "Entrar como" is read-only: support can look at everything a box sees, but
+ * never registers payments, changes prices or plans, deletes or edits data.
+ * Enforced here, before any box route runs, so a new write route is covered too.
+ */
+function deniesImpersonatedWrite(auth: BoxAuth, method: string): boolean {
+  return auth.impersonatorUserId !== undefined && !READ_METHODS.has(method);
+}
+
+/**
+ * A platform admin impersonating a box sees it as its owner (support needs to
+ * see everything) without being on its staff, read-only. Everyone else needs an active
  * membership, and the box must not be suspended or removed.
  */
 async function resolveBoxAuth(
@@ -68,6 +79,9 @@ const boxScope: MiddlewareHandler<BoxEnv> = async (context, next) => {
   const session = context.var.session;
   const auth = await resolveBoxAuth(context.var.services.database(), session);
   if ('error' in auth) return fail(context, 403, auth.error);
+  if (deniesImpersonatedWrite(auth, context.req.method)) {
+    return fail(context, 403, 'impersonation_read_only');
+  }
 
   context.set('auth', auth);
   context.set('outbox', []);
@@ -87,6 +101,9 @@ export interface BoxAuthEnv extends AppEnv {
 const boxAuthOnly: MiddlewareHandler<BoxAuthEnv> = async (context, next) => {
   const auth = await resolveBoxAuth(context.var.services.database(), context.var.session);
   if ('error' in auth) return fail(context, 403, auth.error);
+  if (deniesImpersonatedWrite(auth, context.req.method)) {
+    return fail(context, 403, 'impersonation_read_only');
+  }
   context.set('auth', auth);
   return next();
 };
