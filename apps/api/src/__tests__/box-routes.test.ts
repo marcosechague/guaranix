@@ -382,6 +382,46 @@ describe('payments, debtors and dashboard', () => {
     expect(await json(stolen)).toEqual({ error: 'receipt_not_found' });
   });
 
+  it('the owner sets where to pay and every member of the box sees it', async () => {
+    const { box_owner: owner, reception, member } = as;
+    const fields = {
+      bankName: 'Banco Continental',
+      accountNumber: '1234567890',
+      alias: '0981123456',
+      holderName: 'Box Ñu Guasú S.A.',
+      holderDocument: '80012345-6',
+      note: '',
+    };
+    expect((await reception.browser.patch('/box/payment-details', fields)).status).toBe(403);
+    const saved = await owner.browser.patch('/box/payment-details', fields);
+    expect(saved.status).toBe(200);
+    expect((await json<{ details: { note: null } }>(saved)).details.note).toBeNull();
+
+    expect(
+      (await member.browser.post('/box/payment-details/qr', JPEG, { 'content-type': 'image/jpeg' }))
+        .status,
+    ).toBe(403);
+    const qr = await owner.browser.post('/box/payment-details/qr', JPEG, {
+      'content-type': 'image/jpeg',
+    });
+    expect((await json<{ details: { hasQr: boolean } }>(qr)).details.hasQr).toBe(true);
+
+    const seen = await json<{ details: { alias: string } }>(
+      await member.browser.get('/box/payment-details'),
+    );
+    expect(seen.details.alias).toBe('0981123456');
+    const image = await member.browser.get('/box/payment-details/qr');
+    expect(image.status).toBe(200);
+    expect(image.headers.get('x-content-type-options')).toBe('nosniff');
+
+    const outsider = await userWithRole('member', harness.boxB.boxId);
+    const theirs = await json<{ details: { alias: string | null } }>(
+      await outsider.browser.get('/box/payment-details'),
+    );
+    expect(theirs.details.alias).toBeNull();
+    expect((await outsider.browser.get('/box/payment-details/qr')).status).toBe(404);
+  });
+
   it('the owner previews an import and commits it once', async () => {
     const { browser } = as.box_owner;
     const body = {

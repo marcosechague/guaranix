@@ -7,6 +7,7 @@ import { aiImportRoutes } from './ai-imports';
 import { importRoutes } from './imports';
 import { memberRoutes } from './members';
 import { memberPlanRoutes, planRoutes } from './plans';
+import { paymentDetailsRoutes } from './payment-details';
 import { receiptRoutes } from './receipts';
 import { settingsRoutes } from './settings';
 import { componentRoutes, movementRoutes, resultRoutes, workoutRoutes } from './workouts';
@@ -33,4 +34,5 @@ export function mountBoxRoutes(app: Hono<AppEnv>) {
   app.route('/box/imports', importRoutes);
   app.route('/box/me', meRoutes);
   app.route('/box/settings', settingsRoutes);
+  app.route('/box/payment-details', paymentDetailsRoutes);
 }
