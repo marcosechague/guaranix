@@ -7,6 +7,7 @@ import { formatInstantDate, STATUS_TONES, statusLabel, trialLabel } from '../../
 import type { ReasonAction } from './BoxActionSheet';
 import { BoxActivity } from './BoxActivity';
 import { BoxBillingForm } from './BoxBillingForm';
+import { BoxOwnerSection } from './BoxOwnerSection';
 import { BoxFeaturesSection } from './BoxFeaturesSection';
 
 export interface BoxSheetProps {
@@ -70,14 +71,7 @@ export function BoxSheet({ boxId, onClose, onAction }: BoxSheetProps) {
           ) : null}
 
           <Section title={t('platform.box.owner')}>
-            {box.owner ? (
-              <p className="flex flex-col">
-                <span className="font-semibold">{box.owner.fullName}</span>
-                <span className="text-sm text-text-secondary">{box.owner.email}</span>
-              </p>
-            ) : (
-              <p className="text-sm text-text-secondary">{t('platform.box.noOwner')}</p>
-            )}
+            <BoxOwnerSection box={box} />
           </Section>
 
           <Section title={t('platform.box.billing')}>

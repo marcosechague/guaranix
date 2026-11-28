@@ -1,27 +1,13 @@
-import { boxes, users } from '@guaranix/db/schema';
+import { boxes } from '@guaranix/db/schema';
 import type { BoxStatus, CreatePlatformBoxInput } from '@guaranix/shared';
 import { BOX_TEMPLATES, createPlatformBoxSchema } from '@guaranix/shared';
 import { eq } from 'drizzle-orm';
 import { provisionBox } from './box-provisioning';
+import { ownerAccount } from './platform-box-owner';
 import { unprocessable } from './errors';
 import { type PlatformContext, recordPlatformAudit } from './platform-context';
 import { getPlatformBox, lockBox } from './platform-boxes';
 import { assertPlanAvailable } from './platform-plans';
-
-/** Finds the owner's account by email, or creates one they claim with Google or a reset link. */
-async function ownerAccount(context: PlatformContext, email: string, fullName: string) {
-  const [existing] = await context.transaction
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.email, email));
-  if (existing) return existing.id;
-  const [created] = await context.transaction
-    .insert(users)
-    .values({ email, fullName })
-    .returning({ id: users.id });
-  if (!created) throw new Error('User insert returned no row');
-  return created.id;
-}
 
 export async function createPlatformBox(context: PlatformContext, input: CreatePlatformBoxInput) {
   const values = createPlatformBoxSchema.parse(input);
@@ -65,7 +51,7 @@ export async function changeBoxStatus(
   const transition = TRANSITIONS[action];
   const before = await lockBox(context, boxId);
   if (!(transition.from as readonly BoxStatus[]).includes(before.status)) {
-    throw unprocessable('boxInputstatus_unchanged');
+    throw unprocessable('box_status_unchanged');
   }
   // Removed boxes free their plan's place, so coming back must fit in it again.
   if (before.status === 'cancelled' && before.platformPlanId) {
