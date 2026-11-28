@@ -7,8 +7,8 @@ export function StepHeader({ step }: { step: OnboardingStep }) {
   const current = ONBOARDING_STEPS.indexOf(step) + 1;
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-col gap-1">
-        <GuaranixLogo />
+      <div className="flex flex-col items-start gap-3">
+        <GuaranixLogo variant="tagline" />
         <div className="flex min-w-0 flex-col">
           <span className="text-sm font-semibold">{t('onboarding.eyebrow')}</span>
           <span className="text-sm text-text-secondary">

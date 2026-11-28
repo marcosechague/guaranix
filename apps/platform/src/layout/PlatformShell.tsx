@@ -14,7 +14,7 @@ const SECTIONS: { to: string; label: string; icon: LucideIcon }[] = [
 
 function BrandMark() {
   return (
-    <span className="flex items-baseline gap-2">
+    <span className="flex items-center gap-2">
       <GuaranixLogo />
       <span className="font-display text-lg font-medium text-text-secondary">
         · {t('platform.brand')}

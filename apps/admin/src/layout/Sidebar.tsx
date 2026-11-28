@@ -1,6 +1,7 @@
 import { t } from '@guaranix/shared';
 import {
   BoxMark,
+  GuaranixLogo,
   classNames,
   NavCollapseButton,
   ThemeToggleButton,
@@ -60,12 +61,14 @@ export function Sidebar() {
         collapsed ? 'w-20 px-3' : 'w-64 px-4',
       )}
     >
-      <div className={classNames('flex items-center gap-3', collapsed ? 'justify-center' : 'px-2')}>
+      <div className={classNames('flex items-center gap-3', collapsed ? 'flex-col' : 'px-2')}>
         <BoxMark name={boxName ?? ''} />
-        {collapsed ? null : (
+        {collapsed ? (
+          <GuaranixLogo variant="mark" size="small" />
+        ) : (
           <div className="flex min-w-0 flex-col">
             <span className="line-clamp-2 font-display leading-tight font-bold">{boxName}</span>
-            <span className="text-xs text-text-secondary">{t('app.name')}</span>
+            <GuaranixLogo size="small" className="mt-1 self-start" />
           </div>
         )}
       </div>

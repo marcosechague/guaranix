@@ -1,6 +1,7 @@
 import { t } from '@guaranix/shared';
 import {
   BoxMark,
+  GuaranixLogo,
   classNames,
   NavCollapseButton,
   ThemeToggleButton,
@@ -27,11 +28,15 @@ export function SideRail() {
         wide('lg:w-60 lg:items-stretch lg:px-4'),
       )}
     >
-      <div className={classNames('flex items-center gap-3', wide('lg:px-2'))}>
+      <div className={classNames('flex flex-col items-center gap-3', wide('lg:flex-row lg:px-2'))}>
         <BoxMark name={boxName ?? ''} />
+        {/* The rail shows the GX icon; the desktop sidebar, the wordmark under the box name. */}
+        <span className={classNames('flex', wide('lg:hidden'))}>
+          <GuaranixLogo variant="mark" size="small" />
+        </span>
         <span className={classNames('hidden min-w-0 flex-col', wide('lg:flex'))}>
           <span className="line-clamp-2 font-display leading-tight font-bold">{boxName}</span>
-          <span className="text-xs text-text-secondary">{t('app.name')}</span>
+          <GuaranixLogo size="small" className="mt-1 self-start" />
         </span>
       </div>
       <nav aria-label={t('member.nav.label')} className="w-full flex-1">

@@ -1,6 +1,7 @@
 {
   "app": {
-    "name": "GuaraniX"
+    "name": "GuaraniX",
+    "tagline": "Gestión para boxes y entrenamiento"
   },
   "common": {
     "loading": "Cargando…",
