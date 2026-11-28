@@ -7,6 +7,8 @@
     "retry": "Reintentar",
     "or": "o",
     "close": "Cerrar",
+    "chooseFile": "Elegí un archivo",
+    "removeFile": "Quitar el archivo",
     "cancel": "Cancelar",
     "save": "Guardar",
     "saving": "Guardando…",
@@ -488,7 +490,15 @@
       "saved": "Pago registrado: {amount}.",
       "collect": "Cobrar",
       "collectLabel": "Registrar un pago de {name}",
-      "qrNote": "Los pagos por QR los informa el alumno desde la app con su comprobante."
+      "receipt": "Comprobante",
+      "receiptOptional": "Comprobante (opcional)",
+      "receiptPrompt": "Foto o PDF del comprobante",
+      "receiptHint": "JPG, PNG, WebP o PDF, hasta 5 MB.",
+      "viewReceipt": "Ver comprobante",
+      "viewReceiptLabel": "Ver el comprobante de {name}",
+      "receiptTitle": "Comprobante de {name}",
+      "openPdf": "Abrir el PDF",
+      "receiptMissing": "Este pago no tiene comprobante."
     },
     "imports": {
       "memberFields": {
@@ -1115,6 +1125,10 @@
     "payment_not_found": "No encontramos ese pago.",
     "payment_requires_front_desk": "Los pagos los registra recepción o la administración.",
     "receipt_required": "Adjuntá el comprobante de la transferencia o del QR.",
+    "receipt_empty": "El archivo está vacío. Probá con otra foto del comprobante.",
+    "receipt_too_large": "El comprobante pesa más de 5 MB. Sacale una captura o una foto más liviana.",
+    "receipt_type": "El comprobante tiene que ser una foto (JPG, PNG o WebP) o un PDF.",
+    "receipt_not_found": "No encontramos ese comprobante. Volvé a subirlo.",
     "internal_error": "Algo salió mal. Probá de nuevo en un rato.",
     "platform_plan_not_found": "No encontramos ese plan de GuaraniX.",
     "platform_plan_code_taken": "Ya hay un plan con ese código.",

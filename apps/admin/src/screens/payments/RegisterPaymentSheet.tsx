@@ -1,7 +1,16 @@
-import { formatGuarani, formatShortDate, recordPaymentSchema, t } from '@guaranix/shared';
+import {
+  formatGuarani,
+  formatShortDate,
+  RECEIPT_CONTENT_TYPES,
+  RECEIPT_MAX_BYTES,
+  recordPaymentSchema,
+  t,
+} from '@guaranix/shared';
 import type { Charge } from '@guaranix/shared/api';
 import {
+  FileField,
   FormMessage,
+  MoneyField,
   SegmentedControl,
   SelectField,
   Sheet,
@@ -14,7 +23,7 @@ import { useState } from 'react';
 import { useRecordPayment } from '../../api/mutations';
 import { useMembers, useOpenCharges } from '../../api/queries';
 
-type StaffMethod = 'cash' | 'bank_transfer';
+type StaffMethod = 'cash' | 'bank_transfer' | 'qr';
 
 export interface RegisterPaymentSheetProps {
   /** Opens with this member chosen, e.g. from the debtors list. */
@@ -29,14 +38,26 @@ const chargeLabel = (charge: Charge) =>
     amount: formatGuarani(charge.outstandingGs),
   });
 
+const PENDING_UPLOAD = 'pending-upload';
+
+/** Same limits the API enforces, checked before uploading so the error shows at once. */
+function receiptProblem(file: File | null, method: StaffMethod): string | undefined {
+  if (!file) return method === 'qr' ? t('errors.receipt_required') : undefined;
+  if (!(RECEIPT_CONTENT_TYPES as readonly string[]).includes(file.type)) {
+    return t('errors.receipt_type');
+  }
+  return file.size > RECEIPT_MAX_BYTES ? t('errors.receipt_too_large') : undefined;
+}
+
 export function RegisterPaymentSheet({ initialMemberId, onClose }: RegisterPaymentSheetProps) {
   const members = useMembers('', 'active');
   const [memberId, setMemberId] = useState(initialMemberId ?? '');
   const [chargeId, setChargeId] = useState<string | null>(null);
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState<number | null>(null);
   const [method, setMethod] = useState<StaffMethod>('cash');
   const [reference, setReference] = useState('');
   const [notes, setNotes] = useState('');
+  const [receipt, setReceipt] = useState<File | null>(null);
   const [invalid, setInvalid] = useState(false);
   const charges = useOpenCharges(memberId || null);
   const record = useRecordPayment();
@@ -46,37 +67,44 @@ export function RegisterPaymentSheet({ initialMemberId, onClose }: RegisterPayme
   const openCharges = (charges.data ?? []).filter((charge) => charge.outstandingGs > 0);
   const selectedChargeId = chargeId ?? openCharges[0]?.id ?? '';
   const selectedCharge = openCharges.find((charge) => charge.id === selectedChargeId);
-  const amountValue =
-    amount === '' && selectedCharge ? String(selectedCharge.outstandingGs) : amount;
+  const amountValue = amount ?? selectedCharge?.outstandingGs ?? null;
+  const receiptError = invalid ? receiptProblem(receipt, method) : undefined;
 
   const pickMember = (value: string) => {
     setMemberId(value);
     setChargeId(null);
-    setAmount('');
+    setAmount(null);
   };
   const pickCharge = (value: string) => {
     setChargeId(value);
-    setAmount('');
+    setAmount(null);
   };
 
   const submit = () => {
+    const attached = method === 'cash' ? null : receipt;
     const parsed = recordPaymentSchema.safeParse({
       memberId,
       chargeId: selectedChargeId || null,
-      amountGs: Number(amountValue.replace(/\D/g, '')),
+      amountGs: amountValue ?? 0,
       method,
       paidAt: new Date().toISOString(),
-      reference: method === 'bank_transfer' && reference.trim() ? reference.trim() : null,
+      reference: method !== 'cash' && reference.trim() ? reference.trim() : null,
       notes: notes.trim() || null,
+      // The real key comes back from the upload (see useRecordPayment); this lets the QR rule pass.
+      receiptFileKey: attached ? PENDING_UPLOAD : null,
     });
-    setInvalid(!parsed.success);
-    if (!parsed.success) return;
-    record.mutate(parsed.data, {
-      onSuccess: (payment) => {
-        toast.show(t('admin.payments.saved', { amount: formatGuarani(payment.amountGs) }));
-        onClose();
+    const ok = parsed.success && !receiptProblem(attached, method);
+    setInvalid(!ok);
+    if (!ok) return;
+    record.mutate(
+      { input: parsed.data, receipt: attached },
+      {
+        onSuccess: (payment) => {
+          toast.show(t('admin.payments.saved', { amount: formatGuarani(payment.amountGs) }));
+          onClose();
+        },
       },
-    });
+    );
   };
 
   return (
@@ -84,7 +112,6 @@ export function RegisterPaymentSheet({ initialMemberId, onClose }: RegisterPayme
       open
       onOpenChange={(open) => !open && onClose()}
       title={t('admin.payments.register')}
-      description={t('admin.payments.qrNote')}
       closeLabel={t('common.close')}
       footer={
         <SheetFormActions
@@ -123,12 +150,11 @@ export function RegisterPaymentSheet({ initialMemberId, onClose }: RegisterPayme
             <option value="">{t('admin.payments.noCharge')}</option>
           </SelectField>
         ) : null}
-        <TextField
+        <MoneyField
           label={t('admin.payments.amount')}
-          inputMode="numeric"
           value={amountValue}
-          error={invalid ? t('errors.invalid_input') : undefined}
-          onChange={(event) => setAmount(event.target.value)}
+          error={invalid && !amountValue ? t('errors.invalid_input') : undefined}
+          onValueChange={setAmount}
         />
         <div className="flex flex-col gap-1.5">
           <span className="text-sm font-medium text-text-soft">{t('admin.payments.method')}</span>
@@ -139,16 +165,30 @@ export function RegisterPaymentSheet({ initialMemberId, onClose }: RegisterPayme
             options={[
               { value: 'cash', label: t('admin.payments.methods.cash') },
               { value: 'bank_transfer', label: t('admin.payments.methods.bank_transfer') },
+              { value: 'qr', label: t('admin.payments.methods.qr') },
             ]}
           />
         </div>
-        {method === 'bank_transfer' ? (
-          <TextField
-            label={t('admin.payments.reference')}
-            value={reference}
-            onChange={(event) => setReference(event.target.value)}
-          />
-        ) : null}
+        {method === 'cash' ? null : (
+          <>
+            <TextField
+              label={t('admin.payments.reference')}
+              value={reference}
+              onChange={(event) => setReference(event.target.value)}
+            />
+            <FileField
+              label={
+                method === 'qr' ? t('admin.payments.receipt') : t('admin.payments.receiptOptional')
+              }
+              prompt={t('admin.payments.receiptPrompt')}
+              hint={t('admin.payments.receiptHint')}
+              accept={RECEIPT_CONTENT_TYPES.join(',')}
+              value={receipt}
+              onChange={setReceipt}
+              error={receiptError}
+            />
+          </>
+        )}
         <TextField
           label={t('admin.payments.notes')}
           value={notes}

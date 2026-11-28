@@ -92,7 +92,7 @@ export function bookingWorld(fixture: ServiceFixture, box: TestBox) {
     /** Runs `work` signed in as this member. */
     const act = <T>(work: (context: ServiceContext) => Promise<T>, now = NOW) =>
       withMember(fixture, box, userId, work, now);
-    return { member, memberPlan, act };
+    return { member, memberPlan, act, userId };
   }
 
   async function setPolicy(policy: Partial<typeof boxes.$inferInsert>) {

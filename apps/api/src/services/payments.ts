@@ -8,6 +8,7 @@ import { getCharge, settleCharge } from './charges';
 import { FRONT_DESK_ROLES, assertRole, isStaff, type ServiceContext } from './context';
 import { conflict, notFound, unprocessable } from './errors';
 import { getMember, getOwnMember } from './members';
+import { canUseReceipt } from './receipts';
 
 export type RecordPaymentInput = z.output<typeof recordPaymentSchema>;
 export type PaymentRow = typeof payments.$inferSelect;
@@ -26,7 +27,8 @@ async function committedToCharge(context: ServiceContext, chargeId: string): Pro
 
 /**
  * Records a manual payment. Front desk registers cash, transfers and QR as
- * already confirmed. A member can only report a transfer or QR with its
+ * already confirmed. A receipt must be one uploaded to this box (and, for a
+ * member, one they uploaded themselves). A member can only report a transfer or QR with its
  * receipt, which waits for staff to confirm it. The same bank reference can't
  * be recorded twice, so a receipt sent twice is never counted twice.
  */
@@ -38,6 +40,9 @@ export async function recordPayment(
   if (!staffEntry && isStaff(context.auth.role)) throw unprocessable('payment_requires_front_desk');
   if (!staffEntry && input.method === 'cash') throw unprocessable('cash_requires_staff');
   if (!staffEntry && !input.receiptFileKey) throw unprocessable('receipt_required');
+  if (input.receiptFileKey && !canUseReceipt(context, input.receiptFileKey)) {
+    throw notFound('receipt');
+  }
   const member = staffEntry
     ? await getMember(context, input.memberId)
     : await getOwnMember(context);

@@ -8,7 +8,8 @@
     "build": "wrangler deploy --dry-run --outdir dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "demo:passwords": "tsx scripts/demo-passwords.ts"
+    "demo:passwords": "tsx scripts/demo-passwords.ts",
+    "demo:receipts": "tsx scripts/demo-receipts.ts"
   },
   "dependencies": {
     "@guaranix/ai": "workspace:*",
