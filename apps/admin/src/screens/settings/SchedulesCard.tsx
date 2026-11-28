@@ -10,6 +10,9 @@ import { ScheduleCapacitySheet } from './ScheduleCapacitySheet';
 // Monday first, like the box's week.
 const WEEK_ORDER = [1, 2, 3, 4, 5, 6, 0];
 
+// Postgres `time` comes back as HH:MM:SS; the panel shows HH:MM.
+const startTime = (schedule: ClassSchedule) => schedule.startTime.slice(0, 5);
+
 export function SchedulesCard({ editable }: { editable: boolean }) {
   const { today } = useBoxClock();
   const schedules = useSchedules();
@@ -20,7 +23,7 @@ export function SchedulesCard({ editable }: { editable: boolean }) {
     (schedule) => schedule.validUntil === null || schedule.validUntil >= today,
   );
   const describe = (schedule: ClassSchedule, program: Program | undefined) =>
-    `${weekdayName(schedule.weekday)} ${schedule.startTime} · ${program?.name ?? ''}`;
+    `${weekdayName(schedule.weekday)} ${startTime(schedule)} · ${program?.name ?? ''}`;
 
   return (
     <Card as="section">
@@ -55,8 +58,8 @@ export function SchedulesCard({ editable }: { editable: boolean }) {
                     const program = programById.get(schedule.programId);
                     return (
                       <li key={schedule.id} className="flex items-center gap-3 py-2">
-                        <span className="w-12 font-display font-bold tabular-nums">
-                          {schedule.startTime}
+                        <span className="w-14 shrink-0 font-display font-bold tabular-nums">
+                          {startTime(schedule)}
                         </span>
                         <span className="flex min-w-0 flex-1 items-center gap-2 text-sm">
                           <ColorDot color={program?.color ?? null} />

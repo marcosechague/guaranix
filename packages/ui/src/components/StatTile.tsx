@@ -31,8 +31,8 @@ export function StatTile({
     >
       <span
         className={classNames(
-          'font-display leading-none font-bold tabular-nums',
-          size === 'lg' ? 'text-3xl' : 'text-2xl',
+          'font-display leading-none font-bold whitespace-nowrap tabular-nums',
+          size === 'lg' ? 'text-3xl' : 'text-xl sm:text-2xl',
           labelFirst && 'order-2',
         )}
       >
