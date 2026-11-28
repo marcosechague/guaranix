@@ -1,10 +1,19 @@
-import { auditLogs, boxUsers, boxes, members, platformPlans, users } from '@guaranix/db/schema';
+import {
+  auditLogs,
+  boxUsers,
+  boxes,
+  members,
+  oauthAccounts,
+  platformPlans,
+  userCredentials,
+  users,
+} from '@guaranix/db/schema';
 import type {
   PlatformBoxFilter,
   PlatformBoxSummary,
   UpdatePlatformBoxInput,
 } from '@guaranix/shared';
-import { and, asc, count, desc, eq, ilike, inArray, or, type SQL } from 'drizzle-orm';
+import { and, asc, count, desc, eq, ilike, inArray, or, type SQL, sql } from 'drizzle-orm';
 import { diff } from './audit';
 import { notFound } from './errors';
 import { definedFields } from './objects';
@@ -103,6 +112,9 @@ export async function lockBox(context: PlatformContext, boxId: string) {
   return box;
 }
 
+/** True while the owner has neither a password nor Google linked: they never got in. */
+const ownerAccessPending = sql<boolean>`not exists (select 1 from ${userCredentials} where ${userCredentials.userId} = ${users.id}) and not exists (select 1 from ${oauthAccounts} where ${oauthAccounts.userId} = ${users.id})`;
+
 type BoxRow = { box: typeof boxes.$inferSelect; plan: typeof platformPlans.$inferSelect | null };
 
 async function summarize(context: PlatformContext, rows: BoxRow[]): Promise<PlatformBoxSummary[]> {
@@ -115,14 +127,22 @@ async function summarize(context: PlatformContext, rows: BoxRow[]): Promise<Plat
       .where(and(inArray(members.boxId, boxIds), eq(members.status, 'active')))
       .groupBy(members.boxId),
     context.transaction
-      .select({ boxId: boxUsers.boxId, fullName: users.fullName, email: users.email })
+      .select({
+        boxId: boxUsers.boxId,
+        fullName: users.fullName,
+        email: users.email,
+        accessPending: ownerAccessPending,
+      })
       .from(boxUsers)
       .innerJoin(users, eq(users.id, boxUsers.userId))
       .where(and(inArray(boxUsers.boxId, boxIds), eq(boxUsers.role, 'box_owner')))
       .orderBy(asc(boxUsers.createdAt)),
   ]);
   const membersByBox = new Map(memberCounts.map((row) => [row.boxId, row.total]));
-  const ownerByBox = new Map<string, { fullName: string; email: string | null }>();
+  const ownerByBox = new Map<
+    string,
+    { fullName: string; email: string | null; accessPending: boolean }
+  >();
   for (const { boxId, ...owner } of owners)
     if (!ownerByBox.has(boxId)) ownerByBox.set(boxId, owner);
 

@@ -45,6 +45,15 @@ export const updatePlatformBoxSchema = z
   .partial()
   .refine((input) => Object.keys(input).length > 0);
 
+/** Hands the box to another account: an existing one by email, or a new one. */
+export const changeBoxOwnerSchema = createPlatformBoxSchema.pick({
+  ownerEmail: true,
+  ownerName: true,
+});
+
+/** `POST /platform/boxes/:boxId/owner-access-link`: a one-time link to create a password. */
+export const ownerAccessLinkSchema = z.object({ token: z.string(), expiresAt: z.string() });
+
 /** Suspending or removing a box needs a reason its staff will see. */
 export const boxStatusChangeSchema = z.object({ reason: z.string().trim().min(3).max(240) });
 
@@ -70,7 +79,14 @@ export const platformBoxSummarySchema = z.object({
   /** What the box pays GuaraniX per month on its current plan. */
   monthlyFeeGs: z.number().int(),
   activeMembers: z.number().int(),
-  owner: z.object({ fullName: z.string(), email: z.string().nullable() }).nullable(),
+  owner: z
+    .object({
+      fullName: z.string(),
+      email: z.string().nullable(),
+      /** Never signed in: no password and no Google yet. */
+      accessPending: z.boolean(),
+    })
+    .nullable(),
 });
 
 export const platformMetricsSchema = z.object({
@@ -93,6 +109,8 @@ export const platformMetricsSchema = z.object({
 export type PlatformPlanInput = z.input<typeof platformPlanInputSchema>;
 export type UpdatePlatformPlanInput = z.infer<typeof updatePlatformPlanSchema>;
 export type CreatePlatformBoxInput = z.input<typeof createPlatformBoxSchema>;
+export type OwnerAccessLink = z.infer<typeof ownerAccessLinkSchema>;
+export type ChangeBoxOwnerInput = z.infer<typeof changeBoxOwnerSchema>;
 export type UpdatePlatformBoxInput = z.infer<typeof updatePlatformBoxSchema>;
 export type PlatformBoxFilter = (typeof PLATFORM_BOX_FILTERS)[number];
 export type PlatformBoxSummary = z.infer<typeof platformBoxSummarySchema>;

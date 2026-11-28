@@ -1,5 +1,7 @@
 import type {
+  ChangeBoxOwnerInput,
   CreatePlatformBoxInput,
+  OwnerAccessLink,
   PlatformBoxDetail,
   PlatformBoxFilter,
   PlatformBoxSummary,
@@ -75,6 +77,12 @@ export function useBoxMutations(boxId: string) {
     changeStatus: usePlatformMutation(
       ({ action, reason }: { action: BoxAction; reason?: string }) =>
         api.post<PlatformBoxDetail>(`/platform/boxes/${boxId}/${action}`, reason ? { reason } : {}),
+    ),
+    changeOwner: usePlatformMutation((input: ChangeBoxOwnerInput) =>
+      api.put<PlatformBoxDetail>(`/platform/boxes/${boxId}/owner`, input),
+    ),
+    createAccessLink: usePlatformMutation(() =>
+      api.post<OwnerAccessLink>(`/platform/boxes/${boxId}/owner-access-link`),
     ),
     impersonate: usePlatformMutation((reason: string) =>
       api.post<{ ok: true }>(`/platform/boxes/${boxId}/impersonate`, { reason }),

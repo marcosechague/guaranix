@@ -1,4 +1,4 @@
-import { type SchemaDatabase, withSystemScope } from '@guaranix/db';
+import { type SchemaDatabase, type ScopedTransaction, withSystemScope } from '@guaranix/db';
 import { passwordResetTokens, sessions, userCredentials, users } from '@guaranix/db/schema';
 import { and, eq, gt, isNull } from 'drizzle-orm';
 import { randomToken, sha256 } from '../lib/crypto';
@@ -92,24 +92,38 @@ export async function login(
 }
 
 /**
+ * Issues a single-use reset token for the user in the caller's transaction,
+ * retiring any older ones. Only the hash is stored.
+ */
+export async function issuePasswordResetToken(
+  transaction: ScopedTransaction,
+  userId: string,
+  lifetimeMinutes: number,
+  now = new Date(),
+): Promise<string> {
+  const token = randomToken();
+  await transaction
+    .update(passwordResetTokens)
+    .set({ usedAt: now })
+    .where(and(eq(passwordResetTokens.userId, userId), isNull(passwordResetTokens.usedAt)));
+  await transaction.insert(passwordResetTokens).values({
+    userId,
+    tokenHash: await sha256(token),
+    expiresAt: new Date(now.getTime() + lifetimeMinutes * 60 * 1000),
+  });
+  return token;
+}
+
+/**
  * Creates a reset link token for the email's user, replacing older ones.
  * Returns null for unknown emails; callers answer the same either way.
  */
 export async function createPasswordReset(database: SchemaDatabase, email: string) {
   const user = await findUserByEmail(database, email);
   if (!user) return null;
-  const token = randomToken();
-  await withSystemScope(database, async (transaction) => {
-    await transaction
-      .update(passwordResetTokens)
-      .set({ usedAt: new Date() })
-      .where(and(eq(passwordResetTokens.userId, user.id), isNull(passwordResetTokens.usedAt)));
-    await transaction.insert(passwordResetTokens).values({
-      userId: user.id,
-      tokenHash: await sha256(token),
-      expiresAt: new Date(Date.now() + RESET_TOKEN_LIFETIME_MINUTES * 60 * 1000),
-    });
-  });
+  const token = await withSystemScope(database, (transaction) =>
+    issuePasswordResetToken(transaction, user.id, RESET_TOKEN_LIFETIME_MINUTES),
+  );
   return { token, fullName: user.fullName };
 }
 
