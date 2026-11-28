@@ -233,13 +233,9 @@
         "boxes_platform_plan_id_platform_plans_id_fk": {
           "name": "boxes_platform_plan_id_platform_plans_id_fk",
           "tableFrom": "boxes",
-          "columnsFrom": [
-            "platform_plan_id"
-          ],
+          "columnsFrom": ["platform_plan_id"],
           "tableTo": "platform_plans",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -248,9 +244,7 @@
       "uniqueConstraints": {
         "boxes_slug_unique": {
           "name": "boxes_slug_unique",
-          "columns": [
-            "slug"
-          ],
+          "columns": ["slug"],
           "nullsNotDistinct": false
         }
       },
@@ -259,18 +253,14 @@
           "name": "boxes_select_own",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"boxes\".\"id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         },
         "boxes_update_own": {
           "name": "boxes_update_own",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"boxes\".\"id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"boxes\".\"id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -362,9 +352,7 @@
       "uniqueConstraints": {
         "platform_plans_code_unique": {
           "name": "platform_plans_code_unique",
-          "columns": [
-            "code"
-          ],
+          "columns": ["code"],
           "nullsNotDistinct": false
         }
       },
@@ -484,18 +472,14 @@
           "name": "users_select_linked",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"users\".\"id\" = nullif(current_setting('app.user_id', true), '')::uuid or exists (select 1 from box_users where box_users.user_id = \"users\".\"id\")"
         },
         "users_update_self": {
           "name": "users_update_self",
           "as": "PERMISSIVE",
           "for": "UPDATE",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"users\".\"id\" = nullif(current_setting('app.user_id', true), '')::uuid",
           "withCheck": "\"users\".\"id\" = nullif(current_setting('app.user_id', true), '')::uuid"
         }
@@ -563,13 +547,9 @@
         "oauth_accounts_user_id_users_id_fk": {
           "name": "oauth_accounts_user_id_users_id_fk",
           "tableFrom": "oauth_accounts",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -578,18 +558,12 @@
       "uniqueConstraints": {
         "oauth_accounts_provider_subject_unique": {
           "name": "oauth_accounts_provider_subject_unique",
-          "columns": [
-            "provider",
-            "provider_subject"
-          ],
+          "columns": ["provider", "provider_subject"],
           "nullsNotDistinct": false
         },
         "oauth_accounts_user_provider_unique": {
           "name": "oauth_accounts_user_provider_unique",
-          "columns": [
-            "user_id",
-            "provider"
-          ],
+          "columns": ["user_id", "provider"],
           "nullsNotDistinct": false
         }
       },
@@ -598,9 +572,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -672,13 +644,9 @@
         "password_reset_tokens_user_id_users_id_fk": {
           "name": "password_reset_tokens_user_id_users_id_fk",
           "tableFrom": "password_reset_tokens",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -687,9 +655,7 @@
       "uniqueConstraints": {
         "password_reset_tokens_tokenHash_unique": {
           "name": "password_reset_tokens_tokenHash_unique",
-          "columns": [
-            "token_hash"
-          ],
+          "columns": ["token_hash"],
           "nullsNotDistinct": false
         }
       },
@@ -698,9 +664,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -742,9 +706,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -848,39 +810,27 @@
         "sessions_user_id_users_id_fk": {
           "name": "sessions_user_id_users_id_fk",
           "tableFrom": "sessions",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         },
         "sessions_active_box_id_boxes_id_fk": {
           "name": "sessions_active_box_id_boxes_id_fk",
           "tableFrom": "sessions",
-          "columnsFrom": [
-            "active_box_id"
-          ],
+          "columnsFrom": ["active_box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "sessions_impersonated_box_id_boxes_id_fk": {
           "name": "sessions_impersonated_box_id_boxes_id_fk",
           "tableFrom": "sessions",
-          "columnsFrom": [
-            "impersonated_box_id"
-          ],
+          "columnsFrom": ["impersonated_box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -889,9 +839,7 @@
       "uniqueConstraints": {
         "sessions_tokenHash_unique": {
           "name": "sessions_tokenHash_unique",
-          "columns": [
-            "token_hash"
-          ],
+          "columns": ["token_hash"],
           "nullsNotDistinct": false
         }
       },
@@ -900,9 +848,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -946,13 +892,9 @@
         "user_credentials_user_id_users_id_fk": {
           "name": "user_credentials_user_id_users_id_fk",
           "tableFrom": "user_credentials",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -964,9 +906,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -1064,26 +1004,18 @@
         "data_imports_box_id_boxes_id_fk": {
           "name": "data_imports_box_id_boxes_id_fk",
           "tableFrom": "data_imports",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "data_imports_created_by_user_id_users_id_fk": {
           "name": "data_imports_created_by_user_id_users_id_fk",
           "tableFrom": "data_imports",
-          "columnsFrom": [
-            "created_by_user_id"
-          ],
+          "columnsFrom": ["created_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1092,18 +1024,12 @@
       "uniqueConstraints": {
         "data_imports_box_id_id_unique": {
           "name": "data_imports_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "data_imports_box_id_payload_hash_unique": {
           "name": "data_imports_box_id_payload_hash_unique",
-          "columns": [
-            "box_id",
-            "payload_hash"
-          ],
+          "columns": ["box_id", "payload_hash"],
           "nullsNotDistinct": false
         }
       },
@@ -1112,9 +1038,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"data_imports\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"data_imports\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -1184,26 +1108,18 @@
         "box_feature_overrides_box_id_boxes_id_fk": {
           "name": "box_feature_overrides_box_id_boxes_id_fk",
           "tableFrom": "box_feature_overrides",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "box_feature_overrides_updated_by_user_id_users_id_fk": {
           "name": "box_feature_overrides_updated_by_user_id_users_id_fk",
           "tableFrom": "box_feature_overrides",
-          "columnsFrom": [
-            "updated_by_user_id"
-          ],
+          "columnsFrom": ["updated_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1212,10 +1128,7 @@
       "uniqueConstraints": {
         "box_feature_overrides_box_id_feature_unique": {
           "name": "box_feature_overrides_box_id_feature_unique",
-          "columns": [
-            "box_id",
-            "feature"
-          ],
+          "columns": ["box_id", "feature"],
           "nullsNotDistinct": false
         }
       },
@@ -1224,9 +1137,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"box_feature_overrides\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"box_feature_overrides\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -1295,26 +1206,18 @@
         "platform_plan_features_platform_plan_id_platform_plans_id_fk": {
           "name": "platform_plan_features_platform_plan_id_platform_plans_id_fk",
           "tableFrom": "platform_plan_features",
-          "columnsFrom": [
-            "platform_plan_id"
-          ],
+          "columnsFrom": ["platform_plan_id"],
           "tableTo": "platform_plans",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "platform_plan_features_updated_by_user_id_users_id_fk": {
           "name": "platform_plan_features_updated_by_user_id_users_id_fk",
           "tableFrom": "platform_plan_features",
-          "columnsFrom": [
-            "updated_by_user_id"
-          ],
+          "columnsFrom": ["updated_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1322,10 +1225,7 @@
       "compositePrimaryKeys": {
         "platform_plan_features_platform_plan_id_feature_pk": {
           "name": "platform_plan_features_platform_plan_id_feature_pk",
-          "columns": [
-            "platform_plan_id",
-            "feature"
-          ]
+          "columns": ["platform_plan_id", "feature"]
         }
       },
       "uniqueConstraints": {},
@@ -1334,9 +1234,7 @@
           "name": "platform_plan_features_select",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "true"
         }
       },
@@ -1397,13 +1295,9 @@
         "ai_provider_keys_updated_by_user_id_users_id_fk": {
           "name": "ai_provider_keys_updated_by_user_id_users_id_fk",
           "tableFrom": "ai_provider_keys",
-          "columnsFrom": [
-            "updated_by_user_id"
-          ],
+          "columnsFrom": ["updated_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1415,9 +1309,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -1475,13 +1367,9 @@
         "ai_settings_updated_by_user_id_users_id_fk": {
           "name": "ai_settings_updated_by_user_id_users_id_fk",
           "tableFrom": "ai_settings",
-          "columnsFrom": [
-            "updated_by_user_id"
-          ],
+          "columnsFrom": ["updated_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1493,9 +1381,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -1613,26 +1499,18 @@
         "ai_usage_box_id_boxes_id_fk": {
           "name": "ai_usage_box_id_boxes_id_fk",
           "tableFrom": "ai_usage",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "ai_usage_user_id_users_id_fk": {
           "name": "ai_usage_user_id_users_id_fk",
           "tableFrom": "ai_usage",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1644,9 +1522,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"ai_usage\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"ai_usage\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -1727,26 +1603,18 @@
         "box_users_box_id_boxes_id_fk": {
           "name": "box_users_box_id_boxes_id_fk",
           "tableFrom": "box_users",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "box_users_user_id_users_id_fk": {
           "name": "box_users_user_id_users_id_fk",
           "tableFrom": "box_users",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1755,18 +1623,12 @@
       "uniqueConstraints": {
         "box_users_box_id_id_unique": {
           "name": "box_users_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "box_users_box_id_user_id_unique": {
           "name": "box_users_box_id_user_id_unique",
-          "columns": [
-            "box_id",
-            "user_id"
-          ],
+          "columns": ["box_id", "user_id"],
           "nullsNotDistinct": false
         }
       },
@@ -1775,9 +1637,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"box_users\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"box_users\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -1937,43 +1797,27 @@
         "members_box_id_boxes_id_fk": {
           "name": "members_box_id_boxes_id_fk",
           "tableFrom": "members",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "members_box_user_fk": {
           "name": "members_box_user_fk",
           "tableFrom": "members",
-          "columnsFrom": [
-            "box_id",
-            "user_id"
-          ],
+          "columnsFrom": ["box_id", "user_id"],
           "tableTo": "box_users",
-          "columnsTo": [
-            "box_id",
-            "user_id"
-          ],
+          "columnsTo": ["box_id", "user_id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "members_import_fk": {
           "name": "members_import_fk",
           "tableFrom": "members",
-          "columnsFrom": [
-            "box_id",
-            "import_id"
-          ],
+          "columnsFrom": ["box_id", "import_id"],
           "tableTo": "data_imports",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -1982,26 +1826,17 @@
       "uniqueConstraints": {
         "members_box_id_id_unique": {
           "name": "members_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "members_box_id_user_id_unique": {
           "name": "members_box_id_user_id_unique",
-          "columns": [
-            "box_id",
-            "user_id"
-          ],
+          "columns": ["box_id", "user_id"],
           "nullsNotDistinct": false
         },
         "members_box_id_document_number_unique": {
           "name": "members_box_id_document_number_unique",
-          "columns": [
-            "box_id",
-            "document_number"
-          ],
+          "columns": ["box_id", "document_number"],
           "nullsNotDistinct": false
         }
       },
@@ -2010,9 +1845,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"members\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"members\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -2162,58 +1995,36 @@
         "member_plans_box_id_boxes_id_fk": {
           "name": "member_plans_box_id_boxes_id_fk",
           "tableFrom": "member_plans",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "member_plans_member_fk": {
           "name": "member_plans_member_fk",
           "tableFrom": "member_plans",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "member_plans_plan_fk": {
           "name": "member_plans_plan_fk",
           "tableFrom": "member_plans",
-          "columnsFrom": [
-            "box_id",
-            "plan_id"
-          ],
+          "columnsFrom": ["box_id", "plan_id"],
           "tableTo": "plans",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "member_plans_import_fk": {
           "name": "member_plans_import_fk",
           "tableFrom": "member_plans",
-          "columnsFrom": [
-            "box_id",
-            "import_id"
-          ],
+          "columnsFrom": ["box_id", "import_id"],
           "tableTo": "data_imports",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2222,17 +2033,12 @@
       "uniqueConstraints": {
         "member_plans_box_id_id_unique": {
           "name": "member_plans_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "member_plans_renewed_from_id_unique": {
           "name": "member_plans_renewed_from_id_unique",
-          "columns": [
-            "renewed_from_id"
-          ],
+          "columns": ["renewed_from_id"],
           "nullsNotDistinct": false
         }
       },
@@ -2241,9 +2047,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"member_plans\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"member_plans\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -2331,43 +2135,27 @@
         "plan_pauses_box_id_boxes_id_fk": {
           "name": "plan_pauses_box_id_boxes_id_fk",
           "tableFrom": "plan_pauses",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "plan_pauses_member_plan_fk": {
           "name": "plan_pauses_member_plan_fk",
           "tableFrom": "plan_pauses",
-          "columnsFrom": [
-            "box_id",
-            "member_plan_id"
-          ],
+          "columnsFrom": ["box_id", "member_plan_id"],
           "tableTo": "member_plans",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "plan_pauses_created_by_fk": {
           "name": "plan_pauses_created_by_fk",
           "tableFrom": "plan_pauses",
-          "columnsFrom": [
-            "box_id",
-            "created_by_user_id"
-          ],
+          "columnsFrom": ["box_id", "created_by_user_id"],
           "tableTo": "box_users",
-          "columnsTo": [
-            "box_id",
-            "user_id"
-          ],
+          "columnsTo": ["box_id", "user_id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2376,10 +2164,7 @@
       "uniqueConstraints": {
         "plan_pauses_box_id_id_unique": {
           "name": "plan_pauses_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         }
       },
@@ -2388,9 +2173,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"plan_pauses\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"plan_pauses\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -2431,43 +2214,27 @@
         "plan_programs_box_id_boxes_id_fk": {
           "name": "plan_programs_box_id_boxes_id_fk",
           "tableFrom": "plan_programs",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "plan_programs_plan_fk": {
           "name": "plan_programs_plan_fk",
           "tableFrom": "plan_programs",
-          "columnsFrom": [
-            "box_id",
-            "plan_id"
-          ],
+          "columnsFrom": ["box_id", "plan_id"],
           "tableTo": "plans",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "plan_programs_program_fk": {
           "name": "plan_programs_program_fk",
           "tableFrom": "plan_programs",
-          "columnsFrom": [
-            "box_id",
-            "program_id"
-          ],
+          "columnsFrom": ["box_id", "program_id"],
           "tableTo": "programs",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2475,10 +2242,7 @@
       "compositePrimaryKeys": {
         "plan_programs_plan_id_program_id_pk": {
           "name": "plan_programs_plan_id_program_id_pk",
-          "columns": [
-            "plan_id",
-            "program_id"
-          ]
+          "columns": ["plan_id", "program_id"]
         }
       },
       "uniqueConstraints": {},
@@ -2487,9 +2251,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"plan_programs\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"plan_programs\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -2590,28 +2352,18 @@
         "plans_box_id_boxes_id_fk": {
           "name": "plans_box_id_boxes_id_fk",
           "tableFrom": "plans",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "plans_import_fk": {
           "name": "plans_import_fk",
           "tableFrom": "plans",
-          "columnsFrom": [
-            "box_id",
-            "import_id"
-          ],
+          "columnsFrom": ["box_id", "import_id"],
           "tableTo": "data_imports",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2620,10 +2372,7 @@
       "uniqueConstraints": {
         "plans_box_id_id_unique": {
           "name": "plans_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         }
       },
@@ -2632,9 +2381,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"plans\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"plans\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -2757,58 +2504,36 @@
         "bookings_box_id_boxes_id_fk": {
           "name": "bookings_box_id_boxes_id_fk",
           "tableFrom": "bookings",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "bookings_class_fk": {
           "name": "bookings_class_fk",
           "tableFrom": "bookings",
-          "columnsFrom": [
-            "box_id",
-            "class_id"
-          ],
+          "columnsFrom": ["box_id", "class_id"],
           "tableTo": "classes",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "bookings_member_fk": {
           "name": "bookings_member_fk",
           "tableFrom": "bookings",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "bookings_member_plan_fk": {
           "name": "bookings_member_plan_fk",
           "tableFrom": "bookings",
-          "columnsFrom": [
-            "box_id",
-            "member_plan_id"
-          ],
+          "columnsFrom": ["box_id", "member_plan_id"],
           "tableTo": "member_plans",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2817,26 +2542,17 @@
       "uniqueConstraints": {
         "bookings_box_id_id_unique": {
           "name": "bookings_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "bookings_class_id_member_id_unique": {
           "name": "bookings_class_id_member_id_unique",
-          "columns": [
-            "class_id",
-            "member_id"
-          ],
+          "columns": ["class_id", "member_id"],
           "nullsNotDistinct": false
         },
         "bookings_class_id_waitlist_position_unique": {
           "name": "bookings_class_id_waitlist_position_unique",
-          "columns": [
-            "class_id",
-            "waitlist_position"
-          ],
+          "columns": ["class_id", "waitlist_position"],
           "nullsNotDistinct": false
         }
       },
@@ -2845,9 +2561,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"bookings\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"bookings\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -2945,43 +2659,27 @@
         "class_schedules_box_id_boxes_id_fk": {
           "name": "class_schedules_box_id_boxes_id_fk",
           "tableFrom": "class_schedules",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "class_schedules_program_fk": {
           "name": "class_schedules_program_fk",
           "tableFrom": "class_schedules",
-          "columnsFrom": [
-            "box_id",
-            "program_id"
-          ],
+          "columnsFrom": ["box_id", "program_id"],
           "tableTo": "programs",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "class_schedules_coach_fk": {
           "name": "class_schedules_coach_fk",
           "tableFrom": "class_schedules",
-          "columnsFrom": [
-            "box_id",
-            "coach_user_id"
-          ],
+          "columnsFrom": ["box_id", "coach_user_id"],
           "tableTo": "box_users",
-          "columnsTo": [
-            "box_id",
-            "user_id"
-          ],
+          "columnsTo": ["box_id", "user_id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -2990,10 +2688,7 @@
       "uniqueConstraints": {
         "class_schedules_box_id_id_unique": {
           "name": "class_schedules_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         }
       },
@@ -3002,9 +2697,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"class_schedules\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"class_schedules\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -3138,58 +2831,36 @@
         "classes_box_id_boxes_id_fk": {
           "name": "classes_box_id_boxes_id_fk",
           "tableFrom": "classes",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "classes_program_fk": {
           "name": "classes_program_fk",
           "tableFrom": "classes",
-          "columnsFrom": [
-            "box_id",
-            "program_id"
-          ],
+          "columnsFrom": ["box_id", "program_id"],
           "tableTo": "programs",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "classes_schedule_fk": {
           "name": "classes_schedule_fk",
           "tableFrom": "classes",
-          "columnsFrom": [
-            "box_id",
-            "schedule_id"
-          ],
+          "columnsFrom": ["box_id", "schedule_id"],
           "tableTo": "class_schedules",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "classes_coach_fk": {
           "name": "classes_coach_fk",
           "tableFrom": "classes",
-          "columnsFrom": [
-            "box_id",
-            "coach_user_id"
-          ],
+          "columnsFrom": ["box_id", "coach_user_id"],
           "tableTo": "box_users",
-          "columnsTo": [
-            "box_id",
-            "user_id"
-          ],
+          "columnsTo": ["box_id", "user_id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3198,18 +2869,12 @@
       "uniqueConstraints": {
         "classes_box_id_id_unique": {
           "name": "classes_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "classes_schedule_id_starts_at_unique": {
           "name": "classes_schedule_id_starts_at_unique",
-          "columns": [
-            "schedule_id",
-            "starts_at"
-          ],
+          "columns": ["schedule_id", "starts_at"],
           "nullsNotDistinct": false
         }
       },
@@ -3218,9 +2883,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"classes\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"classes\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -3299,13 +2962,9 @@
         "programs_box_id_boxes_id_fk": {
           "name": "programs_box_id_boxes_id_fk",
           "tableFrom": "programs",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3314,18 +2973,12 @@
       "uniqueConstraints": {
         "programs_box_id_id_unique": {
           "name": "programs_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "programs_box_id_name_unique": {
           "name": "programs_box_id_name_unique",
-          "columns": [
-            "box_id",
-            "name"
-          ],
+          "columns": ["box_id", "name"],
           "nullsNotDistinct": false
         }
       },
@@ -3334,9 +2987,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"programs\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"programs\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -3394,13 +3045,9 @@
         "movements_box_id_boxes_id_fk": {
           "name": "movements_box_id_boxes_id_fk",
           "tableFrom": "movements",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3409,18 +3056,12 @@
       "uniqueConstraints": {
         "movements_box_id_id_unique": {
           "name": "movements_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "movements_box_id_name_unique": {
           "name": "movements_box_id_name_unique",
-          "columns": [
-            "box_id",
-            "name"
-          ],
+          "columns": ["box_id", "name"],
           "nullsNotDistinct": false
         }
       },
@@ -3429,9 +3070,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"movements\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"movements\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -3552,58 +3191,36 @@
         "personal_records_box_id_boxes_id_fk": {
           "name": "personal_records_box_id_boxes_id_fk",
           "tableFrom": "personal_records",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "personal_records_member_fk": {
           "name": "personal_records_member_fk",
           "tableFrom": "personal_records",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "personal_records_movement_fk": {
           "name": "personal_records_movement_fk",
           "tableFrom": "personal_records",
-          "columnsFrom": [
-            "box_id",
-            "movement_id"
-          ],
+          "columnsFrom": ["box_id", "movement_id"],
           "tableTo": "movements",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "personal_records_result_fk": {
           "name": "personal_records_result_fk",
           "tableFrom": "personal_records",
-          "columnsFrom": [
-            "box_id",
-            "result_id"
-          ],
+          "columnsFrom": ["box_id", "result_id"],
           "tableTo": "workout_results",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3615,9 +3232,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"personal_records\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"personal_records\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -3679,43 +3294,27 @@
         "result_fist_bumps_box_id_boxes_id_fk": {
           "name": "result_fist_bumps_box_id_boxes_id_fk",
           "tableFrom": "result_fist_bumps",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "result_fist_bumps_result_fk": {
           "name": "result_fist_bumps_result_fk",
           "tableFrom": "result_fist_bumps",
-          "columnsFrom": [
-            "box_id",
-            "result_id"
-          ],
+          "columnsFrom": ["box_id", "result_id"],
           "tableTo": "workout_results",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "result_fist_bumps_member_fk": {
           "name": "result_fist_bumps_member_fk",
           "tableFrom": "result_fist_bumps",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3724,10 +3323,7 @@
       "uniqueConstraints": {
         "result_fist_bumps_result_id_member_id_unique": {
           "name": "result_fist_bumps_result_id_member_id_unique",
-          "columns": [
-            "result_id",
-            "member_id"
-          ],
+          "columns": ["result_id", "member_id"],
           "nullsNotDistinct": false
         }
       },
@@ -3736,9 +3332,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"result_fist_bumps\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"result_fist_bumps\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -3866,43 +3460,27 @@
         "workout_components_box_id_boxes_id_fk": {
           "name": "workout_components_box_id_boxes_id_fk",
           "tableFrom": "workout_components",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "workout_components_workout_fk": {
           "name": "workout_components_workout_fk",
           "tableFrom": "workout_components",
-          "columnsFrom": [
-            "box_id",
-            "workout_id"
-          ],
+          "columnsFrom": ["box_id", "workout_id"],
           "tableTo": "workouts",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "workout_components_movement_fk": {
           "name": "workout_components_movement_fk",
           "tableFrom": "workout_components",
-          "columnsFrom": [
-            "box_id",
-            "movement_id"
-          ],
+          "columnsFrom": ["box_id", "movement_id"],
           "tableTo": "movements",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -3911,18 +3489,12 @@
       "uniqueConstraints": {
         "workout_components_box_id_id_unique": {
           "name": "workout_components_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "workout_components_workout_id_position_unique": {
           "name": "workout_components_workout_id_position_unique",
-          "columns": [
-            "workout_id",
-            "position"
-          ],
+          "columns": ["workout_id", "position"],
           "nullsNotDistinct": false
         }
       },
@@ -3931,9 +3503,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"workout_components\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"workout_components\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -4072,43 +3642,27 @@
         "workout_results_box_id_boxes_id_fk": {
           "name": "workout_results_box_id_boxes_id_fk",
           "tableFrom": "workout_results",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "workout_results_component_fk": {
           "name": "workout_results_component_fk",
           "tableFrom": "workout_results",
-          "columnsFrom": [
-            "box_id",
-            "component_id"
-          ],
+          "columnsFrom": ["box_id", "component_id"],
           "tableTo": "workout_components",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "workout_results_member_fk": {
           "name": "workout_results_member_fk",
           "tableFrom": "workout_results",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -4117,18 +3671,12 @@
       "uniqueConstraints": {
         "workout_results_box_id_id_unique": {
           "name": "workout_results_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "workout_results_component_id_member_id_unique": {
           "name": "workout_results_component_id_member_id_unique",
-          "columns": [
-            "component_id",
-            "member_id"
-          ],
+          "columns": ["component_id", "member_id"],
           "nullsNotDistinct": false
         }
       },
@@ -4137,9 +3685,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"workout_results\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"workout_results\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -4242,43 +3788,27 @@
         "workouts_box_id_boxes_id_fk": {
           "name": "workouts_box_id_boxes_id_fk",
           "tableFrom": "workouts",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "workouts_program_fk": {
           "name": "workouts_program_fk",
           "tableFrom": "workouts",
-          "columnsFrom": [
-            "box_id",
-            "program_id"
-          ],
+          "columnsFrom": ["box_id", "program_id"],
           "tableTo": "programs",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "workouts_created_by_fk": {
           "name": "workouts_created_by_fk",
           "tableFrom": "workouts",
-          "columnsFrom": [
-            "box_id",
-            "created_by_user_id"
-          ],
+          "columnsFrom": ["box_id", "created_by_user_id"],
           "tableTo": "box_users",
-          "columnsTo": [
-            "box_id",
-            "user_id"
-          ],
+          "columnsTo": ["box_id", "user_id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -4287,10 +3817,7 @@
       "uniqueConstraints": {
         "workouts_box_id_id_unique": {
           "name": "workouts_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         }
       },
@@ -4299,9 +3826,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"workouts\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"workouts\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -4418,58 +3943,36 @@
         "charges_box_id_boxes_id_fk": {
           "name": "charges_box_id_boxes_id_fk",
           "tableFrom": "charges",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "charges_member_fk": {
           "name": "charges_member_fk",
           "tableFrom": "charges",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "charges_member_plan_fk": {
           "name": "charges_member_plan_fk",
           "tableFrom": "charges",
-          "columnsFrom": [
-            "box_id",
-            "member_plan_id"
-          ],
+          "columnsFrom": ["box_id", "member_plan_id"],
           "tableTo": "member_plans",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "charges_import_fk": {
           "name": "charges_import_fk",
           "tableFrom": "charges",
-          "columnsFrom": [
-            "box_id",
-            "import_id"
-          ],
+          "columnsFrom": ["box_id", "import_id"],
           "tableTo": "data_imports",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -4478,10 +3981,7 @@
       "uniqueConstraints": {
         "charges_box_id_id_unique": {
           "name": "charges_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         }
       },
@@ -4490,9 +3990,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"charges\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"charges\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -4660,69 +4158,45 @@
         "payments_box_id_boxes_id_fk": {
           "name": "payments_box_id_boxes_id_fk",
           "tableFrom": "payments",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payments_recorded_by_user_id_users_id_fk": {
           "name": "payments_recorded_by_user_id_users_id_fk",
           "tableFrom": "payments",
-          "columnsFrom": [
-            "recorded_by_user_id"
-          ],
+          "columnsFrom": ["recorded_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payments_reviewed_by_user_id_users_id_fk": {
           "name": "payments_reviewed_by_user_id_users_id_fk",
           "tableFrom": "payments",
-          "columnsFrom": [
-            "reviewed_by_user_id"
-          ],
+          "columnsFrom": ["reviewed_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payments_member_fk": {
           "name": "payments_member_fk",
           "tableFrom": "payments",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payments_charge_fk": {
           "name": "payments_charge_fk",
           "tableFrom": "payments",
-          "columnsFrom": [
-            "box_id",
-            "charge_id"
-          ],
+          "columnsFrom": ["box_id", "charge_id"],
           "tableTo": "charges",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -4731,10 +4205,7 @@
       "uniqueConstraints": {
         "payments_box_id_id_unique": {
           "name": "payments_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         }
       },
@@ -4743,9 +4214,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"payments\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"payments\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -4854,26 +4323,18 @@
         "payment_accounts_box_id_boxes_id_fk": {
           "name": "payment_accounts_box_id_boxes_id_fk",
           "tableFrom": "payment_accounts",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_accounts_connected_by_user_id_users_id_fk": {
           "name": "payment_accounts_connected_by_user_id_users_id_fk",
           "tableFrom": "payment_accounts",
-          "columnsFrom": [
-            "connected_by_user_id"
-          ],
+          "columnsFrom": ["connected_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -4882,17 +4343,12 @@
       "uniqueConstraints": {
         "payment_accounts_box_id_id_unique": {
           "name": "payment_accounts_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "payment_accounts_box_id_unique": {
           "name": "payment_accounts_box_id_unique",
-          "columns": [
-            "box_id"
-          ],
+          "columns": ["box_id"],
           "nullsNotDistinct": false
         }
       },
@@ -4901,9 +4357,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"payment_accounts\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"payment_accounts\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -5121,103 +4575,63 @@
         "payment_attempts_box_id_boxes_id_fk": {
           "name": "payment_attempts_box_id_boxes_id_fk",
           "tableFrom": "payment_attempts",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_attempts_account_fk": {
           "name": "payment_attempts_account_fk",
           "tableFrom": "payment_attempts",
-          "columnsFrom": [
-            "box_id",
-            "account_id"
-          ],
+          "columnsFrom": ["box_id", "account_id"],
           "tableTo": "payment_accounts",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_attempts_charge_fk": {
           "name": "payment_attempts_charge_fk",
           "tableFrom": "payment_attempts",
-          "columnsFrom": [
-            "box_id",
-            "charge_id"
-          ],
+          "columnsFrom": ["box_id", "charge_id"],
           "tableTo": "charges",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_attempts_member_fk": {
           "name": "payment_attempts_member_fk",
           "tableFrom": "payment_attempts",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_attempts_card_fk": {
           "name": "payment_attempts_card_fk",
           "tableFrom": "payment_attempts",
-          "columnsFrom": [
-            "box_id",
-            "saved_card_id"
-          ],
+          "columnsFrom": ["box_id", "saved_card_id"],
           "tableTo": "saved_cards",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_attempts_link_fk": {
           "name": "payment_attempts_link_fk",
           "tableFrom": "payment_attempts",
-          "columnsFrom": [
-            "box_id",
-            "payment_link_id"
-          ],
+          "columnsFrom": ["box_id", "payment_link_id"],
           "tableTo": "payment_links",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_attempts_payment_fk": {
           "name": "payment_attempts_payment_fk",
           "tableFrom": "payment_attempts",
-          "columnsFrom": [
-            "box_id",
-            "payment_id"
-          ],
+          "columnsFrom": ["box_id", "payment_id"],
           "tableTo": "payments",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5226,24 +4640,17 @@
       "uniqueConstraints": {
         "payment_attempts_box_id_id_unique": {
           "name": "payment_attempts_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "payment_attempts_order_number_unique": {
           "name": "payment_attempts_order_number_unique",
-          "columns": [
-            "order_number"
-          ],
+          "columns": ["order_number"],
           "nullsNotDistinct": false
         },
         "payment_attempts_payment_id_unique": {
           "name": "payment_attempts_payment_id_unique",
-          "columns": [
-            "payment_id"
-          ],
+          "columns": ["payment_id"],
           "nullsNotDistinct": false
         }
       },
@@ -5252,9 +4659,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"payment_attempts\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"payment_attempts\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -5327,43 +4732,27 @@
         "payment_customers_box_id_boxes_id_fk": {
           "name": "payment_customers_box_id_boxes_id_fk",
           "tableFrom": "payment_customers",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_customers_account_fk": {
           "name": "payment_customers_account_fk",
           "tableFrom": "payment_customers",
-          "columnsFrom": [
-            "box_id",
-            "account_id"
-          ],
+          "columnsFrom": ["box_id", "account_id"],
           "tableTo": "payment_accounts",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_customers_member_fk": {
           "name": "payment_customers_member_fk",
           "tableFrom": "payment_customers",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5372,25 +4761,17 @@
       "uniqueConstraints": {
         "payment_customers_box_id_id_unique": {
           "name": "payment_customers_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "payment_customers_account_id_member_id_unique": {
           "name": "payment_customers_account_id_member_id_unique",
-          "columns": [
-            "account_id",
-            "member_id"
-          ],
+          "columns": ["account_id", "member_id"],
           "nullsNotDistinct": false
         },
         "payment_customers_customer_ref_unique": {
           "name": "payment_customers_customer_ref_unique",
-          "columns": [
-            "customer_ref"
-          ],
+          "columns": ["customer_ref"],
           "nullsNotDistinct": false
         }
       },
@@ -5399,9 +4780,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"payment_customers\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"payment_customers\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -5539,28 +4918,18 @@
         "payment_events_box_id_boxes_id_fk": {
           "name": "payment_events_box_id_boxes_id_fk",
           "tableFrom": "payment_events",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_events_account_fk": {
           "name": "payment_events_account_fk",
           "tableFrom": "payment_events",
-          "columnsFrom": [
-            "box_id",
-            "account_id"
-          ],
+          "columnsFrom": ["box_id", "account_id"],
           "tableTo": "payment_accounts",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5572,9 +4941,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"payment_events\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"payment_events\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -5649,56 +5016,36 @@
         "payment_links_box_id_boxes_id_fk": {
           "name": "payment_links_box_id_boxes_id_fk",
           "tableFrom": "payment_links",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_links_created_by_user_id_users_id_fk": {
           "name": "payment_links_created_by_user_id_users_id_fk",
           "tableFrom": "payment_links",
-          "columnsFrom": [
-            "created_by_user_id"
-          ],
+          "columnsFrom": ["created_by_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_links_charge_fk": {
           "name": "payment_links_charge_fk",
           "tableFrom": "payment_links",
-          "columnsFrom": [
-            "box_id",
-            "charge_id"
-          ],
+          "columnsFrom": ["box_id", "charge_id"],
           "tableTo": "charges",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "payment_links_member_fk": {
           "name": "payment_links_member_fk",
           "tableFrom": "payment_links",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5707,17 +5054,12 @@
       "uniqueConstraints": {
         "payment_links_box_id_id_unique": {
           "name": "payment_links_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "payment_links_token_hash_unique": {
           "name": "payment_links_token_hash_unique",
-          "columns": [
-            "token_hash"
-          ],
+          "columns": ["token_hash"],
           "nullsNotDistinct": false
         }
       },
@@ -5726,9 +5068,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"payment_links\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"payment_links\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -5865,58 +5205,36 @@
         "saved_cards_box_id_boxes_id_fk": {
           "name": "saved_cards_box_id_boxes_id_fk",
           "tableFrom": "saved_cards",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "saved_cards_account_fk": {
           "name": "saved_cards_account_fk",
           "tableFrom": "saved_cards",
-          "columnsFrom": [
-            "box_id",
-            "account_id"
-          ],
+          "columnsFrom": ["box_id", "account_id"],
           "tableTo": "payment_accounts",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "saved_cards_customer_fk": {
           "name": "saved_cards_customer_fk",
           "tableFrom": "saved_cards",
-          "columnsFrom": [
-            "box_id",
-            "customer_id"
-          ],
+          "columnsFrom": ["box_id", "customer_id"],
           "tableTo": "payment_customers",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "saved_cards_member_fk": {
           "name": "saved_cards_member_fk",
           "tableFrom": "saved_cards",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -5925,17 +5243,12 @@
       "uniqueConstraints": {
         "saved_cards_box_id_id_unique": {
           "name": "saved_cards_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "saved_cards_card_ref_unique": {
           "name": "saved_cards_card_ref_unique",
-          "columns": [
-            "card_ref"
-          ],
+          "columns": ["card_ref"],
           "nullsNotDistinct": false
         }
       },
@@ -5944,9 +5257,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"saved_cards\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"saved_cards\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -6063,39 +5374,27 @@
         "audit_logs_box_id_boxes_id_fk": {
           "name": "audit_logs_box_id_boxes_id_fk",
           "tableFrom": "audit_logs",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "audit_logs_actor_user_id_users_id_fk": {
           "name": "audit_logs_actor_user_id_users_id_fk",
           "tableFrom": "audit_logs",
-          "columnsFrom": [
-            "actor_user_id"
-          ],
+          "columnsFrom": ["actor_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "audit_logs_impersonator_user_id_users_id_fk": {
           "name": "audit_logs_impersonator_user_id_users_id_fk",
           "tableFrom": "audit_logs",
-          "columnsFrom": [
-            "impersonator_user_id"
-          ],
+          "columnsFrom": ["impersonator_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -6107,18 +5406,14 @@
           "name": "audit_logs_select_own_box",
           "as": "PERMISSIVE",
           "for": "SELECT",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"audit_logs\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         },
         "audit_logs_insert_own_box": {
           "name": "audit_logs_insert_own_box",
           "as": "PERMISSIVE",
           "for": "INSERT",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "withCheck": "\"audit_logs\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
       },
@@ -6287,56 +5582,36 @@
         "notification_deliveries_box_id_boxes_id_fk": {
           "name": "notification_deliveries_box_id_boxes_id_fk",
           "tableFrom": "notification_deliveries",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "notification_deliveries_user_id_users_id_fk": {
           "name": "notification_deliveries_user_id_users_id_fk",
           "tableFrom": "notification_deliveries",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "notification_deliveries_notification_fk": {
           "name": "notification_deliveries_notification_fk",
           "tableFrom": "notification_deliveries",
-          "columnsFrom": [
-            "box_id",
-            "notification_id"
-          ],
+          "columnsFrom": ["box_id", "notification_id"],
           "tableTo": "notifications",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "notification_deliveries_member_fk": {
           "name": "notification_deliveries_member_fk",
           "tableFrom": "notification_deliveries",
-          "columnsFrom": [
-            "box_id",
-            "member_id"
-          ],
+          "columnsFrom": ["box_id", "member_id"],
           "tableTo": "members",
-          "columnsTo": [
-            "box_id",
-            "id"
-          ],
+          "columnsTo": ["box_id", "id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -6345,11 +5620,7 @@
       "uniqueConstraints": {
         "notification_deliveries_once": {
           "name": "notification_deliveries_once",
-          "columns": [
-            "notification_id",
-            "recipient_key",
-            "channel"
-          ],
+          "columns": ["notification_id", "recipient_key", "channel"],
           "nullsNotDistinct": false
         }
       },
@@ -6358,9 +5629,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"notification_deliveries\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"notification_deliveries\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -6423,13 +5692,9 @@
         "notification_preferences_user_id_users_id_fk": {
           "name": "notification_preferences_user_id_users_id_fk",
           "tableFrom": "notification_preferences",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -6437,11 +5702,7 @@
       "compositePrimaryKeys": {
         "notification_preferences_user_id_topic_channel_pk": {
           "name": "notification_preferences_user_id_topic_channel_pk",
-          "columns": [
-            "user_id",
-            "topic",
-            "channel"
-          ]
+          "columns": ["user_id", "topic", "channel"]
         }
       },
       "uniqueConstraints": {},
@@ -6450,9 +5711,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -6556,26 +5815,18 @@
         "notifications_box_id_boxes_id_fk": {
           "name": "notifications_box_id_boxes_id_fk",
           "tableFrom": "notifications",
-          "columnsFrom": [
-            "box_id"
-          ],
+          "columnsFrom": ["box_id"],
           "tableTo": "boxes",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         },
         "notifications_actor_user_id_users_id_fk": {
           "name": "notifications_actor_user_id_users_id_fk",
           "tableFrom": "notifications",
-          "columnsFrom": [
-            "actor_user_id"
-          ],
+          "columnsFrom": ["actor_user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "no action"
         }
@@ -6584,18 +5835,12 @@
       "uniqueConstraints": {
         "notifications_box_id_id_unique": {
           "name": "notifications_box_id_id_unique",
-          "columns": [
-            "box_id",
-            "id"
-          ],
+          "columns": ["box_id", "id"],
           "nullsNotDistinct": false
         },
         "notifications_box_id_idempotency_key_unique": {
           "name": "notifications_box_id_idempotency_key_unique",
-          "columns": [
-            "box_id",
-            "idempotency_key"
-          ],
+          "columns": ["box_id", "idempotency_key"],
           "nullsNotDistinct": false
         }
       },
@@ -6604,9 +5849,7 @@
           "name": "tenant_isolation",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "\"notifications\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid",
           "withCheck": "\"notifications\".\"box_id\" = nullif(current_setting('app.box_id', true), '')::uuid"
         }
@@ -6691,13 +5934,9 @@
         "push_subscriptions_user_id_users_id_fk": {
           "name": "push_subscriptions_user_id_users_id_fk",
           "tableFrom": "push_subscriptions",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -6706,9 +5945,7 @@
       "uniqueConstraints": {
         "push_subscriptions_endpoint_unique": {
           "name": "push_subscriptions_endpoint_unique",
-          "columns": [
-            "endpoint"
-          ],
+          "columns": ["endpoint"],
           "nullsNotDistinct": false
         }
       },
@@ -6717,9 +5954,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -6778,13 +6013,9 @@
         "telegram_link_codes_user_id_users_id_fk": {
           "name": "telegram_link_codes_user_id_users_id_fk",
           "tableFrom": "telegram_link_codes",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -6796,9 +6027,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -6848,13 +6077,9 @@
         "telegram_links_user_id_users_id_fk": {
           "name": "telegram_links_user_id_users_id_fk",
           "tableFrom": "telegram_links",
-          "columnsFrom": [
-            "user_id"
-          ],
+          "columnsFrom": ["user_id"],
           "tableTo": "users",
-          "columnsTo": [
-            "id"
-          ],
+          "columnsTo": ["id"],
           "onUpdate": "no action",
           "onDelete": "cascade"
         }
@@ -6863,9 +6088,7 @@
       "uniqueConstraints": {
         "telegram_links_chatId_unique": {
           "name": "telegram_links_chatId_unique",
-          "columns": [
-            "chat_id"
-          ],
+          "columns": ["chat_id"],
           "nullsNotDistinct": false
         }
       },
@@ -6874,9 +6097,7 @@
           "name": "deny_app_role",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "guaranix_app"
-          ],
+          "to": ["guaranix_app"],
           "using": "false",
           "withCheck": "false"
         }
@@ -6889,136 +6110,72 @@
     "public.ai_provider": {
       "name": "ai_provider",
       "schema": "public",
-      "values": [
-        "anthropic",
-        "openai",
-        "gemini"
-      ]
+      "values": ["anthropic", "openai", "gemini"]
     },
     "public.booking_status": {
       "name": "booking_status",
       "schema": "public",
-      "values": [
-        "booked",
-        "waitlisted",
-        "cancelled",
-        "late_cancelled",
-        "attended",
-        "no_show"
-      ]
+      "values": ["booked", "waitlisted", "cancelled", "late_cancelled", "attended", "no_show"]
     },
     "public.box_role": {
       "name": "box_role",
       "schema": "public",
-      "values": [
-        "box_owner",
-        "box_admin",
-        "coach",
-        "reception",
-        "member"
-      ]
+      "values": ["box_owner", "box_admin", "coach", "reception", "member"]
     },
     "public.box_status": {
       "name": "box_status",
       "schema": "public",
-      "values": [
-        "trial",
-        "active",
-        "suspended",
-        "cancelled"
-      ]
+      "values": ["trial", "active", "suspended", "cancelled"]
     },
     "public.business_type": {
       "name": "business_type",
       "schema": "public",
-      "values": [
-        "functional_box",
-        "pilates_studio",
-        "combat_gym"
-      ]
+      "values": ["functional_box", "pilates_studio", "combat_gym"]
     },
     "public.charge_status": {
       "name": "charge_status",
       "schema": "public",
-      "values": [
-        "open",
-        "paid",
-        "void"
-      ]
+      "values": ["open", "paid", "void"]
     },
     "public.class_status": {
       "name": "class_status",
       "schema": "public",
-      "values": [
-        "scheduled",
-        "cancelled"
-      ]
+      "values": ["scheduled", "cancelled"]
     },
     "public.feature_flag": {
       "name": "feature_flag",
       "schema": "public",
-      "values": [
-        "ai_import",
-        "whatsapp",
-        "card_payments"
-      ]
+      "values": ["ai_import", "whatsapp", "card_payments"]
     },
     "public.import_source": {
       "name": "import_source",
       "schema": "public",
-      "values": [
-        "spreadsheet",
-        "crosshero",
-        "ai"
-      ]
+      "values": ["spreadsheet", "crosshero", "ai"]
     },
     "public.member_plan_status": {
       "name": "member_plan_status",
       "schema": "public",
-      "values": [
-        "active",
-        "paused",
-        "expired",
-        "cancelled"
-      ]
+      "values": ["active", "paused", "expired", "cancelled"]
     },
     "public.member_status": {
       "name": "member_status",
       "schema": "public",
-      "values": [
-        "active",
-        "inactive"
-      ]
+      "values": ["active", "inactive"]
     },
     "public.movement_category": {
       "name": "movement_category",
       "schema": "public",
-      "values": [
-        "weightlifting",
-        "gymnastics",
-        "monostructural",
-        "other"
-      ]
+      "values": ["weightlifting", "gymnastics", "monostructural", "other"]
     },
     "public.notification_channel": {
       "name": "notification_channel",
       "schema": "public",
-      "values": [
-        "push",
-        "telegram",
-        "whatsapp"
-      ]
+      "values": ["push", "telegram", "whatsapp"]
     },
     "public.notification_delivery_status": {
       "name": "notification_delivery_status",
       "schema": "public",
-      "values": [
-        "queued",
-        "sending",
-        "sent",
-        "failed",
-        "skipped"
-      ]
+      "values": ["queued", "sending", "sent", "failed", "skipped"]
     },
     "public.notification_kind": {
       "name": "notification_kind",
@@ -7038,131 +6195,67 @@
     "public.notification_topic": {
       "name": "notification_topic",
       "schema": "public",
-      "values": [
-        "bookings",
-        "workouts",
-        "billing",
-        "staff"
-      ]
+      "values": ["bookings", "workouts", "billing", "staff"]
     },
     "public.payment_attempt_kind": {
       "name": "payment_attempt_kind",
       "schema": "public",
-      "values": [
-        "autopay",
-        "link"
-      ]
+      "values": ["autopay", "link"]
     },
     "public.payment_attempt_status": {
       "name": "payment_attempt_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "approved",
-        "declined",
-        "failed",
-        "refunded"
-      ]
+      "values": ["pending", "approved", "declined", "failed", "refunded"]
     },
     "public.payment_method": {
       "name": "payment_method",
       "schema": "public",
-      "values": [
-        "cash",
-        "bank_transfer",
-        "qr",
-        "card"
-      ]
+      "values": ["cash", "bank_transfer", "qr", "card"]
     },
     "public.payment_provider": {
       "name": "payment_provider",
       "schema": "public",
-      "values": [
-        "bancard",
-        "mock"
-      ]
+      "values": ["bancard", "mock"]
     },
     "public.payment_provider_environment": {
       "name": "payment_provider_environment",
       "schema": "public",
-      "values": [
-        "sandbox",
-        "production"
-      ]
+      "values": ["sandbox", "production"]
     },
     "public.payment_status": {
       "name": "payment_status",
       "schema": "public",
-      "values": [
-        "pending_review",
-        "confirmed",
-        "rejected",
-        "refunded"
-      ]
+      "values": ["pending_review", "confirmed", "rejected", "refunded"]
     },
     "public.plan_kind": {
       "name": "plan_kind",
       "schema": "public",
-      "values": [
-        "unlimited",
-        "weekly_limit",
-        "class_pack",
-        "drop_in"
-      ]
+      "values": ["unlimited", "weekly_limit", "class_pack", "drop_in"]
     },
     "public.saved_card_status": {
       "name": "saved_card_status",
       "schema": "public",
-      "values": [
-        "pending",
-        "active",
-        "removed"
-      ]
+      "values": ["pending", "active", "removed"]
     },
     "public.scaling": {
       "name": "scaling",
       "schema": "public",
-      "values": [
-        "rx",
-        "scaled"
-      ]
+      "values": ["rx", "scaled"]
     },
     "public.score_type": {
       "name": "score_type",
       "schema": "public",
-      "values": [
-        "none",
-        "time",
-        "rounds_reps",
-        "reps",
-        "load",
-        "distance",
-        "calories",
-        "points"
-      ]
+      "values": ["none", "time", "rounds_reps", "reps", "load", "distance", "calories", "points"]
     },
     "public.timer_type": {
       "name": "timer_type",
       "schema": "public",
-      "values": [
-        "none",
-        "for_time",
-        "amrap",
-        "emom",
-        "tabata"
-      ]
+      "values": ["none", "for_time", "amrap", "emom", "tabata"]
     },
     "public.workout_component_kind": {
       "name": "workout_component_kind",
       "schema": "public",
-      "values": [
-        "warm_up",
-        "skill",
-        "strength",
-        "metcon",
-        "accessory",
-        "cool_down"
-      ]
+      "values": ["warm_up", "skill", "strength", "metcon", "accessory", "cool_down"]
     }
   },
   "schemas": {},
