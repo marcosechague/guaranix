@@ -47,8 +47,32 @@ export const notificationPreferenceInputSchema = z
   });
 
 /** What the browser's `PushSubscription.toJSON()` returns. */
+/**
+ * Browsers' push services. Anything else would make GuaraniX POST to an
+ * arbitrary host on every notification.
+ */
+const PUSH_SERVICE_HOSTS = [
+  /^fcm\.googleapis\.com$/,
+  /^android\.googleapis\.com$/,
+  /(^|\.)push\.services\.mozilla\.com$/,
+  /(^|\.)push\.apple\.com$/,
+  /(^|\.)notify\.windows\.com$/,
+];
+
+export function isPushServiceUrl(endpoint: string): boolean {
+  try {
+    const { hostname } = new URL(endpoint);
+    return PUSH_SERVICE_HOSTS.some((host) => host.test(hostname));
+  } catch {
+    return false;
+  }
+}
+
 export const pushSubscriptionInputSchema = z.object({
-  endpoint: z.url({ protocol: /^https$/ }).max(1000),
+  endpoint: z
+    .url({ protocol: /^https$/ })
+    .max(1000)
+    .refine(isPushServiceUrl),
   keys: z.object({
     p256dh: z
       .string()

@@ -2,7 +2,7 @@ import { type SchemaDatabase, withSystemScope } from '@guaranix/db';
 import { oauthAccounts, userCredentials, users } from '@guaranix/db/schema';
 import { and, eq } from 'drizzle-orm';
 import type { GoogleIdentity } from '../integrations/google-oauth';
-import { revokeUserSessions } from './sessions';
+import { forgetNotificationAddresses, revokeUserSessions } from './sessions';
 
 const PROVIDER = 'google';
 
@@ -72,7 +72,10 @@ export async function signInWithGoogle(
   });
 
   if ('error' in outcome) return outcome;
-  if (outcome.wasUnverified) await revokeUserSessions(database, outcome.userId);
+  if (outcome.wasUnverified) {
+    await revokeUserSessions(database, outcome.userId);
+    await forgetNotificationAddresses(database, outcome.userId);
+  }
   return { userId: outcome.userId };
 }
 

@@ -167,6 +167,26 @@ describe('AI import', () => {
     expect(await usageRows()).toHaveLength(1);
   });
 
+  it('lets only one of several parallel reads through the last use', async () => {
+    await allow(harness.boxA.boxId, 1);
+    const owner = await staff('box_owner');
+    const responses = await Promise.all(
+      Array.from({ length: 4 }, () => owner.post('/box/ai-imports/extract', SHEET)),
+    );
+    expect(responses.map((response) => response.status).sort()).toEqual([200, 422, 422, 422]);
+    expect(await usageRows()).toHaveLength(1);
+  });
+
+  it('limits how often one person can ask for a read', async () => {
+    await allow(harness.boxA.boxId, null);
+    const owner = await staff('box_owner');
+    const statuses: number[] = [];
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      statuses.push((await owner.post('/box/ai-imports/extract', SHEET)).status);
+    }
+    expect(statuses).toEqual([200, 200, 200, 200, 200, 429]);
+  });
+
   it("does not spend another box's uses", async () => {
     await allow(harness.boxA.boxId, 1);
     await allow(harness.boxB.boxId, 1);

@@ -44,8 +44,11 @@ async function withComponents(context: ServiceContext, rows: WorkoutRow[]): Prom
       ),
     )
     .orderBy(asc(workoutComponents.position));
+  // Coach notes are for staff only; members (and their offline cache) never get them.
+  const staff = isStaff(context.auth.role);
   return rows.map((row) => ({
     ...row,
+    coachNotes: staff ? row.coachNotes : null,
     components: components.filter((component) => component.workoutId === row.id),
   }));
 }

@@ -90,6 +90,22 @@ describe('WODs', () => {
     expect(visible.map((workout) => workout.id)).toEqual([draft.id]);
   });
 
+  it('keeps coach notes away from members', async () => {
+    const draft = await world.as('coach', (context) =>
+      createWorkout(context, { ...wodInput(), coachNotes: 'Escalar a Rosa' }),
+    );
+    await world.as('coach', (context) => setWorkoutPublished(context, draft.id, true));
+    const member = await world.memberWith();
+    const [listed] = await member.act((context) =>
+      listWorkouts(context, { date: draft.workoutDate }),
+    );
+    expect(listed?.coachNotes).toBeNull();
+    expect((await member.act((context) => getWorkout(context, draft.id))).coachNotes).toBeNull();
+    expect((await world.as('coach', (context) => getWorkout(context, draft.id))).coachNotes).toBe(
+      'Escalar a Rosa',
+    );
+  });
+
   it('allows one WOD per program and day', async () => {
     const input = wodInput();
     await world.as('coach', (context) => createWorkout(context, input));
@@ -246,6 +262,19 @@ describe('results', () => {
       [scaled.member.id, 0],
     ]);
     expect(board.entries.map((entry) => entry.bumpedByMe)).toEqual([true, false, false]);
+    await fast.act((context) =>
+      logResult(context, {
+        ...empty,
+        componentId: metconId,
+        scaling: 'rx',
+        timeSeconds: 300,
+        notes: 'Me dolió la rodilla',
+      }),
+    );
+    const seenBySlow = await slow.act((context) => leaderboard(context, metconId));
+    expect(seenBySlow.entries[0]?.notes).toBeNull();
+    const seenByFast = await fast.act((context) => leaderboard(context, metconId));
+    expect(seenByFast.entries[0]?.notes).toBe('Me dolió la rodilla');
     expect(await slow.act((context) => toggleFistBump(context, fastResult.result.id))).toEqual({
       bumped: false,
     });

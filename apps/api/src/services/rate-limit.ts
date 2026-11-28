@@ -17,6 +17,8 @@ export const RATE_LIMITS = {
   resetByIp: { name: 'reset:ip', limit: 20, windowSeconds: 15 * 60 },
   passwordChangeByUser: { name: 'password:user', limit: 10, windowSeconds: 15 * 60 },
   boxSignupByUser: { name: 'box-signup:user', limit: 3, windowSeconds: 24 * 60 * 60 },
+  // Each AI read spends on GuaraniX's provider key; the monthly limit is per box, this is per person.
+  aiImportByUser: { name: 'ai-import:user', limit: 5, windowSeconds: 60 },
   paymentLinkByIp: { name: 'payment-link:ip', limit: 60, windowSeconds: 15 * 60 },
 } as const satisfies Record<string, RateLimitRule>;
 
