@@ -6,3 +6,5 @@ export type { AuthGateProps } from './AuthGate';
 export { AuthProvider, useAuth, useSession } from './AuthProvider';
 export type { AuthProviderProps } from './AuthProvider';
 export { AuthLayout } from './shared';
+export { ImpersonationBanner } from './ImpersonationBanner';
+export type { ImpersonationBannerProps } from './ImpersonationBanner';

@@ -10,6 +10,7 @@ import {
   text,
   uuid,
 } from 'drizzle-orm/pg-core';
+import { dataImports } from './imports';
 import { boxes } from './platform';
 import { programs } from './classes';
 import { memberPlanStatusEnum, planKindEnum } from './enums';
@@ -29,9 +30,16 @@ export const plans = pgTable(
     classCount: integer(),
     durationDays: integer().notNull(),
     isActive: boolean().notNull().default(true),
+    /** The import that created this row, if any. */
+    importId: uuid(),
   },
   (table) => [
     tenantKey('plans', table.boxId, table.id),
+    sameBoxReference(
+      'plans_import_fk',
+      [table.boxId, table.importId],
+      [dataImports.boxId, dataImports.id],
+    ),
     check('plans_price_non_negative', sql`${table.priceGs} >= 0`),
     check('plans_duration_positive', sql`${table.durationDays} > 0`),
     // Same rules as `planLimitIssues` in packages/shared.
@@ -84,6 +92,8 @@ export const memberPlans = pgTable(
     classesPerWeek: integer(),
     /** Credits left for packs and drop-ins; null means not credit-based. */
     classesRemaining: integer(),
+    /** The import that created this row, if any. */
+    importId: uuid(),
   },
   (table) => [
     tenantKey('member_plans', table.boxId, table.id),
@@ -93,6 +103,11 @@ export const memberPlans = pgTable(
       [members.boxId, members.id],
     ),
     sameBoxReference('member_plans_plan_fk', [table.boxId, table.planId], [plans.boxId, plans.id]),
+    sameBoxReference(
+      'member_plans_import_fk',
+      [table.boxId, table.importId],
+      [dataImports.boxId, dataImports.id],
+    ),
     index('member_plans_box_id_member_id_idx').on(table.boxId, table.memberId),
     index('member_plans_box_id_ends_on_idx').on(table.boxId, table.endsOn),
     check('member_plans_dates_ordered', sql`${table.endsOn} >= ${table.startsOn}`),

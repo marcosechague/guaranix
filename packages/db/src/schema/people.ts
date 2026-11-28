@@ -1,6 +1,7 @@
 import { boolean, date, index, pgTable, text, unique, uuid } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { boxRoleEnum, memberStatusEnum } from './enums';
+import { dataImports } from './imports';
 import { users } from './platform';
 import { sameBoxReference, tenantColumns, tenantIsolationPolicy, tenantKey } from './tenant';
 
@@ -48,6 +49,8 @@ export const members = pgTable(
       .default(sql`current_date`),
     /** Id in the system the member was imported from. */
     externalRef: text(),
+    /** The import that created this row, if any. */
+    importId: uuid(),
   },
   (table) => [
     tenantKey('members', table.boxId, table.id),
@@ -58,6 +61,11 @@ export const members = pgTable(
       'members_box_user_fk',
       [table.boxId, table.userId],
       [boxUsers.boxId, boxUsers.userId],
+    ),
+    sameBoxReference(
+      'members_import_fk',
+      [table.boxId, table.importId],
+      [dataImports.boxId, dataImports.id],
     ),
     tenantIsolationPolicy(table.boxId),
   ],

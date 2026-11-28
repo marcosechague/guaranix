@@ -442,12 +442,278 @@
       "collect": "Cobrar",
       "collectLabel": "Registrar un pago de {name}",
       "qrNote": "Los pagos por QR los informa el alumno desde la app con su comprobante."
+    },
+    "imports": {
+      "memberFields": {
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "fullName": "Nombre y apellido",
+        "documentNumber": "Cédula",
+        "email": "Email",
+        "phone": "Teléfono",
+        "birthDate": "Fecha de nacimiento",
+        "joinedOn": "Fecha de alta",
+        "status": "Estado",
+        "externalRef": "Id en el sistema anterior",
+        "notes": "Notas",
+        "planName": "Plan",
+        "planStartsOn": "Inicio del plan",
+        "planEndsOn": "Vencimiento del plan",
+        "classesRemaining": "Clases restantes",
+        "balanceGs": "Saldo pendiente (₲)",
+        "balanceDueOn": "Vencimiento del saldo"
+      },
+      "planFields": {
+        "name": "Nombre del plan",
+        "kind": "Tipo",
+        "priceGs": "Precio (₲)",
+        "durationDays": "Duración en días",
+        "classesPerWeek": "Clases por semana",
+        "classCount": "Cantidad de clases"
+      },
+      "issues": {
+        "required": "Falta este dato.",
+        "invalid_date": "No es una fecha válida. Usá día/mes/año, por ejemplo 31/12/2026.",
+        "invalid_amount": "No es un monto en guaraníes enteros.",
+        "negative_amount": "El monto no puede ser negativo.",
+        "invalid_number": "No es un número válido.",
+        "invalid_document": "La cédula tiene que tener entre 5 y 10 números.",
+        "invalid_email": "El email no es válido.",
+        "invalid_phone": "El teléfono no es válido.",
+        "invalid_status": "Usá Activo o Inactivo.",
+        "invalid_plan_kind": "Usá Ilimitado, Por semana, Pack de clases o Clase suelta.",
+        "invalid_plan_limits": "Las clases no coinciden con el tipo de plan.",
+        "too_long": "El texto es demasiado largo.",
+        "name_split": "Separamos nombre y apellido solos. Revisá que estén bien.",
+        "identity_missing": "Necesitamos cédula, email, teléfono o id para reconocer al alumno.",
+        "identity_mismatch": "Ya hay un alumno con ese email o id, pero con otra cédula.",
+        "duplicate_in_file": "Este alumno ya aparece en otra fila del archivo.",
+        "member_exists": "Ya está en el box: no cambiamos su ficha.",
+        "plan_not_found": "Ese plan no existe en el box ni en la hoja de planes.",
+        "plan_invalid": "El plan tiene errores en la hoja de planes.",
+        "plan_exists": "Ya existe un plan con ese nombre: usamos el del box.",
+        "plan_dates_missing": "Falta el inicio o el vencimiento del plan.",
+        "plan_dates_invalid": "El vencimiento es anterior al inicio.",
+        "plan_expired": "El plan ya venció: queda en el historial.",
+        "plan_already_present": "Ya tiene un plan en esas fechas: no lo agregamos de nuevo.",
+        "credits_not_allowed": "Este plan no usa clases restantes.",
+        "credits_exceed_plan": "Tiene más clases restantes que las que da el plan.",
+        "credits_defaulted": "Sin clases restantes: le dejamos todas las del plan.",
+        "balance_already_imported": "Su saldo ya se importó antes: no lo cargamos de nuevo."
+      }
     }
   },
   "platform": {
     "home": {
       "title": "Plataforma GuaraniX",
       "subtitle": "Administrá los boxes, planes y funciones."
+    },
+    "brand": "Plataforma",
+    "nav": {
+      "label": "Secciones de la plataforma",
+      "boxes": "Boxes",
+      "plans": "Planes",
+      "logout": "Cerrar sesión"
+    },
+    "noAccess": {
+      "title": "Esta cuenta no administra GuaraniX",
+      "subtitle": "Entrá con una cuenta del equipo de GuaraniX. Si sos dueño de un box, usá el panel de tu box."
+    },
+    "metrics": {
+      "label": "Resumen de la plataforma",
+      "mrr": "Ingreso mensual (MRR)",
+      "mrrHint": "{amount} más si convierten las pruebas",
+      "activeBoxes": "Boxes activos",
+      "activeBoxesHint": "{trial} en prueba · {extra} con sedes extra",
+      "members": "Alumnos activos",
+      "membersHint": "En todos los boxes",
+      "attention": "Para mirar",
+      "attentionHint": "{ending} · {suspended}",
+      "trialsEnding": "{count} pruebas vencen esta semana",
+      "trialsEndingOne": "1 prueba vence esta semana",
+      "suspended": "{count} suspendidos",
+      "suspendedOne": "1 suspendido"
+    },
+    "boxes": {
+      "title": "Boxes",
+      "subtitle": "Altas, planes y estado de cada centro.",
+      "new": "Nuevo box",
+      "search": "Buscar por nombre o ciudad",
+      "filtersLabel": "Filtrar por estado",
+      "filters": {
+        "all": "Todos",
+        "trial": "En prueba",
+        "active": "Activos",
+        "suspended": "Suspendidos",
+        "cancelled": "De baja"
+      },
+      "columns": {
+        "box": "Box",
+        "city": "Ciudad",
+        "plan": "Plan",
+        "members": "Alumnos",
+        "fee": "Su cuota",
+        "status": "Estado",
+        "actions": "Acciones"
+      },
+      "noPlan": "Sin plan",
+      "noCity": "Sin ciudad",
+      "feeExtra": "incluye {count} sede extra",
+      "feeExtraPlural": "incluye {count} sedes extra",
+      "trialLeft": "Prueba: {days} días",
+      "trialToday": "La prueba vence hoy",
+      "trialOver": "Prueba vencida",
+      "empty": {
+        "title": "No hay boxes con ese filtro",
+        "description": "Probá con otro estado o buscá por otro nombre."
+      },
+      "firstEmpty": {
+        "title": "Todavía no hay boxes",
+        "description": "Dá de alta el primero o compartí el link de registro con un dueño."
+      },
+      "open": "Ver {name}",
+      "loadError": "No pudimos cargar los boxes."
+    },
+    "status": {
+      "trial": "En prueba",
+      "active": "Activo",
+      "suspended": "Suspendido",
+      "cancelled": "De baja"
+    },
+    "businessTypes": {
+      "functional_box": "Box funcional",
+      "pilates_studio": "Estudio de pilates",
+      "combat_gym": "Boxeo y artes marciales"
+    },
+    "box": {
+      "close": "Cerrar",
+      "owner": "Dueño",
+      "noOwner": "Sin dueño asignado",
+      "since": "Alta el {date}",
+      "billing": "Plan de GuaraniX",
+      "plan": "Plan",
+      "extraLocations": "Sedes adicionales",
+      "extraLocationsHint": "Cada una suma {amount} por mes.",
+      "trialEndsAt": "Fin de la prueba",
+      "save": "Guardar cambios",
+      "saved": "Cambios guardados",
+      "monthlyFee": "Paga {amount} por mes",
+      "statusReason": "Motivo: {reason}",
+      "activity": "Actividad reciente",
+      "activityEmpty": "Sin movimientos todavía.",
+      "byImpersonation": "como soporte",
+      "actions": "Acciones",
+      "enterAs": "Entrar como",
+      "suspend": "Suspender",
+      "reactivate": "Reactivar",
+      "remove": "Dar de baja",
+      "open": "Ver ficha"
+    },
+    "statusChange": {
+      "cancel": "Cancelar",
+      "reason": "Motivo",
+      "suspend": {
+        "title": "Suspender {name}",
+        "description": "Su staff y sus alumnos no van a poder entrar hasta que lo reactives. Ven el motivo.",
+        "reasonHint": "Por ejemplo: cuota de GuaraniX impaga.",
+        "confirm": "Suspender box",
+        "done": "{name} quedó suspendido"
+      },
+      "remove": {
+        "title": "Dar de baja {name}",
+        "description": "Deja de usar GuaraniX. No se borra nada y lo podés reactivar después.",
+        "reasonHint": "Por ejemplo: cerró el local.",
+        "confirm": "Dar de baja",
+        "done": "{name} quedó de baja"
+      },
+      "reactivate": {
+        "done": "{name} está activo de nuevo"
+      },
+      "impersonate": {
+        "title": "Entrar como {name}",
+        "description": "Vas a ver y cambiar todo como su dueño durante una hora. Queda registrado en su historial, con el motivo.",
+        "reasonHint": "Por ejemplo: no le aparecen las clases del sábado.",
+        "confirm": "Entrar al panel del box",
+        "done": "Abrimos el panel de {name}"
+      }
+    },
+    "newBox": {
+      "title": "Nuevo box",
+      "description": "Arranca con 30 días de prueba y la plantilla del rubro. El dueño entra con Google o con \"Olvidé mi contraseña\".",
+      "name": "Nombre del box",
+      "city": "Ciudad",
+      "businessType": "Rubro",
+      "plan": "Plan de GuaraniX",
+      "planOption": "{name} · {amount}",
+      "planFull": "{name} · sin lugares",
+      "ownerName": "Nombre del dueño",
+      "ownerEmail": "Email del dueño",
+      "template": "Cargar la plantilla del rubro",
+      "create": "Crear box",
+      "created": "{name} está listo",
+      "cancel": "Cancelar",
+      "required": "Completá este dato.",
+      "invalidEmail": "Revisá el email.",
+      "templateHint": "Programas, horarios y planes de ejemplo que el dueño ajusta después."
+    },
+    "plans": {
+      "title": "Planes de GuaraniX",
+      "subtitle": "Lo que pagan los boxes. Cambiar un precio afecta al MRR desde ahora.",
+      "new": "Nuevo plan",
+      "perMonth": "por mes",
+      "extraLocation": "Sede adicional: {amount} por mes",
+      "usage": "{count} boxes",
+      "usageLimit": "{count} de {limit} lugares",
+      "inactive": "No se ofrece",
+      "edit": "Editar {name}",
+      "form": {
+        "newTitle": "Nuevo plan",
+        "editTitle": "Editar plan",
+        "code": "Código",
+        "codeHint": "Minúsculas y guiones bajos, por ejemplo base_anual. No se cambia después.",
+        "name": "Nombre",
+        "description": "Descripción",
+        "monthlyPrice": "Precio por mes",
+        "extraLocationPrice": "Precio por sede adicional",
+        "boxLimit": "Cupo de boxes",
+        "boxLimitHint": "Vacío para no limitar. El fundador usa 20.",
+        "active": "Se ofrece a boxes nuevos",
+        "save": "Guardar plan",
+        "saved": "Plan guardado",
+        "cancel": "Cancelar",
+        "invalid": "Revisá los datos marcados."
+      },
+      "editShort": "Editar"
+    },
+    "impersonation": {
+      "banner": "Estás dentro de {box} como soporte de GuaraniX, hasta las {time}.",
+      "leave": "Salir del box"
+    },
+    "activity": {
+      "other": "Otro cambio ({action})",
+      "box_created": "Alta del box desde la plataforma",
+      "box_signed_up": "El dueño registró el box",
+      "box_suspended": "Box suspendido",
+      "box_reactivated": "Box reactivado",
+      "box_removed": "Box dado de baja",
+      "box_platform_updated": "Cambio de plan o sedes",
+      "box_impersonation_started": "Soporte entró al box",
+      "box_impersonation_ended": "Soporte salió del box",
+      "charge_created": "Cargo nuevo",
+      "charge_voided": "Cargo anulado",
+      "class_cancelled": "Clase suspendida",
+      "member_created": "Alumno nuevo",
+      "member_updated": "Datos de un alumno",
+      "member_plan_assigned": "Plan vendido",
+      "member_plan_cancelled": "Plan dado de baja",
+      "member_plan_paused": "Plan pausado",
+      "member_plan_pause_removed": "Pausa quitada",
+      "payment_recorded": "Pago registrado",
+      "plan_created": "Plan nuevo",
+      "program_created": "Programa nuevo",
+      "program_updated": "Programa editado",
+      "schedule_created": "Horario nuevo",
+      "schedule_ended": "Horario terminado"
     }
   },
   "brodi": {
@@ -614,7 +880,11 @@
     "platform_plan_inactive": "Ese plan ya no se ofrece.",
     "platform_plan_full": "Ese plan ya no tiene lugares. Elegí otro.",
     "box_status_unchanged": "El box ya está en ese estado.",
-    "signup_unavailable": "Por ahora no estamos sumando boxes nuevos. Escribinos y te avisamos."
+    "signup_unavailable": "Por ahora no estamos sumando boxes nuevos. Escribinos y te avisamos.",
+    "import_has_errors": "Hay filas con errores. Corregilas o elegí importar solo las filas válidas.",
+    "import_empty": "No hay nada para importar.",
+    "data_import_not_found": "No encontramos esa importación.",
+    "import_in_progress": "Esta importación ya se está guardando. Esperá un momento y revisá el historial."
   },
   "workout": {
     "kinds": {

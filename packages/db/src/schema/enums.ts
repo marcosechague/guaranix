@@ -5,6 +5,7 @@ import {
   BUSINESS_TYPES,
   CHARGE_STATUSES,
   CLASS_STATUSES,
+  IMPORT_SOURCES,
   MEMBER_PLAN_STATUSES,
   MEMBER_STATUSES,
   MOVEMENT_CATEGORIES,
@@ -34,3 +35,4 @@ export const movementCategoryEnum = pgEnum('movement_category', MOVEMENT_CATEGOR
 export const chargeStatusEnum = pgEnum('charge_status', CHARGE_STATUSES);
 export const paymentMethodEnum = pgEnum('payment_method', PAYMENT_METHODS);
 export const paymentStatusEnum = pgEnum('payment_status', PAYMENT_STATUSES);
+export const importSourceEnum = pgEnum('import_source', IMPORT_SOURCES);

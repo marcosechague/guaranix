@@ -12,3 +12,11 @@ export function formatGuarani(amount: number): string {
   const sign = amount < 0 ? '-' : '';
   return `${sign}₲ ${digits}`;
 }
+
+const compactMillions = new Intl.NumberFormat('es-PY', { maximumFractionDigits: 1 });
+
+/** Big totals for dashboards: `4_800_000` → `₲ 4,8 M`. Below a million it is exact. */
+export function formatGuaraniCompact(amount: number): string {
+  if (Math.abs(amount) < 1_000_000) return formatGuarani(amount);
+  return `₲ ${compactMillions.format(amount / 1_000_000)} M`;
+}

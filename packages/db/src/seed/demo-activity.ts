@@ -4,6 +4,7 @@ import {
   bookings,
   charges,
   classes,
+  dataImports,
   memberPlans,
   movements,
   payments,
@@ -17,7 +18,7 @@ import {
 import type { ScopedTransaction } from '../scope';
 import { localDate } from './calendar';
 
-/** Bookings, a pause, a WOD with results and PRs, charges, a payment and an audit entry. */
+/** Bookings, a pause, a WOD with results and PRs, charges, a payment, an audit entry and an import. */
 export async function seedActivity(
   transaction: ScopedTransaction,
   context: { boxId: string; ownerId: string; coachId: string; memberIds: string[] },
@@ -147,5 +148,23 @@ export async function seedActivity(
     entityType: 'payment',
     entityId: payment?.id ?? null,
     changes: { amountGs: firstPlan.priceGs, method: 'cash' },
+  });
+  // An empty spreadsheet import, so the box's history isn't blank.
+  await transaction.insert(dataImports).values({
+    boxId,
+    createdByUserId: ownerId,
+    fileName: 'alumnos.xlsx',
+    source: 'spreadsheet',
+    payloadHash: `demo-${boxId}`,
+    summary: {
+      rows: 0,
+      invalidRows: 0,
+      membersCreated: 0,
+      membersMatched: 0,
+      plansCreated: 0,
+      memberPlansCreated: 0,
+      chargesCreated: 0,
+      balanceGs: 0,
+    },
   });
 }
