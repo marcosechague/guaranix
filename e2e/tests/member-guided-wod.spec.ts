@@ -43,6 +43,8 @@ test('a member does the WOD in guided mode and only confirms the result', async 
   const finalTime = await time.inputValue();
   await page.getByRole('button', { name: t('member.wod.saveResult') }).click();
   await expect(page.getByText(t('member.wod.saved'))).toBeVisible();
+  // The story image is drawn right after saving, ready to share.
+  await expect(page.getByRole('button', { name: t('member.share.instagram') })).toBeEnabled();
 
   await page.getByRole('button', { name: t('member.timer.backToWod') }).click();
   const board = page.getByRole('region', { name: t('member.wod.board') });
