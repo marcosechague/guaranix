@@ -5,7 +5,8 @@ export interface PageHeaderProps {
   title: string;
   /** Small context line above the title, such as the app or box name. */
   eyebrow?: string | undefined;
-  subtitle?: string | undefined;
+  /** A line of text, or a short row such as a status badge with dates. */
+  subtitle?: ReactNode;
   /** `large` on wide panels, `regular` on phone-sized screens. */
   size?: 'regular' | 'large';
   /** Buttons or an avatar aligned with the title (end on wide screens). */
@@ -31,7 +32,7 @@ export function PageHeader({
       >
         {title}
       </h1>
-      {subtitle ? <p className="mt-1 text-text-secondary">{subtitle}</p> : null}
+      {subtitle ? <div className="mt-1 text-text-secondary">{subtitle}</div> : null}
     </div>
   );
   if (!actions) return <header>{heading}</header>;

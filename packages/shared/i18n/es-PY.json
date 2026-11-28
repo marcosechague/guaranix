@@ -1134,19 +1134,27 @@
       "extraLocations": "Sedes adicionales",
       "extraLocationsHint": "Cada una suma {amount} por mes.",
       "trialEndsAt": "Fin de la prueba",
-      "save": "Guardar cambios",
       "saved": "Cambios guardados",
       "monthlyFee": "Paga {amount} por mes",
       "statusReason": "Motivo: {reason}",
       "activity": "Actividad reciente",
       "activityEmpty": "Sin movimientos todavía.",
       "byImpersonation": "como soporte",
-      "actions": "Acciones",
       "enterAs": "Entrar como",
       "suspend": "Suspender",
       "reactivate": "Reactivar",
       "remove": "Dar de baja",
-      "open": "Ver ficha"
+      "open": "Ver ficha",
+      "back": "Boxes",
+      "tabs": {
+        "label": "Secciones del box",
+        "summary": "Resumen",
+        "features": "Funciones",
+        "activity": "Actividad"
+      },
+      "state": "Estado del box",
+      "stateHint": "Suspender corta el acceso al panel y a la app de sus alumnos. Dar de baja lo saca de la lista activa. Las dos cosas piden un motivo y quedan en la actividad.",
+      "notFound": "No encontramos este box."
     },
     "statusChange": {
       "cancel": "Cancelar",
@@ -1284,7 +1292,13 @@
       "saved_card_added": "Tarjeta guardada",
       "saved_card_removed": "Tarjeta quitada",
       "member_plan_renewed": "Plan renovado solo",
-      "support_member_viewed": "Soporte abrió la ficha de un alumno"
+      "support_member_viewed": "Soporte abrió la ficha de un alumno",
+      "box_feature_overridden": "Cambio de funciones del box",
+      "box_payment_details_updated": "Datos de cobro del box",
+      "box_payment_qr_updated": "QR de cobro cargado",
+      "box_payment_qr_removed": "QR de cobro quitado",
+      "box_booking_policy_updated": "Reglas de reserva",
+      "box_check_in_policy_updated": "Reglas de asistencia"
     },
     "features": {
       "names": {
@@ -1307,8 +1321,6 @@
       "saved": "Funciones guardadas",
       "invalidLimit": "Poné un número entero, 0 o más.",
       "boxTitle": "Funciones de este box",
-      "fromPlanOn": "Su plan la incluye: {limit}",
-      "fromPlanOff": "Su plan no la incluye",
       "unlimited": "sin límite",
       "perMonth": "{count} por mes",
       "used": "Este mes: {used} de {limit}",
@@ -1319,8 +1331,14 @@
         "on": "Activada",
         "off": "Desactivada"
       },
-      "ownLimit": "Límite propio por mes",
-      "ownLimitHint": "Vacío para usar el del plan."
+      "boxHint": "Lo que elijas acá le gana al plan solo para este box y queda en su actividad.",
+      "included": "Incluida en el plan · {limit}",
+      "notIncluded": "No incluida en el plan",
+      "on": "Activa",
+      "off": "Apagada",
+      "ownLimitPlaceholder": "Del plan: {limit}",
+      "ownLimitShort": "Límite por mes",
+      "noLimit": "Sin límite"
     },
     "ai": {
       "title": "Inteligencia artificial",

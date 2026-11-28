@@ -54,11 +54,14 @@ export function usePlanFeatures(planId: string) {
   });
 }
 
-export function useSavePlanFeature(planId: string) {
+/** Saves every changed feature of a plan in one go, then refreshes once. */
+export function useSavePlanFeatures(planId: string) {
   const api = useApi();
-  return usePlatformMutation(({ feature, ...input }: PlanFeatureInput & { feature: FeatureFlag }) =>
-    api.put(`/platform/plans/${planId}/features/${feature}`, input),
-  );
+  return usePlatformMutation(async (changes: (PlanFeatureInput & { feature: FeatureFlag })[]) => {
+    for (const { feature, ...input } of changes) {
+      await api.put(`/platform/plans/${planId}/features/${feature}`, input);
+    }
+  });
 }
 
 export function useBoxFeatures(boxId: string) {
@@ -71,9 +74,12 @@ export function useBoxFeatures(boxId: string) {
   });
 }
 
-export function useSaveBoxFeature(boxId: string) {
+/** Saves every changed feature of a box in one go, then refreshes once. */
+export function useSaveBoxFeatures(boxId: string) {
   const api = useApi();
-  return usePlatformMutation(({ feature, ...input }: BoxFeatureInput & { feature: FeatureFlag }) =>
-    api.put(`/platform/boxes/${boxId}/features/${feature}`, input),
-  );
+  return usePlatformMutation(async (changes: (BoxFeatureInput & { feature: FeatureFlag })[]) => {
+    for (const { feature, ...input } of changes) {
+      await api.put(`/platform/boxes/${boxId}/features/${feature}`, input);
+    }
+  });
 }
