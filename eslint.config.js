@@ -45,8 +45,8 @@ const SYSTEM_SCOPE_FILES = [
   'apps/api/src/middleware/account-scope.ts',
   // Cron: lists the boxes to visit, then works inside each box's own scope.
   'apps/api/src/jobs/upcoming-classes.ts',
-  // AI import: reads the platform's provider key and fills in the tokens of the box's own use row.
-  'apps/api/src/services/ai-import.ts',
+  // AI features (import, Brodi): read the platform's provider key and fill in the tokens of the box's own use row.
+  'apps/api/src/services/ai-usage.ts',
   // Card autopay cron: lists the boxes with autopay on, then works inside each box's scope.
   'apps/api/src/jobs/card-autopay.ts',
   // Webhooks and payment links arrive without a session: an account id or a token hash

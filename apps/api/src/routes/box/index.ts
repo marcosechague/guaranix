@@ -6,6 +6,7 @@ import { checkInRoutes } from './check-ins';
 import { bookingRoutes, meRoutes } from './bookings';
 import { classRoutes, programRoutes, scheduleRoutes } from './classes';
 import { aiImportRoutes } from './ai-imports';
+import { brodiQuestionRoutes, brodiRoutes } from './brodi';
 import { importRoutes } from './imports';
 import { locationRoutes } from './locations';
 import { memberRoutes } from './members';
@@ -19,6 +20,7 @@ import { componentRoutes, movementRoutes, resultRoutes, workoutRoutes } from './
 export function mountBoxRoutes(app: Hono<AppEnv>) {
   // First: it has no request-wide transaction, and a later `/box` router would open one.
   app.route('/box/ai-imports', aiImportRoutes);
+  app.route('/box/brodi-questions', brodiQuestionRoutes);
   app.route('/box/members', memberRoutes);
   app.route('/box/plans', planRoutes);
   app.route('/box/member-plans', memberPlanRoutes);
@@ -41,4 +43,5 @@ export function mountBoxRoutes(app: Hono<AppEnv>) {
   app.route('/box/me', meRoutes);
   app.route('/box/settings', settingsRoutes);
   app.route('/box/payment-details', paymentDetailsRoutes);
+  app.route('/box/brodi', brodiRoutes);
 }
