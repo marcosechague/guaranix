@@ -1,0 +1,204 @@
+import { and, asc, eq, gt, lte } from 'drizzle-orm';
+import { bookings, classes, programs } from '@guaranix/db/schema';
+import { calendarDateIn } from '@guaranix/shared';
+import type {
+  CheckInClass,
+  CheckInDenial,
+  CheckInMember,
+  CheckInPassView,
+  CheckInResult,
+} from '@guaranix/shared/schemas';
+import { markAttendance } from './attendance';
+import { findPlanForClass } from './booking-eligibility';
+import { currentBox } from './box-calendar';
+import { SPOT_STATUSES, bookClass, takenSpots } from './bookings';
+import { overdueOwedBy } from './charges';
+import { signCheckInPass, verifyCheckInPass } from './check-in-pass';
+import { CLASS_STAFF_ROLES, assertRole, type ServiceContext } from './context';
+import { ServiceError, unprocessable } from './errors';
+import { getMember, getOwnMember } from './members';
+
+/** How early before a class the entrance lets people in. */
+export const CHECK_IN_OPENS_MINUTES_BEFORE = 30;
+const MINUTE_MS = 60_000;
+
+type ClassRow = typeof classes.$inferSelect;
+type BookingRow = typeof bookings.$inferSelect;
+type Candidate = { class: ClassRow; programName: string; booking: BookingRow | null };
+
+const DENIALS_FROM_ERRORS = new Set<string>([
+  'no_valid_plan',
+  'plan_excludes_program',
+  'no_credits_left',
+  'weekly_limit_reached',
+]);
+
+function classView(candidate: Candidate): CheckInClass {
+  return {
+    id: candidate.class.id,
+    programName: candidate.programName,
+    startsAt: candidate.class.startsAt.toISOString(),
+  };
+}
+
+/** Classes open for check-in right now, with the member's booking in each, soonest first. */
+async function candidateClasses(context: ServiceContext, memberId: string): Promise<Candidate[]> {
+  const opensBy = new Date(context.now.getTime() + CHECK_IN_OPENS_MINUTES_BEFORE * MINUTE_MS);
+  const rows = await context.transaction
+    .select({ class: classes, programName: programs.name, booking: bookings })
+    .from(classes)
+    .innerJoin(programs, eq(programs.id, classes.programId))
+    .leftJoin(bookings, and(eq(bookings.classId, classes.id), eq(bookings.memberId, memberId)))
+    .where(
+      and(
+        eq(classes.status, 'scheduled'),
+        lte(classes.startsAt, opensBy),
+        gt(classes.endsAt, context.now),
+      ),
+    )
+    .orderBy(asc(classes.startsAt));
+  return rows;
+}
+
+/** Of the classes the member holds a spot in, the one closest to now. */
+function bookedCandidate(candidates: Candidate[], now: Date): Candidate | undefined {
+  const distance = (candidate: Candidate) =>
+    Math.abs(candidate.class.startsAt.getTime() - now.getTime());
+  return candidates
+    .filter((candidate) =>
+      (SPOT_STATUSES as readonly string[]).includes(candidate.booking?.status ?? ''),
+    )
+    .sort((first, second) => distance(first) - distance(second))[0];
+}
+
+/**
+ * A member without a booking gets the next class that hasn't started, has a
+ * free spot and is covered by their plan. Returns the denial that explains
+ * why none worked, most specific first.
+ */
+async function walkIn(
+  context: ServiceContext,
+  memberId: string,
+  candidates: Candidate[],
+): Promise<{ booked: Candidate } | { reason: CheckInDenial; candidate: Candidate | null }> {
+  const box = await currentBox(context);
+  const policy = {
+    timezone: box.timezone,
+    lateCancelConsumesCredit: box.lateCancelConsumesCredit,
+    noShowConsumesCredit: box.noShowConsumesCredit,
+  };
+  const upcoming = candidates.filter((candidate) => candidate.class.startsAt > context.now);
+  let reason: CheckInDenial = 'no_class_now';
+  let reasonClass: Candidate | null = null;
+  for (const candidate of upcoming) {
+    if (candidate.booking?.status === 'waitlisted') {
+      reason = 'waitlisted';
+      reasonClass = candidate;
+      continue;
+    }
+    try {
+      await findPlanForClass(context, memberId, candidate.class, policy);
+    } catch (error) {
+      if (!(error instanceof ServiceError) || !DENIALS_FROM_ERRORS.has(error.code)) throw error;
+      if (reason === 'no_class_now' || reason === 'class_full') {
+        reason = error.code as CheckInDenial;
+        reasonClass = candidate;
+      }
+      continue;
+    }
+    if ((await takenSpots(context, candidate.class.id)) >= candidate.class.capacity) {
+      if (reason === 'no_class_now') {
+        reason = 'class_full';
+        reasonClass = candidate;
+      }
+      continue;
+    }
+    const booking = await bookClass(
+      context,
+      { classId: candidate.class.id, memberId },
+      { notify: false },
+    );
+    // Someone took the last spot between the count and the booking: undo it all.
+    if (booking.status !== 'booked') throw unprocessable('class_full');
+    return { booked: { ...candidate, booking } };
+  }
+  return { reason, candidate: reasonClass };
+}
+
+async function admit(context: ServiceContext, candidate: Candidate) {
+  const booking = candidate.booking;
+  if (!booking) throw new Error('Admitting a class without a booking');
+  await markAttendance(context, candidate.class.id, [
+    { bookingId: booking.id, status: 'attended' },
+  ]);
+}
+
+/**
+ * The entrance read a member's QR: let them in only with the fee up to date.
+ * A booked member is marked as attended; one without a booking takes a free
+ * spot in the next class their plan covers. A denial writes nothing and says
+ * why, so the screen can tell the member what to fix.
+ */
+export async function checkInWithPass(
+  context: ServiceContext,
+  secret: string,
+  pass: string,
+): Promise<CheckInResult> {
+  assertRole(context.auth.role, CLASS_STAFF_ROLES);
+  const memberId = await verifyCheckInPass(secret, context.auth.boxId, pass, context.now);
+  const member = await getMember(context, memberId);
+  const who: CheckInMember = {
+    id: member.id,
+    firstName: member.firstName,
+    lastName: member.lastName,
+  };
+  const deny = (reason: CheckInDenial, candidate: Candidate | null, owedGs: number | null = null) =>
+    ({
+      outcome: 'denied',
+      reason,
+      member: who,
+      class: candidate ? classView(candidate) : null,
+      owedGs,
+    }) satisfies CheckInResult;
+
+  if (member.status !== 'active') return deny('member_inactive', null);
+  const box = await currentBox(context);
+  const owedGs = await overdueOwedBy(context, member.id, calendarDateIn(box.timezone, context.now));
+  if (owedGs > 0) return deny('fee_overdue', null, owedGs);
+
+  const candidates = await candidateClasses(context, member.id);
+  const booked = bookedCandidate(candidates, context.now);
+  if (booked) {
+    if (booked.booking?.status === 'attended') {
+      return {
+        outcome: 'already_checked_in',
+        member: who,
+        class: classView(booked),
+        walkIn: false,
+      };
+    }
+    await admit(context, booked);
+    return { outcome: 'checked_in', member: who, class: classView(booked), walkIn: false };
+  }
+
+  const result = await walkIn(context, member.id, candidates);
+  if ('reason' in result) return deny(result.reason, result.candidate);
+  await admit(context, result.booked);
+  return { outcome: 'checked_in', member: who, class: classView(result.booked), walkIn: true };
+}
+
+/** The signed-in member's entry QR. Someone dado de baja gets none. */
+export async function issueOwnCheckInPass(
+  context: ServiceContext,
+  secret: string,
+): Promise<CheckInPassView> {
+  const member = await getOwnMember(context);
+  if (member.status !== 'active') throw unprocessable('member_inactive');
+  const { pass, expiresAt } = await signCheckInPass(
+    secret,
+    context.auth.boxId,
+    member.id,
+    context.now,
+  );
+  return { pass, expiresAt: expiresAt.toISOString() };
+}

@@ -88,10 +88,12 @@ async function nextWaitlistPosition(context: ServiceContext, classId: string): P
  * Books a class in one call (the "2 taps" flow): picks the plan that pays for
  * it, takes a credit if it's a pack, and joins the waitlist when the class is
  * full. Waitlisted bookings don't spend a credit until they get a spot.
+ * `notify: false` skips the confirmation, e.g. for a walk-in already at the door.
  */
 export async function bookClass(
   context: ServiceContext,
   input: { classId: string; memberId?: string | undefined },
+  options: { notify?: boolean } = {},
 ): Promise<BookingRow> {
   const box = await currentBox(context);
   const memberId = await resolveMemberId(context, input.memberId);
@@ -129,7 +131,7 @@ export async function bookClass(
         .values({ ...values, boxId: context.auth.boxId, classId: classRow.id, memberId })
         .returning();
   if (!booking) throw new Error('Booking was not saved');
-  await notifyBookingConfirmed(context, booking, classRow);
+  if (options.notify !== false) await notifyBookingConfirmed(context, booking, classRow);
   return booking;
 }
 
