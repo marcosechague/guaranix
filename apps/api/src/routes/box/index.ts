@@ -6,6 +6,7 @@ import { classRoutes, programRoutes, scheduleRoutes } from './classes';
 import { importRoutes } from './imports';
 import { memberRoutes } from './members';
 import { memberPlanRoutes, planRoutes } from './plans';
+import { receiptRoutes } from './receipts';
 import { settingsRoutes } from './settings';
 import { componentRoutes, movementRoutes, resultRoutes, workoutRoutes } from './workouts';
 
@@ -24,6 +25,7 @@ export function mountBoxRoutes(app: Hono<AppEnv>) {
   app.route('/box/components', componentRoutes);
   app.route('/box/charges', chargeRoutes);
   app.route('/box/payments', paymentRoutes);
+  app.route('/box/receipts', receiptRoutes);
   app.route('/box/reports', reportRoutes);
   app.route('/box/imports', importRoutes);
   app.route('/box/me', meRoutes);

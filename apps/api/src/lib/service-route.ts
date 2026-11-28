@@ -74,3 +74,31 @@ export function idParam(context: Context, name: string, entity: string): string 
   if (!result.success) throw new ServiceError(404, `${entity}_not_found`);
   return result.data;
 }
+
+/** A path parameter checked against a schema; anything else is a 404 for `entity`. */
+export function parseParam<Schema extends z.ZodType>(
+  context: Context,
+  name: string,
+  schema: Schema,
+  entity: string,
+): z.output<Schema> {
+  const result = schema.safeParse(context.req.param(name));
+  if (!result.success) throw new ServiceError(404, `${entity}_not_found`);
+  return result.data;
+}
+
+/**
+ * A raw file upload. Stops at the declared length before reading, so an
+ * oversized body is never buffered; services still check the real bytes.
+ */
+export async function readUpload(
+  context: Context,
+  maxBytes: number,
+  tooLargeCode: string,
+): Promise<ArrayBuffer> {
+  const declared = Number(context.req.header('content-length') ?? 0);
+  if (!Number.isFinite(declared) || declared > maxBytes) {
+    throw new ServiceError(422, tooLargeCode);
+  }
+  return context.req.arrayBuffer();
+}

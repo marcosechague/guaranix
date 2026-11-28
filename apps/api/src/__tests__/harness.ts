@@ -3,6 +3,7 @@ import { createTestDatabase, seedDemoBox, seedPlatform } from '@guaranix/db/test
 import type { Session } from '@guaranix/shared';
 import { createApp } from '../app';
 import type { Bindings, Services } from '../env';
+import { createMemoryFileStorage } from '../integrations/file-storage';
 import type { GoogleIdentity, GoogleOAuth } from '../integrations/google-oauth';
 
 export const APP_ORIGIN = 'http://localhost:5173';
@@ -13,6 +14,8 @@ export const testEnv: Bindings = {
   PUBLIC_API_URL: 'http://localhost:8787',
   AUTH_SECRET: 'test-secret-that-is-long-enough-for-hmac-keys',
   TURNSTILE_SITE_KEY: 'site-key',
+  // Never read: the test services store receipts in memory.
+  RECEIPTS: {} as R2Bucket,
 };
 
 export interface FakeGoogle extends GoogleOAuth {
@@ -45,10 +48,12 @@ export async function createHarness() {
   const emails = createMemoryEmailSender();
   const google = createFakeGoogle();
   const captcha = { enabled: true, passes: true };
+  const files = createMemoryFileStorage();
 
   const services: Services = {
     database: () => testDatabase.database,
     emailSender: emails,
+    files,
     get captcha() {
       return captcha.enabled ? { verify: async () => captcha.passes } : null;
     },
@@ -65,6 +70,7 @@ export async function createHarness() {
     boxA,
     boxB,
     emails,
+    files,
     google,
     captcha,
     close: testDatabase.close,
@@ -90,7 +96,8 @@ export function createBrowser(harness: Harness, origin = APP_ORIGIN) {
     const allHeaders: Record<string, string> = { 'cf-connecting-ip': ip, ...headers };
     if (method !== 'GET') allHeaders['origin'] ??= origin;
     if (method !== 'GET' && csrfToken) allHeaders['x-csrf-token'] ??= csrfToken;
-    if (body !== undefined) allHeaders['content-type'] = 'application/json';
+    const raw = body instanceof Uint8Array;
+    if (body !== undefined && !raw) allHeaders['content-type'] = 'application/json';
     if (cookies.size > 0) {
       allHeaders['cookie'] = [...cookies].map(([name, value]) => `${name}=${value}`).join('; ');
     }
@@ -99,7 +106,7 @@ export function createBrowser(harness: Harness, origin = APP_ORIGIN) {
       {
         method,
         headers: allHeaders,
-        ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+        ...(body === undefined ? {} : { body: raw ? body : JSON.stringify(body) }),
       },
       testEnv,
     );

@@ -146,12 +146,18 @@ function invalidateMoney(queryClient: ReturnType<typeof useQueryClient>) {
   );
 }
 
+/** Uploads the receipt first, when there is one, then records the payment with its key. */
 export function useRecordPayment() {
   const api = useApi();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (input: RecordPaymentInput) =>
-      (await api.post<{ payment: Payment }>('/box/payments', input)).payment,
+    mutationFn: async ({ input, receipt }: { input: RecordPaymentInput; receipt: File | null }) => {
+      const receiptFileKey = receipt
+        ? (await api.upload<{ fileKey: string }>('/box/receipts', receipt)).fileKey
+        : null;
+      return (await api.post<{ payment: Payment }>('/box/payments', { ...input, receiptFileKey }))
+        .payment;
+    },
     onSuccess: () => invalidateMoney(queryClient),
   });
 }

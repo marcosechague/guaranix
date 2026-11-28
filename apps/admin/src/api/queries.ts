@@ -171,3 +171,18 @@ export function useOpenCharges(memberId: string | null) {
 }
 
 export { useMovements, usePlans, usePrograms } from '@guaranix/ui/data';
+
+/** A receipt as a local object URL, so the private file never needs a public link. */
+export function useReceipt(fileKey: string | null) {
+  const api = useApi();
+  return useQuery({
+    queryKey: ['receipt', fileKey],
+    enabled: fileKey !== null,
+    staleTime: Infinity,
+    gcTime: 0,
+    queryFn: async () => {
+      const blob = await api.blob(`/box/receipts/${fileKey ?? ''}`);
+      return { url: URL.createObjectURL(blob), isPdf: blob.type === 'application/pdf' };
+    },
+  });
+}
