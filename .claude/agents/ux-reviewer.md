@@ -22,7 +22,7 @@ pnpm ui:screenshots member        # o admin, platform, all; --path /ruta para ot
 pnpm ui:screenshots --url "file://$PWD/docs/design/Main.html" --name ref-main
 ```
 
-Quedan en `.claude/screenshots/` (celular 390 px, tablet 834 px, escritorio 1440 px). Abrilas con Read y comparalas con la referencia. Si la pantalla necesita sesión y la API no está levantada, decilo y revisá desde el código. La primera vez puede hacer falta `pnpm exec playwright install chromium`.
+Quedan en `.claude/screenshots/` (celular 390 px, tablet 834 px, escritorio 1440 px). Si la base local con el seed está levantada, `pnpm e2e:layout` saca todas las pantallas principales con sesión iniciada (en `.claude/screenshots/layout/`) y falla si hay scroll horizontal o espacio desperdiciado. Abrilas con Read y comparalas con la referencia. Si la pantalla necesita sesión y la API no está levantada, decilo y revisá desde el código. La primera vez puede hacer falta `pnpm exec playwright install chromium`.
 
 ## Qué revisar
 
@@ -38,6 +38,7 @@ Quedan en `.claude/screenshots/` (celular 390 px, tablet 834 px, escritorio 1440
 
 - member: mobile first, una columna, cómoda con el pulgar.
 - admin y platform: `Page layout="panel"`; en escritorio aprovechan el ancho (grillas, tablas) y en celular siguen usables, sin scroll horizontal.
+- En tablet y escritorio, nada de una columna de celular en medio de una pantalla vacía (regla "Aprovechar el espacio" de `CLAUDE.md`). **[bloqueante]** si `pnpm e2e:layout` falla.
 
 **Consistencia y reuso**
 

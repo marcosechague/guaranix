@@ -23,7 +23,9 @@ export interface DataTableProps<Row> {
 
 /**
  * A table on tablets and desktops that turns into stacked cards on phones,
- * so wide lists (boxes, members) never scroll sideways in a 390 px screen.
+ * so wide lists (boxes, members) never scroll sideways in a 390 px screen. On a
+ * tablet with the sidebar open a long row can still be wider than the room left:
+ * then the table scrolls inside its own frame and the page stays put.
  */
 export function DataTable<Row>({ caption, columns, rows, rowKey, className }: DataTableProps<Row>) {
   const primary = columns.find((column) => column.primary) ?? columns[0];
@@ -31,43 +33,45 @@ export function DataTable<Row>({ caption, columns, rows, rowKey, className }: Da
   const bare = columns.filter((column) => column !== primary && column.bare);
   return (
     <div className={className}>
-      <table className="hidden w-full border-collapse text-sm md:table">
-        <caption className="sr-only">{caption}</caption>
-        <thead>
-          <tr className="text-left text-xs text-text-secondary">
-            {columns.map((column) => (
-              <th
-                key={column.key}
-                scope="col"
-                className={classNames(
-                  'px-3 pb-2 font-semibold first:pl-0 last:pr-0',
-                  column.align === 'end' ? 'text-right' : '',
-                )}
-              >
-                {column.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row) => (
-            <tr key={rowKey(row)} className="border-t border-divider">
+      <div className="hidden overflow-x-auto md:block">
+        <table className="w-full border-collapse text-sm">
+          <caption className="sr-only">{caption}</caption>
+          <thead>
+            <tr className="text-left text-xs text-text-secondary">
               {columns.map((column) => (
-                <td
+                <th
                   key={column.key}
+                  scope="col"
                   className={classNames(
-                    'px-3 py-3 align-middle text-text-soft first:pl-0 last:pr-0',
-                    column.primary ? 'font-semibold text-text' : '',
-                    column.align === 'end' ? 'text-right whitespace-nowrap' : '',
+                    'px-3 pb-2 font-semibold first:pl-0 last:pr-0',
+                    column.align === 'end' ? 'text-right' : '',
                   )}
                 >
-                  {column.cell(row)}
-                </td>
+                  {column.header}
+                </th>
               ))}
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={rowKey(row)} className="border-t border-divider">
+                {columns.map((column) => (
+                  <td
+                    key={column.key}
+                    className={classNames(
+                      'px-3 py-3 align-middle text-text-soft first:pl-0 last:pr-0',
+                      column.primary ? 'font-semibold text-text' : '',
+                      column.align === 'end' ? 'text-right whitespace-nowrap' : '',
+                    )}
+                  >
+                    {column.cell(row)}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
 
       <ul aria-label={caption} className="flex flex-col divide-y divide-divider md:hidden">
         {rows.map((row) => (
