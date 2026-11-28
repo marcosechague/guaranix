@@ -4,7 +4,8 @@ import { BottomBar, BoxMark, classNames } from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
 import { Settings, UserRound } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
-import { NAV_ITEMS } from './nav-items';
+import { canManage } from '../lib/roles';
+import { BRODI_NAV_ITEM, NAV_ITEMS } from './nav-items';
 
 function TopBarLink({ to, label, children }: { to: string; label: string; children: ReactNode }) {
   return (
@@ -19,7 +20,8 @@ function TopBarLink({ to, label, children }: { to: string; label: string; childr
 }
 
 export function MobileTopBar() {
-  const { boxName } = useBoxClock();
+  const { boxName, role } = useBoxClock();
+  const BrodiIcon = BRODI_NAV_ITEM.icon;
   return (
     <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-border bg-background/95 px-4 py-3 backdrop-blur md:hidden">
       <div className="flex min-w-0 items-center gap-3">
@@ -27,6 +29,12 @@ export function MobileTopBar() {
         <span className="truncate font-display font-bold">{boxName}</span>
       </div>
       <div className="flex items-center gap-2">
+        {/* The tab bar is full; Brodi lives up here on phones, for managers only. */}
+        {canManage(role) ? (
+          <TopBarLink to={BRODI_NAV_ITEM.to} label={BRODI_NAV_ITEM.label}>
+            <BrodiIcon aria-hidden="true" size={20} />
+          </TopBarLink>
+        ) : null}
         <TopBarLink to="/ajustes" label={t('admin.nav.settings')}>
           <Settings aria-hidden="true" size={20} />
         </TopBarLink>

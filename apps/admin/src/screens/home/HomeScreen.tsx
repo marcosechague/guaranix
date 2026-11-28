@@ -5,6 +5,7 @@ import { useBoxClock } from '@guaranix/ui/data';
 import { CalendarPlus, UserPlus } from 'lucide-react';
 import { Link } from 'react-router';
 import { canFrontDesk, canManage } from '../../lib/roles';
+import { BrodiHomeCard } from './BrodiHomeCard';
 import { DebtorsCard } from './DebtorsCard';
 import { KpiRow } from './KpiRow';
 import { TodayClassesCard } from './TodayClassesCard';
@@ -43,6 +44,7 @@ export function HomeScreen() {
       <div className="grid gap-6 lg:grid-cols-3">
         <TodayClassesCard className="lg:col-span-2" />
         <div className="flex flex-col gap-6">
+          {canManage(role) ? <BrodiHomeCard /> : null}
           <TodayWodCard />
           {canFrontDesk(role) ? <DebtorsCard /> : null}
         </div>
