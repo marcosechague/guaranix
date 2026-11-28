@@ -14,6 +14,7 @@ import {
 } from '@guaranix/ui';
 import { AccountSecurity, useSession } from '@guaranix/ui/auth';
 import { useMe, useMyPlans, usePlans } from '../../api/queries';
+import { CardEntryLink } from '../card/CardEntryLink';
 import { useBoxClock } from '@guaranix/ui/data';
 
 const STATE_TONES: Record<MemberPlan['state'], BadgeTone> = {
@@ -110,7 +111,12 @@ export function ProfileScreen() {
         </div>
       </header>
       <Columns
-        start={<PlanCard />}
+        start={
+          <>
+            <PlanCard />
+            <CardEntryLink />
+          </>
+        }
         end={
           <>
             <AppearanceCard />

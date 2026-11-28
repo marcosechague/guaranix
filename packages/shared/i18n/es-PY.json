@@ -232,6 +232,40 @@
       "notFoundTitle": "No encontramos este timer",
       "notFoundBody": "Puede que el coach haya cambiado el WOD. Volvé al WOD de hoy y abrilo de nuevo.",
       "backToWod": "Volver al WOD"
+    },
+    "cards": {
+      "title": "Mi tarjeta",
+      "subtitle": "Pagá tu cuota sola, sin pasar por recepción",
+      "entryTitle": "Pagar con tarjeta",
+      "entryHint": "Guardá tu tarjeta y la cuota se paga sola cuando vence",
+      "unavailableTitle": "Tu box todavía no cobra con tarjeta",
+      "unavailableBody": "Mientras tanto podés pagar por transferencia, QR o en recepción.",
+      "addTitle": "Agregar tarjeta",
+      "replaceTitle": "Cambiar de tarjeta",
+      "consent": "Autorizo a mi box a cobrar mis cuotas de esta tarjeta cada vez que vencen. Puedo quitarla cuando quiera.",
+      "add": "Cargar tarjeta",
+      "safety": "Los datos de la tarjeta se cargan en el formulario seguro de Bancard. GuaraniX y tu box nunca los ven.",
+      "formHint": "Cargá los datos de tu tarjeta en el formulario de Bancard.",
+      "formFailed": "No pudimos abrir el formulario de Bancard. Revisá tu conexión y probá de nuevo.",
+      "mockHint": "Modo de prueba: no hay Bancard conectado, así que estos botones simulan la respuesta.",
+      "mockApprove": "Simular aprobación",
+      "mockDecline": "Simular rechazo",
+      "saved": "Tarjeta guardada.",
+      "masked": "{brand} •••• {last4}",
+      "expires": "Vence {date}",
+      "autopayOn": "Débito automático",
+      "autopayOff": "Sin débito automático",
+      "autopayOnHint": "Tu cuota se cobra de esta tarjeta el día que vence. Si no pasa, te mandamos un link para pagar.",
+      "autopayOffHint": "Tu box todavía no activó el débito automático. Cuando lo active, tu cuota se va a cobrar de esta tarjeta.",
+      "remove": "Quitar tarjeta",
+      "removeConfirm": "Sí, quitar la tarjeta",
+      "consentLabel": "Autorizo el débito automático"
+    },
+    "pay": {
+      "title": "Pagar cuota",
+      "greeting": "Hola {name}, este es el link para pagar tu cuota.",
+      "payWithCard": "Pagar con tarjeta",
+      "paid": "Listo, esta cuota está pagada. ¡Gracias!"
     }
   },
   "admin": {
@@ -462,7 +496,38 @@
       "capacitySaved": "Cupo actualizado en {count} clases.",
       "spots": "{count} lugares",
       "durationMinutes": "{count} min",
-      "readOnly": "Solo el dueño o un administrador pueden cambiar estos ajustes."
+      "readOnly": "Solo el dueño o un administrador pueden cambiar estos ajustes.",
+      "cards": {
+        "title": "Cobro con tarjeta",
+        "hint": "Conectá la cuenta de tu comercio en Bancard. La plata va directo a tu cuenta; GuaraniX no la toca.",
+        "notIncluded": "Tu plan de GuaraniX todavía no incluye el cobro con tarjeta. Escribinos para activarlo.",
+        "ownerConnects": "Solo el dueño del box puede conectar la cuenta de cobro.",
+        "provider": "Procesador",
+        "providers": {
+          "bancard": "Bancard",
+          "mock": "Simulado (solo pruebas)"
+        },
+        "environment": "Ambiente",
+        "environments": {
+          "sandbox": "Pruebas",
+          "production": "Producción"
+        },
+        "publicKey": "Clave pública",
+        "privateKey": "Clave privada",
+        "privateKeyHint": "Se guarda cifrada y no se vuelve a mostrar.",
+        "autopay": "Débito automático",
+        "autopayHint": "Cobra las cuotas de los alumnos que guardaron su tarjeta el día que vencen, con reintentos al día 1, 3 y 7.",
+        "connect": "Conectar cuenta",
+        "checking": "Probando las claves…",
+        "connected": "Cuenta conectada.",
+        "webhook": "URL de confirmación",
+        "webhookHint": "Pasásela a Bancard para que te confirme cada pago.",
+        "copyWebhook": "Copiar la URL de confirmación",
+        "copied": "URL copiada.",
+        "replaceKeys": "Cambiar claves",
+        "disconnect": "Desconectar",
+        "disconnectConfirm": "Sí, dejar de cobrar con tarjeta"
+      }
     },
     "payments": {
       "title": "Cobros",
