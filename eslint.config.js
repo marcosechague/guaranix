@@ -39,6 +39,8 @@ const SYSTEM_SCOPE_FILES = [
   'apps/api/src/middleware/platform-scope.ts',
   // Creating a box: the caller has no box yet; services touch only what they create.
   'apps/api/src/middleware/account-scope.ts',
+  // Cron: lists the boxes to visit, then works inside each box's own scope.
+  'apps/api/src/jobs/upcoming-classes.ts',
 ];
 
 export default tseslint.config(

@@ -13,12 +13,11 @@ import { provisionBox } from './box-provisioning';
 import { unprocessable } from './errors';
 import { boxesOnPlan } from './platform-plans';
 import { generateClasses } from './schedules';
+import { UPCOMING_CLASS_DAYS } from './class-generation';
 
 /** Plans offered at self sign-up, best first: founders while there is room, then base. */
 const SIGNUP_PLAN_CODES = ['founders', 'base'];
 const TRIAL_DAYS = 30;
-/** Classes created up front, so members can book from day one (cron extends it later). */
-const FIRST_CLASS_DAYS = 14;
 
 export class SetupRejected extends Error {
   constructor(
@@ -103,7 +102,7 @@ export async function signUpBox(
   await enterBoxScope(transaction, { boxId: box.id, userId: caller.userId });
   await generateClasses(
     { transaction, auth: { boxId: box.id, userId: caller.userId, role: 'box_owner' }, now },
-    { from: calendarDateIn(box.timezone, now), days: FIRST_CLASS_DAYS },
+    { from: calendarDateIn(box.timezone, now), days: UPCOMING_CLASS_DAYS },
   );
   return {
     box: { id: box.id, name: box.name, slug: box.slug },
