@@ -948,7 +948,7 @@
       },
       "impersonate": {
         "title": "Entrar como {name}",
-        "description": "Vas a ver y cambiar todo como su dueño durante una hora. Queda registrado en su historial, con el motivo.",
+        "description": "Vas a ver el panel como su dueño durante una hora, en modo solo lectura: no se puede cobrar, cambiar precios ni borrar nada. Queda registrado en su historial, con el motivo.",
         "reasonHint": "Por ejemplo: no le aparecen las clases del sábado.",
         "confirm": "Entrar al panel del box",
         "done": "Abrimos el panel de {name}"
