@@ -222,4 +222,17 @@ describe('config', () => {
     const [user] = await harness.database.select().from(users).where(eq(users.email, email));
     expect(user?.emailVerifiedAt).not.toBeNull();
   });
+
+  it('finds a Gmail account however Google spells the address', async () => {
+    const id = (subjectCounter += 1);
+    const [owner] = await harness.database
+      .insert(users)
+      .values({ email: `dueno${id}@gmail.com`, fullName: 'Dueño' })
+      .returning({ id: users.id });
+    const browser = createBrowser(harness);
+    harness.google.nextIdentity = googleIdentity(`Due.No${id}@gmail.com`);
+    await googleFlow(browser);
+    const session = (await (await browser.get('/auth/session')).json()) as Session;
+    expect(session.user.id).toBe(owner?.id);
+  });
 });

@@ -1,6 +1,7 @@
 import { type SchemaDatabase, withSystemScope } from '@guaranix/db';
 import { oauthAccounts, userCredentials, users } from '@guaranix/db/schema';
 import { and, eq } from 'drizzle-orm';
+import { canonicalAccountEmail } from '@guaranix/shared';
 import type { GoogleIdentity } from '../integrations/google-oauth';
 import { forgetNotificationAddresses, revokeUserSessions } from './sessions';
 
@@ -33,7 +34,7 @@ export async function signInWithGoogle(
   const linkedUserId = await findLinkedUser(database, identity.subject);
   if (linkedUserId) return { userId: linkedUserId };
   if (!identity.email || !identity.emailVerified) return { error: 'google_failed' };
-  const email = identity.email;
+  const email = canonicalAccountEmail(identity.email);
 
   const outcome = await withSystemScope(database, async (transaction) => {
     const [existing] = await transaction

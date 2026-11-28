@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { BOX_ROLES, BOX_STATUSES } from '../domain/enums';
-import { emailSchema, idSchema, nameSchema } from './common';
+import { accountEmailSchema, idSchema, nameSchema } from './common';
 import { pushUnsubscribeInputSchema } from './notifications';
 
 /** NIST 800-63B: length over composition rules. 128 caps hashing cost. */
@@ -11,20 +11,20 @@ export const captchaTokenSchema = z.string().min(1).max(2048).optional();
 
 export const signupSchema = z.object({
   fullName: nameSchema,
-  email: emailSchema,
+  email: accountEmailSchema,
   password: passwordSchema,
   captchaToken: captchaTokenSchema,
 });
 
 export const loginSchema = z.object({
-  email: emailSchema,
+  email: accountEmailSchema,
   // Old passwords may predate the current policy, so only bound the length.
   password: z.string().min(1).max(128),
   captchaToken: captchaTokenSchema,
 });
 
 export const forgotPasswordSchema = z.object({
-  email: emailSchema,
+  email: accountEmailSchema,
   captchaToken: captchaTokenSchema,
 });
 
