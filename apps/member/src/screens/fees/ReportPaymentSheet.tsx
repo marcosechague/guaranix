@@ -10,6 +10,7 @@ import {
   FileField,
   FormMessage,
   MoneyField,
+  PaymentDetailsView,
   SegmentedControl,
   SelectField,
   Sheet,
@@ -17,7 +18,7 @@ import {
   TextField,
   useToast,
 } from '@guaranix/ui';
-import { errorText } from '@guaranix/ui/data';
+import { errorText, usePaymentDetails, usePaymentQrUrl } from '@guaranix/ui/data';
 import { useState } from 'react';
 import { useReportPayment } from '../../api/mutations';
 import { payableGs, reportableCharges } from '../../lib/fees';
@@ -44,6 +45,8 @@ export function ReportPaymentSheet({ memberId, account, onClose }: ReportPayment
   const [receipt, setReceipt] = useState<File | null>(null);
   const [invalid, setInvalid] = useState(false);
   const report = useReportPayment();
+  const details = usePaymentDetails();
+  const qrUrl = usePaymentQrUrl(details.data?.hasQr ?? false);
   const toast = useToast();
 
   const charge = charges.find((item) => item.id === chargeId);
@@ -130,6 +133,9 @@ export function ReportPaymentSheet({ memberId, account, onClose }: ReportPayment
             ]}
           />
         </div>
+        {details.data ? (
+          <PaymentDetailsView details={details.data} qrUrl={qrUrl} method={method} />
+        ) : null}
         <FileField
           label={t('member.fees.receipt')}
           prompt={t('member.fees.receiptPrompt')}

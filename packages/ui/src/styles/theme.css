@@ -78,6 +78,8 @@
   --color-warning-soft: var(--gx-color-warning-soft);
   /* Dims the screen behind sheets, in both themes (Tailwind's black is reset above). */
   --color-scrim: rgb(14 15 17 / 0.55);
+  /* QR codes scan reliably only on white, in either theme. */
+  --color-qr-backdrop: #ffffff;
 }
 
 @theme {

@@ -92,6 +92,20 @@
       "when": 1795830465474,
       "tag": "0012_notifications_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1795832966200,
+      "tag": "0013_box_payment_details",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1795832966987,
+      "tag": "0014_box_payment_details_grants",
+      "breakpoints": true
     }
   ]
 }

@@ -1,14 +1,16 @@
 import { t } from '@guaranix/shared';
 import { Page, PageHeader, Skeleton } from '@guaranix/ui';
-import { LoadError, useBoxClock } from '@guaranix/ui/data';
+import { LoadError, useBoxClock, usePaymentDetails } from '@guaranix/ui/data';
 import { useBookingPolicy } from '../../api/queries';
 import { canManage } from '../../lib/roles';
 import { BookingPolicyCard } from './BookingPolicyCard';
+import { PaymentDetailsCard } from './PaymentDetailsCard';
 import { SchedulesCard } from './SchedulesCard';
 
 export function SettingsScreen() {
   const { role } = useBoxClock();
   const policy = useBookingPolicy();
+  const paymentDetails = usePaymentDetails();
   const editable = canManage(role);
   return (
     <Page layout="panel">
@@ -25,6 +27,13 @@ export function SettingsScreen() {
         <BookingPolicyCard policy={policy.data} editable={editable} />
       )}
       <SchedulesCard editable={editable} />
+      {paymentDetails.isPending ? (
+        <Skeleton className="h-96 rounded-xl" />
+      ) : paymentDetails.isError ? (
+        <LoadError error={paymentDetails.error} onRetry={() => void paymentDetails.refetch()} />
+      ) : (
+        <PaymentDetailsCard details={paymentDetails.data} editable={editable} />
+      )}
     </Page>
   );
 }
