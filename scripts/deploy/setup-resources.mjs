@@ -6,7 +6,8 @@
  * left alone, so it is safe to run again. Prints the Hyperdrive id.
  *
  * Usage: node scripts/deploy/setup-resources.mjs <staging|production>
- * Env: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, DATABASE_URL (Neon, direct, not pooled).
+ * Env: CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, PROD_DATABASE_URL (Neon, direct, not pooled).
+ * Not DATABASE_URL, which belongs to the local development database.
  * Names must match apps/api/wrangler.jsonc.
  */
 import { appendFileSync } from 'node:fs';
@@ -19,12 +20,12 @@ if (environment !== 'staging' && environment !== 'production') {
 const {
   CLOUDFLARE_API_TOKEN: token,
   CLOUDFLARE_ACCOUNT_ID: accountId,
-  DATABASE_URL: databaseUrl,
+  PROD_DATABASE_URL: databaseUrl,
 } = process.env;
 for (const [name, value] of Object.entries({
   CLOUDFLARE_API_TOKEN: token,
   CLOUDFLARE_ACCOUNT_ID: accountId,
-  DATABASE_URL: databaseUrl,
+  PROD_DATABASE_URL: databaseUrl,
 })) {
   if (!value) {
     console.error(`Falta ${name} (ver docs/despliegue.md).`);
@@ -96,7 +97,7 @@ async function ensureHyperdrive(name) {
   }
   const url = new URL(databaseUrl);
   if (url.hostname.includes('-pooler.')) {
-    throw new Error('DATABASE_URL es la URL "pooled" de Neon; usá la directa (sin -pooler).');
+    throw new Error('PROD_DATABASE_URL es la URL "pooled" de Neon; usá la directa (sin -pooler).');
   }
   const origin = {
     scheme: 'postgresql',
