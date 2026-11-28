@@ -99,6 +99,20 @@ describe('audit log', () => {
   });
 });
 
+describe('Brodi', () => {
+  it.each(['brodi_messages', 'brodi_weekly_summaries'])(
+    '%s is append-only for boxes',
+    async (table) => {
+      const update = asBoxA((transaction) =>
+        transaction.execute(sql.raw(`update ${table} set updated_at = now()`)),
+      );
+      const remove = asBoxA((transaction) => transaction.execute(sql.raw(`delete from ${table}`)));
+      expect(await causeOf(update)).toMatch(permissionDenied);
+      expect(await causeOf(remove)).toMatch(permissionDenied);
+    },
+  );
+});
+
 describe('platform plans', () => {
   it('are readable but not writable from a box', async () => {
     const plans = await asBoxA((transaction) => transaction.select().from(platformPlans));

@@ -58,7 +58,7 @@ export const PAYMENT_METHODS = ['cash', 'bank_transfer', 'qr', 'card'] as const;
 export const PAYMENT_STATUSES = ['pending_review', 'confirmed', 'rejected', 'refunded'] as const;
 
 /** Paid extras a GuaraniX plan includes, each overridable per box from the superadmin. */
-export const FEATURE_FLAGS = ['ai_import', 'whatsapp', 'card_payments'] as const;
+export const FEATURE_FLAGS = ['ai_import', 'whatsapp', 'card_payments', 'brodi'] as const;
 /** Push and Telegram are free; WhatsApp costs per message, so it is a plan feature with a quota. */
 export const NOTIFICATION_CHANNELS = ['push', 'telegram', 'whatsapp'] as const;
 /** What a person can turn on or off, per channel. */
@@ -81,6 +81,11 @@ export const NOTIFICATION_DELIVERY_STATUSES = [
   'failed',
   'skipped',
 ] as const;
+
+/** Who wrote a line of a Brodi conversation. */
+export const BRODI_MESSAGE_ROLES = ['user', 'assistant'] as const;
+/** `ai` when the provider wrote the weekly summary; `template` when it fell back to fixed text. */
+export const BRODI_SUMMARY_SOURCES = ['ai', 'template'] as const;
 
 /** AI providers behind `packages/ai`; the superadmin picks one and loads its key. */
 export const AI_PROVIDERS = ['anthropic', 'openai', 'gemini'] as const;

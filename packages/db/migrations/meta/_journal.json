@@ -141,6 +141,20 @@
       "when": 1795864670491,
       "tag": "0019_guided_workout",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1795864896257,
+      "tag": "0020_brodi",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1795864897062,
+      "tag": "0021_brodi_grants",
+      "breakpoints": true
     }
   ]
 }

@@ -60,6 +60,19 @@ beforeAll(async () => {
       });
       await seedCardPayment(transaction, box.boxId);
       await seedPlanLocation(transaction, box.boxId);
+      await transaction.insert(schema.brodiMessages).values({
+        boxId: box.boxId,
+        userId: box.ownerId,
+        role: 'user',
+        content: '¿Cuánto cobré este mes?',
+      });
+      await transaction.insert(schema.brodiWeeklySummaries).values({
+        boxId: box.boxId,
+        weekStart: '2026-11-23',
+        source: 'template',
+        summary: 'Semana tranquila.',
+        figures: {},
+      });
     }
   });
 });
@@ -170,6 +183,8 @@ describe('tenant tables', () => {
         "bookings",
         "box_feature_overrides",
         "box_users",
+        "brodi_messages",
+        "brodi_weekly_summaries",
         "charges",
         "class_schedules",
         "classes",
