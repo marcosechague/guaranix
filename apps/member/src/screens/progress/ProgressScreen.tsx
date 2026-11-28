@@ -32,7 +32,7 @@ export function ProgressScreen() {
   const month = today.slice(0, 7);
 
   return (
-    <Page layout="mobile" className="gap-4">
+    <Page layout="mobile">
       <PageHeader
         size="large"
         title={t('member.progress.title')}
@@ -54,7 +54,7 @@ export function ProgressScreen() {
           }
         />
       ) : (
-        <ul className="flex flex-col gap-2.5">
+        <ul className="grid grid-cols-1 gap-2.5 md:grid-cols-2 md:gap-3">
           {bestPerMovement(records.data).map((record) => (
             <li
               key={record.id}
@@ -65,7 +65,7 @@ export function ProgressScreen() {
               </span>
               <span className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="truncate font-semibold">{nameOf(record.movementId)}</span>
-                <span className="flex items-center gap-2 text-sm text-text-secondary">
+                <span className="flex flex-wrap items-center gap-2 text-sm text-text-secondary">
                   {record.repMax ? (
                     <Badge tone="outline" className="px-2 py-0.5 text-tiny">
                       {t('member.progress.repMax', { count: record.repMax })}
@@ -79,7 +79,7 @@ export function ProgressScreen() {
                   ) : null}
                 </span>
               </span>
-              <span className="font-display text-2xl font-bold tabular-nums">
+              <span className="shrink-0 font-display text-2xl font-bold tabular-nums">
                 {recordValue(record)}
               </span>
             </li>
