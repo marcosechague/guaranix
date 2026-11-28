@@ -15,6 +15,8 @@ let world: ReturnType<typeof bookingWorld>;
 beforeAll(async () => {
   fixture = await createServiceFixture();
   world = bookingWorld(fixture, fixture.boxA);
+  // Classes here start a day or more out; open booking a week ahead instead of the 24 h default.
+  await world.setPolicy({ bookingOpensHoursBefore: 168 });
 });
 
 afterAll(async () => {

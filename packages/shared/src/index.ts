@@ -5,3 +5,4 @@ export { formatGuarani } from './money/format-guarani';
 export * from './dates';
 export * from './format/scores';
 export * from './format/dates';
+export * from './onboarding';

@@ -1,3 +1,4 @@
+import type { ScopedTransaction } from '@guaranix/db';
 import { boxes, platformPlans } from '@guaranix/db/schema';
 import type { PlatformPlanInput, UpdatePlatformPlanInput } from '@guaranix/shared';
 import { platformPlanInputSchema } from '@guaranix/shared';
@@ -52,7 +53,7 @@ export async function updatePlatformPlan(
     .where(eq(platformPlans.id, planId))
     .for('update');
   if (!before) throw notFound('platform_plan');
-  if (input.boxLimit != null && input.boxLimit < (await boxesOnPlan(context, planId))) {
+  if (input.boxLimit != null && input.boxLimit < (await boxesOnPlan(context.transaction, planId))) {
     throw unprocessable('platform_plan_limit_below_usage');
   }
   const [plan] = await context.transaction
@@ -70,8 +71,9 @@ export async function updatePlatformPlan(
   return plan;
 }
 
-export async function boxesOnPlan(context: PlatformContext, planId: string): Promise<number> {
-  const [row] = await context.transaction
+/** Boxes holding a place on the plan (removed boxes free theirs). */
+export async function boxesOnPlan(transaction: ScopedTransaction, planId: string): Promise<number> {
+  const [row] = await transaction
     .select({ total: count() })
     .from(boxes)
     .where(and(eq(boxes.platformPlanId, planId), ne(boxes.status, 'cancelled')));
@@ -87,7 +89,7 @@ export async function assertPlanAvailable(context: PlatformContext, planId: stri
     .for('update');
   if (!plan) throw notFound('platform_plan');
   if (!plan.isActive) throw unprocessable('platform_plan_inactive');
-  if (plan.boxLimit !== null && (await boxesOnPlan(context, planId)) >= plan.boxLimit) {
+  if (plan.boxLimit !== null && (await boxesOnPlan(context.transaction, planId)) >= plan.boxLimit) {
     throw unprocessable('platform_plan_full');
   }
   return plan;

@@ -1,4 +1,4 @@
-import { boxUsers, classes, members, programs } from '@guaranix/db/schema';
+import { boxes, boxUsers, classes, members, programs } from '@guaranix/db/schema';
 import { withSystemScope } from '@guaranix/db';
 import type { BoxRole, Session } from '@guaranix/shared';
 import { addDays, calendarDateIn } from '@guaranix/shared';
@@ -12,6 +12,11 @@ let as: Record<BoxRole | 'planless', SignedIn>;
 
 beforeAll(async () => {
   harness = await createHarness();
+  // These tests book classes a few days out; open booking a week ahead instead of the 24 h default.
+  await harness.database
+    .update(boxes)
+    .set({ bookingOpensHoursBefore: 168 })
+    .where(eq(boxes.id, harness.boxA.boxId));
   // Signing up hashes a password, which is slow on purpose: one user per role, shared.
   const entries = await Promise.all(
     (['box_owner', 'box_admin', 'coach', 'reception', 'member'] as const).map(

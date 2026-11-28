@@ -1,6 +1,6 @@
-import { applyBoxTemplate, type ScopedTransaction } from '@guaranix/db';
+import { applyBoxTemplate, boxTemplateFromSetup, type ScopedTransaction } from '@guaranix/db';
 import { boxUsers, boxes } from '@guaranix/db/schema';
-import { type BusinessType, calendarDateIn, slugFromName } from '@guaranix/shared';
+import { type BoxSetup, type BusinessType, calendarDateIn, slugFromName } from '@guaranix/shared';
 import { like } from 'drizzle-orm';
 
 export const DEFAULT_TIMEZONE = 'America/Asuncion';
@@ -10,11 +10,14 @@ export interface ProvisionBoxInput {
   name: string;
   slug?: string | undefined;
   city: string | null;
+  phone?: string | null;
+  bookingOpensHoursBefore?: number;
   businessType: BusinessType;
   platformPlanId: string;
   ownerUserId: string;
   trialDays: number;
-  applyTemplate: boolean;
+  /** Programs, timetable and plans to start with; null for an empty box. */
+  setup: BoxSetup | null;
 }
 
 /** The requested slug if free, otherwise the name's slug with the first free `-2`, `-3`… */
@@ -35,8 +38,8 @@ async function freeSlug(transaction: ScopedTransaction, base: string): Promise<s
 }
 
 /**
- * Creates a box in trial with its owner and, optionally, the Paraguayan
- * template, in the caller's transaction. Runs unscoped: the box does not
+ * Creates a box in trial with its owner and, optionally, its
+ * starting setup, in the caller's transaction. Runs unscoped: the box does not
  * exist yet, so there is no `box_id` to scope to. Callers authorize and audit.
  */
 export async function provisionBox(
@@ -51,6 +54,10 @@ export async function provisionBox(
       name: input.name,
       slug,
       city: input.city,
+      phone: input.phone ?? null,
+      ...(input.bookingOpensHoursBefore
+        ? { bookingOpensHoursBefore: input.bookingOpensHoursBefore }
+        : {}),
       businessType: input.businessType,
       platformPlanId: input.platformPlanId,
       status: 'trial',
@@ -62,9 +69,10 @@ export async function provisionBox(
   await transaction
     .insert(boxUsers)
     .values({ boxId: box.id, userId: input.ownerUserId, role: 'box_owner' });
-  if (input.applyTemplate) {
+  if (input.setup) {
     await applyBoxTemplate(transaction, box.id, {
       validFrom: calendarDateIn(DEFAULT_TIMEZONE, now),
+      template: boxTemplateFromSetup(input.setup),
     });
   }
   return box;
