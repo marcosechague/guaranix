@@ -35,6 +35,8 @@ export function ReceiptSheet({ name, fileKey, onClose, footer }: ReceiptSheetPro
       ) : receipt.data.isPdf ? (
         <div className="flex flex-col gap-3">
           <iframe
+            // The PDF viewer needs no scripts or forms of ours.
+            sandbox=""
             title={t('admin.payments.receiptTitle', { name })}
             src={receipt.data.url}
             className="aspect-3/4 w-full rounded-md border border-border bg-surface"

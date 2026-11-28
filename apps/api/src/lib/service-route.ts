@@ -88,17 +88,39 @@ export function parseParam<Schema extends z.ZodType>(
 }
 
 /**
- * A raw file upload. Stops at the declared length before reading, so an
- * oversized body is never buffered; services still check the real bytes.
+ * A raw file upload, read chunk by chunk and cut off as soon as it passes
+ * `maxBytes`, so an oversized body is never buffered whole, with or without a
+ * Content-Length. Services still check the real bytes.
  */
 export async function readUpload(
   context: Context,
   maxBytes: number,
   tooLargeCode: string,
 ): Promise<ArrayBuffer> {
-  const declared = Number(context.req.header('content-length') ?? 0);
-  if (!Number.isFinite(declared) || declared > maxBytes) {
-    throw new ServiceError(422, tooLargeCode);
+  const tooLarge = () => new ServiceError(422, tooLargeCode);
+  const declared = context.req.header('content-length');
+  if (declared !== undefined && !/^\d+$/.test(declared)) throw invalidInput();
+  if (declared !== undefined && Number(declared) > maxBytes) throw tooLarge();
+  const body = context.req.raw.body;
+  if (!body) return new ArrayBuffer(0);
+  const reader = body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      throw tooLarge();
+    }
+    chunks.push(value);
   }
-  return context.req.arrayBuffer();
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes.buffer;
 }

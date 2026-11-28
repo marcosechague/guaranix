@@ -31,6 +31,12 @@ export function sniffReceiptType(bytes: Uint8Array): ReceiptContentType | null {
   return null;
 }
 
+const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+/** Exactly what `storeReceipt` writes (plus the demo seed's `seed/` folder), nothing else. */
+const RECEIPT_KEY = new RegExp(
+  `^boxes/${UUID}/receipts/(${UUID}|seed)/(${UUID}|demo-\\d+)\\.(jpg|png|webp|pdf)$`,
+);
+
 /** Every receipt of a box lives under its own prefix; the uploader's id is part of the key. */
 const boxPrefix = (boxId: string) => `boxes/${boxId}/receipts/`;
 const uploaderPrefix = (boxId: string, userId: string) => `${boxPrefix(boxId)}${userId}/`;
@@ -48,7 +54,7 @@ function assertCanHandleReceipts(context: ServiceContext): void {
  * receipt of the box, a member only the ones they uploaded.
  */
 export function canUseReceipt(context: ServiceContext, key: string): boolean {
-  if (key.includes('..')) return false;
+  if (!RECEIPT_KEY.test(key)) return false;
   const prefix = isFrontDesk(context)
     ? boxPrefix(context.auth.boxId)
     : uploaderPrefix(context.auth.boxId, context.auth.userId);

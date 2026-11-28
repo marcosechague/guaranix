@@ -96,7 +96,7 @@ export function createBrowser(harness: Harness, origin = APP_ORIGIN) {
     const allHeaders: Record<string, string> = { 'cf-connecting-ip': ip, ...headers };
     if (method !== 'GET') allHeaders['origin'] ??= origin;
     if (method !== 'GET' && csrfToken) allHeaders['x-csrf-token'] ??= csrfToken;
-    const raw = body instanceof Uint8Array;
+    const raw = body instanceof Uint8Array || body instanceof ReadableStream;
     if (body !== undefined && !raw) allHeaders['content-type'] = 'application/json';
     if (cookies.size > 0) {
       allHeaders['cookie'] = [...cookies].map(([name, value]) => `${name}=${value}`).join('; ');
@@ -107,6 +107,7 @@ export function createBrowser(harness: Harness, origin = APP_ORIGIN) {
         method,
         headers: allHeaders,
         ...(body === undefined ? {} : { body: raw ? body : JSON.stringify(body) }),
+        ...(body instanceof ReadableStream ? { duplex: 'half' } : {}),
       },
       testEnv,
     );

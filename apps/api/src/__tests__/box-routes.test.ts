@@ -358,6 +358,20 @@ describe('payments, debtors and dashboard', () => {
     expect(await json(await upload(member, page))).toEqual({ error: 'receipt_type' });
     expect((await upload(coach, JPEG)).status).toBe(403);
 
+    // No Content-Length (a streamed body): the read stops once it passes the limit.
+    let pulled = 0;
+    const endless = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        pulled += 1;
+        controller.enqueue(pulled === 1 ? JPEG : new Uint8Array(1024 * 1024));
+      },
+    });
+    const streamed = await member.browser.post('/box/receipts', endless, {
+      'content-type': 'image/jpeg',
+    });
+    expect(await json(streamed)).toEqual({ error: 'receipt_too_large' });
+    expect(pulled).toBeLessThan(10);
+
     const stolen = await other.browser.post('/box/payments', {
       memberId: other.memberId,
       amountGs: 10_000,

@@ -66,7 +66,11 @@ describe('receipts', () => {
     await expectServiceError(open(someoneElse, 'member'), 'receipt_not_found');
     await expectServiceError(
       fixture.as(boxA, 'reception', (context) =>
-        readReceipt(context, files, `boxes/${boxA.boxId}/receipts/${boxA.userIds.member}/none.jpg`),
+        readReceipt(
+          context,
+          files,
+          `boxes/${boxA.boxId}/receipts/${boxA.userIds.member}/${crypto.randomUUID()}.jpg`,
+        ),
       ),
       'receipt_not_found',
     );
@@ -80,6 +84,10 @@ describe('receipts', () => {
       );
       expect(canUseReceipt(context, `boxes/${boxA.boxId}/receipts/`)).toBe(false);
       expect(canUseReceipt(context, `boxes/${boxB.boxId}/receipts/u/a.jpg`)).toBe(false);
+      const own = `boxes/${boxA.boxId}/receipts/${boxA.userIds.member}`;
+      expect(canUseReceipt(context, `${own}/${crypto.randomUUID()}.jpg`)).toBe(true);
+      expect(canUseReceipt(context, `${own}/%2e%2e/%2e%2e/x.jpg`)).toBe(false);
+      expect(canUseReceipt(context, `${own}/${crypto.randomUUID()}.html`)).toBe(false);
     });
   });
 });

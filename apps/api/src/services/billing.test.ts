@@ -44,8 +44,8 @@ async function memberOwing(amountGs: number, dueOn = addDays(TODAY, -3)) {
 }
 
 /** A key the way `storeReceipt` builds it: the box, then the uploader. */
-const receiptOf = (boxId: string, userId: string, name: string) =>
-  `boxes/${boxId}/receipts/${userId}/${name}`;
+const receiptOf = (boxId: string, userId: string, extension: string) =>
+  `boxes/${boxId}/receipts/${userId}/${crypto.randomUUID()}.${extension}`;
 
 async function statusOf(chargeId: string) {
   return (await world.as('box_owner', (context) => getCharge(context, chargeId))).status;
@@ -93,7 +93,7 @@ describe('manual payments', () => {
           amountGs: 280_000,
           method: 'bank_transfer',
           reference: `OP-${referenceCounter}`,
-          receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'abc.jpg'),
+          receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'jpg'),
         }),
       ),
     );
@@ -127,7 +127,7 @@ describe('manual payments', () => {
             amountGs: 50_000,
             method: 'qr',
             reference: 'QR-777',
-            receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'qr.png'),
+            receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'png'),
           }),
         ),
       );
@@ -163,7 +163,7 @@ describe('manual payments', () => {
             memberId: other.member.id,
             amountGs: 1,
             method: 'bank_transfer',
-            receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'r.jpg'),
+            receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'jpg'),
           }),
         ),
       ),
@@ -178,7 +178,7 @@ describe('manual payments', () => {
             chargeId: other.charge.id,
             amountGs: 1,
             method: 'bank_transfer',
-            receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'r.jpg'),
+            receiptFileKey: receiptOf(fixture.boxA.boxId, owing.userId, 'jpg'),
           }),
         ),
       ),
@@ -322,7 +322,7 @@ describe('dashboard', () => {
             memberId: debtor.member.id,
             amountGs: 50_000,
             method: 'qr',
-            receiptFileKey: receiptOf(local.boxA.boxId, debtor.userId, 'q.png'),
+            receiptFileKey: receiptOf(local.boxA.boxId, debtor.userId, 'png'),
           }),
         ),
       );
