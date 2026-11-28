@@ -117,6 +117,7 @@ jobs:
         run: |
           for app in member admin platform; do
             pnpm --filter "@guaranix/$app" build
+            node scripts/deploy/write-headers.mjs "apps/$app/dist" "$VITE_API_URL"
             (cd "apps/$app" && ../api/node_modules/.bin/wrangler deploy --env '${{ inputs.environment }}')
           done
 

@@ -47,7 +47,7 @@ Cada deploy (`deploy.yml`) hace, en orden:
 3. **Migraciones** (`pnpm db:migrate`) contra Neon.
 4. **Bootstrap** (`pnpm --filter @guaranix/db db:bootstrap`): crea los planes de GuaraniX que falten y deja como superadmin a `PLATFORM_ADMIN_EMAIL`. Nunca pisa un plan editado ni carga datos demo.
 5. **API**: arma el archivo de secretos con los del environment (`scripts/deploy/write-secrets-file.mjs`, solo los nombres permitidos) y corre `wrangler deploy --env <ambiente> --secrets-file`. Si falta un secreto obligatorio, el deploy falla antes de subir nada.
-6. **Apps**: `vite build` con `VITE_API_URL`, `VITE_ADMIN_URL` y `VITE_PLATFORM_URL` del ambiente, y `wrangler deploy` de cada una.
+6. **Apps**: `vite build` con `VITE_API_URL`, `VITE_ADMIN_URL` y `VITE_PLATFORM_URL` del ambiente, los encabezados de seguridad (`scripts/deploy/write-headers.mjs` escribe `_headers`: CSP que solo deja hablar con la API del ambiente y Turnstile, sin iframes ajenos, sin referrer con ruta) y `wrangler deploy` de cada una. Si una app suma un script de otro dominio, hay que agregarlo en ese script.
 7. **Telegram**: registra el webhook si hay bot configurado.
 8. **Prueba de humo**: `GET /health` de la API (tiene que decir el ambiente correcto) y la portada de cada app.
 
