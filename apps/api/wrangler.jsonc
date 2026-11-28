@@ -5,15 +5,17 @@
   "compatibility_date": "2026-11-01",
   "compatibility_flags": ["nodejs_compat"],
   "observability": { "enabled": true },
+  // Only the staging and production environments are meant to be deployed.
+  "workers_dev": false,
   // UTC; Asunción is UTC-3 all year. Keep in sync with CRONS in src/scheduled.ts.
   // 06:00 → 03:00: classes for the next 2 weeks, before anyone books.
   // 12:00 → 09:00: membership reminders and the managers' overdue summary.
+  // 12:30 → 09:30: card autopay, when banks and members are awake.
   // 23:00 → 20:00: tomorrow's WODs loaded days ahead.
   // Every 10 minutes: requeue notifications that fell through.
-  "triggers": { "crons": ["0 6 * * *", "0 12 * * *", "0 23 * * *", "*/10 * * * *"] },
+  "triggers": { "crons": ["0 6 * * *", "0 12 * * *", "30 12 * * *", "0 23 * * *", "*/10 * * * *"] },
   // Push, Telegram and WhatsApp go through this queue (docs/notificaciones.md).
-  // Create them once: `wrangler queues create guaranix-notifications` and
-  // `wrangler queues create guaranix-notifications-dlq`.
+  // The top level is local development (`wrangler dev` simulates queue and bucket).
   "queues": {
     "producers": [{ "binding": "NOTIFICATIONS_QUEUE", "queue": "guaranix-notifications" }],
     "consumers": [
@@ -30,18 +32,94 @@
   // Payment receipts. Private: only the API reads them, after checking the box and role.
   "r2_buckets": [{ "binding": "RECEIPTS", "bucket_name": "guaranix-receipts" }],
   "vars": {
-    "APP_ENV": "development",
+    // Fails closed: a plain `wrangler deploy` (no --env) gets production checks,
+    // Secure cookies and no console email sender. `pnpm dev` passes
+    // `--var APP_ENV:development`, and `.dev.vars` may set it too.
+    "APP_ENV": "production",
     "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:5174,http://localhost:5175",
     "PUBLIC_API_URL": "http://localhost:8787",
+    "MEMBER_APP_URL": "http://localhost:5173",
     "ADMIN_APP_URL": "http://localhost:5174",
-    // Public by design; fill in per environment. Their secrets go in `.dev.vars` or `wrangler secret`.
-    "VAPID_PUBLIC_KEY": "",
-    "TELEGRAM_BOT_USERNAME": "",
-    "WHATSAPP_PHONE_NUMBER_ID": "",
+    // VAPID_PUBLIC_KEY, TELEGRAM_BOT_USERNAME and WHATSAPP_PHONE_NUMBER_ID are public but
+    // per account: locally in `.dev.vars`, in Cloudflare from GitHub variables.
     "WHATSAPP_TEMPLATE_LANGUAGE": "es",
   },
-  // Secrets never go here. Locally they live in `.dev.vars` (see `.dev.vars.example`);
-  // in Cloudflare, `wrangler secret put AUTH_SECRET` and so on.
-  // The Hyperdrive binding to Neon is added with the first deploy; until then
-  // the Worker reads DATABASE_URL from `.dev.vars`.
+  // Secrets never go here. Locally they live in `.dev.vars` (see `.dev.vars.example`).
+  // In Cloudflare the deploy workflow uploads them from the GitHub environment
+  // (`scripts/deploy/write-secrets-file.mjs`, runbook in docs/despliegue.md).
+  //
+  // Staging and production. Bindings, vars and routes are not inherited from the
+  // top level, so each environment lists them all. Hostnames must match
+  // deploy/environments.json (`pnpm check:deploy` compares them).
+  // HYPERDRIVE_ID is replaced by the deploy workflow with the GitHub variable of
+  // the same name, so the account's ids stay out of the repo.
+  "env": {
+    "staging": {
+      "name": "guaranix-api-staging",
+      "workers_dev": false,
+      "routes": [{ "pattern": "api-staging.guaranix.com.py", "custom_domain": true }],
+      "triggers": {
+        "crons": ["0 6 * * *", "0 12 * * *", "30 12 * * *", "0 23 * * *", "*/10 * * * *"],
+      },
+      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "HYPERDRIVE_ID" }],
+      "queues": {
+        "producers": [
+          { "binding": "NOTIFICATIONS_QUEUE", "queue": "guaranix-notifications-staging" },
+        ],
+        "consumers": [
+          {
+            "queue": "guaranix-notifications-staging",
+            "max_batch_size": 10,
+            "max_batch_timeout": 5,
+            "max_retries": 10,
+            "dead_letter_queue": "guaranix-notifications-staging-dlq",
+          },
+        ],
+      },
+      "r2_buckets": [{ "binding": "RECEIPTS", "bucket_name": "guaranix-receipts-staging" }],
+      // Public values that change per account (VAPID_PUBLIC_KEY, TELEGRAM_BOT_USERNAME,
+      // WHATSAPP_PHONE_NUMBER_ID, TURNSTILE_SITE_KEY, EMAIL_FROM) come from GitHub
+      // variables with the secrets, so they are not declared here.
+      "vars": {
+        "APP_ENV": "staging",
+        "ALLOWED_ORIGINS": "https://app-staging.guaranix.com.py,https://panel-staging.guaranix.com.py,https://plataforma-staging.guaranix.com.py",
+        "PUBLIC_API_URL": "https://api-staging.guaranix.com.py",
+        "ADMIN_APP_URL": "https://panel-staging.guaranix.com.py",
+        "MEMBER_APP_URL": "https://app-staging.guaranix.com.py",
+        "WHATSAPP_TEMPLATE_LANGUAGE": "es",
+      },
+    },
+    "production": {
+      "name": "guaranix-api-production",
+      "workers_dev": false,
+      "routes": [{ "pattern": "api.guaranix.com.py", "custom_domain": true }],
+      "triggers": {
+        "crons": ["0 6 * * *", "0 12 * * *", "30 12 * * *", "0 23 * * *", "*/10 * * * *"],
+      },
+      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "HYPERDRIVE_ID" }],
+      "queues": {
+        "producers": [
+          { "binding": "NOTIFICATIONS_QUEUE", "queue": "guaranix-notifications-production" },
+        ],
+        "consumers": [
+          {
+            "queue": "guaranix-notifications-production",
+            "max_batch_size": 10,
+            "max_batch_timeout": 5,
+            "max_retries": 10,
+            "dead_letter_queue": "guaranix-notifications-production-dlq",
+          },
+        ],
+      },
+      "r2_buckets": [{ "binding": "RECEIPTS", "bucket_name": "guaranix-receipts-production" }],
+      "vars": {
+        "APP_ENV": "production",
+        "ALLOWED_ORIGINS": "https://app.guaranix.com.py,https://panel.guaranix.com.py,https://plataforma.guaranix.com.py",
+        "PUBLIC_API_URL": "https://api.guaranix.com.py",
+        "ADMIN_APP_URL": "https://panel.guaranix.com.py",
+        "MEMBER_APP_URL": "https://app.guaranix.com.py",
+        "WHATSAPP_TEMPLATE_LANGUAGE": "es",
+      },
+    },
+  },
 }

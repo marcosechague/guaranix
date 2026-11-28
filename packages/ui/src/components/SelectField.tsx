@@ -1,5 +1,6 @@
 import { type Ref, type SelectHTMLAttributes, useId } from 'react';
 import { classNames } from '../lib/class-names';
+import { fieldControlClasses } from './field-control';
 
 export interface SelectFieldProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
@@ -28,11 +29,7 @@ export function SelectField({
         ref={ref}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${selectId}-error` : undefined}
-        className={classNames(
-          'min-h-touch rounded-md border bg-surface px-3 text-base text-text outline-none',
-          'focus-visible:border-accent',
-          error ? 'border-warning' : 'border-border',
-        )}
+        className={fieldControlClasses(Boolean(error), 'min-h-touch bg-surface px-3 text-base')}
         {...props}
       >
         {children}

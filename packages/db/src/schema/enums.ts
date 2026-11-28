@@ -8,6 +8,11 @@ import {
   IMPORT_SOURCES,
   FEATURE_FLAGS,
   AI_PROVIDERS,
+  PAYMENT_ATTEMPT_KINDS,
+  PAYMENT_ATTEMPT_STATUSES,
+  PAYMENT_PROVIDERS,
+  PAYMENT_PROVIDER_ENVIRONMENTS,
+  SAVED_CARD_STATUSES,
   NOTIFICATION_CHANNELS,
   NOTIFICATION_DELIVERY_STATUSES,
   NOTIFICATION_KINDS,
@@ -44,6 +49,14 @@ export const paymentStatusEnum = pgEnum('payment_status', PAYMENT_STATUSES);
 export const importSourceEnum = pgEnum('import_source', IMPORT_SOURCES);
 export const featureFlagEnum = pgEnum('feature_flag', FEATURE_FLAGS);
 export const aiProviderEnum = pgEnum('ai_provider', AI_PROVIDERS);
+export const paymentProviderEnum = pgEnum('payment_provider', PAYMENT_PROVIDERS);
+export const paymentProviderEnvironmentEnum = pgEnum(
+  'payment_provider_environment',
+  PAYMENT_PROVIDER_ENVIRONMENTS,
+);
+export const paymentAttemptKindEnum = pgEnum('payment_attempt_kind', PAYMENT_ATTEMPT_KINDS);
+export const paymentAttemptStatusEnum = pgEnum('payment_attempt_status', PAYMENT_ATTEMPT_STATUSES);
+export const savedCardStatusEnum = pgEnum('saved_card_status', SAVED_CARD_STATUSES);
 export const notificationChannelEnum = pgEnum('notification_channel', NOTIFICATION_CHANNELS);
 export const notificationTopicEnum = pgEnum('notification_topic', NOTIFICATION_TOPICS);
 export const notificationKindEnum = pgEnum('notification_kind', NOTIFICATION_KINDS);

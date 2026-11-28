@@ -120,6 +120,9 @@ importers:
       '@guaranix/messaging':
         specifier: workspace:*
         version: link:../../packages/messaging
+      '@guaranix/payments':
+        specifier: workspace:*
+        version: link:../../packages/payments
       '@guaranix/shared':
         specifier: workspace:*
         version: link:../../packages/shared
@@ -333,7 +336,21 @@ importers:
         specifier: ^5.1.2
         version: 5.1.2(@opentelemetry/api@1.10.0)(@types/node@26.6.11)(vite@8.4.0(@types/node@26.6.11)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.4)(tsx@4.23.15))
 
-  packages/payments: {}
+  packages/payments:
+    dependencies:
+      '@guaranix/shared':
+        specifier: workspace:*
+        version: link:../shared
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.11
+        version: 26.6.11
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^5.1.2
+        version: 5.1.2(@opentelemetry/api@1.10.0)(@types/node@26.6.11)(vite@8.4.0(@types/node@26.6.11)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.4)(tsx@4.23.15))
 
   packages/shared:
     dependencies:

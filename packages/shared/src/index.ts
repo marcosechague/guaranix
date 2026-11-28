@@ -5,6 +5,7 @@ export { formatGuarani, formatGuaraniCompact } from './money/format-guarani';
 export * from './dates';
 export * from './format/scores';
 export * from './format/dates';
+export * from './format/whatsapp';
 export * from './onboarding';
 export * from './imports';
 export * from './timer/workout-timer';

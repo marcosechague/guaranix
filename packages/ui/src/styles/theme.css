@@ -8,6 +8,8 @@
 @source '../components';
 @source '../auth';
 @source '../data';
+@source '../theme';
+@source '../notifications';
 
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
@@ -25,6 +27,7 @@
   --gx-color-accent: #d9f24a;
   --gx-color-accent-hover: #ecff7a;
   --gx-color-accent-text: #d9f24a;
+  --gx-color-accent-strong: #d9f24a;
   --gx-color-on-accent: #0e0f11;
   --gx-color-accent-soft: #24261f;
   --gx-color-success: #6ee7a0;
@@ -46,6 +49,7 @@
   --gx-color-accent: #d9f24a;
   --gx-color-accent-hover: #ecff7a;
   --gx-color-accent-text: #3a4a00;
+  --gx-color-accent-strong: #5c7300;
   --gx-color-on-accent: #0e0f11;
   --gx-color-accent-soft: #eef0e0;
   --gx-color-success: #2f6b3f;
@@ -70,6 +74,8 @@
   --color-accent: var(--gx-color-accent);
   --color-accent-hover: var(--gx-color-accent-hover);
   --color-accent-text: var(--gx-color-accent-text);
+  /* Accent for thin marks that must stand out (focus rings, bars, dots): lime fades on light. */
+  --color-accent-strong: var(--gx-color-accent-strong);
   --color-on-accent: var(--gx-color-on-accent);
   --color-accent-soft: var(--gx-color-accent-soft);
   --color-success: var(--gx-color-success);
@@ -118,7 +124,7 @@
   }
 
   :focus-visible {
-    outline: 2px solid var(--gx-color-accent);
+    outline: 2px solid var(--gx-color-accent-strong);
     outline-offset: 2px;
   }
 }

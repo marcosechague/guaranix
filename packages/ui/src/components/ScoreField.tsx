@@ -1,5 +1,6 @@
 import { type InputHTMLAttributes, useId } from 'react';
 import { classNames } from '../lib/class-names';
+import { fieldControlClasses } from './field-control';
 
 export interface ScoreFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> {
   label: string;
@@ -29,10 +30,9 @@ export function ScoreField({
         autoComplete="off"
         aria-invalid={invalid || undefined}
         onChange={(event) => onChange(event.target.value)}
-        className={classNames(
-          'min-h-14 w-full rounded-md border bg-surface-sunken px-4 font-display text-3xl font-bold text-text tabular-nums outline-none',
-          'placeholder:text-text-secondary focus-visible:border-accent',
-          invalid ? 'border-warning' : 'border-border',
+        className={fieldControlClasses(
+          Boolean(invalid),
+          'min-h-14 w-full bg-surface-sunken px-4 font-display text-3xl font-bold tabular-nums',
         )}
         {...props}
       />

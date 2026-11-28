@@ -54,11 +54,11 @@ export const MOVEMENT_CATEGORIES = [
 ] as const;
 
 export const CHARGE_STATUSES = ['open', 'paid', 'void'] as const;
-export const PAYMENT_METHODS = ['cash', 'bank_transfer', 'qr'] as const;
-export const PAYMENT_STATUSES = ['pending_review', 'confirmed', 'rejected'] as const;
+export const PAYMENT_METHODS = ['cash', 'bank_transfer', 'qr', 'card'] as const;
+export const PAYMENT_STATUSES = ['pending_review', 'confirmed', 'rejected', 'refunded'] as const;
 
 /** Paid extras a GuaraniX plan includes, each overridable per box from the superadmin. */
-export const FEATURE_FLAGS = ['ai_import', 'whatsapp'] as const;
+export const FEATURE_FLAGS = ['ai_import', 'whatsapp', 'card_payments'] as const;
 /** Push and Telegram are free; WhatsApp costs per message, so it is a plan feature with a quota. */
 export const NOTIFICATION_CHANNELS = ['push', 'telegram', 'whatsapp'] as const;
 /** What a person can turn on or off, per channel. */
@@ -70,6 +70,7 @@ export const NOTIFICATION_KINDS = [
   'workout_published',
   'membership_due',
   'membership_overdue',
+  'card_payment_failed',
   'staff_class_cancelled',
   'staff_overdue_digest',
 ] as const;
@@ -83,6 +84,19 @@ export const NOTIFICATION_DELIVERY_STATUSES = [
 
 /** AI providers behind `packages/ai`; the superadmin picks one and loads its key. */
 export const AI_PROVIDERS = ['anthropic', 'openai', 'gemini'] as const;
+/** Card processors behind `packages/payments`. `mock` only works outside production. */
+export const PAYMENT_PROVIDERS = ['bancard', 'mock'] as const;
+export const PAYMENT_PROVIDER_ENVIRONMENTS = ['sandbox', 'production'] as const;
+/** `autopay` charges the saved card from the cron; `link` is a member paying a link. */
+export const PAYMENT_ATTEMPT_KINDS = ['autopay', 'link'] as const;
+export const PAYMENT_ATTEMPT_STATUSES = [
+  'pending',
+  'approved',
+  'declined',
+  'failed',
+  'refunded',
+] as const;
+export const SAVED_CARD_STATUSES = ['pending', 'active', 'removed'] as const;
 
 export type PlatformRole = (typeof PLATFORM_ROLES)[number];
 export type BoxRole = (typeof BOX_ROLES)[number];
@@ -108,3 +122,8 @@ export type NotificationTopic = (typeof NOTIFICATION_TOPICS)[number];
 export type NotificationKind = (typeof NOTIFICATION_KINDS)[number];
 export type NotificationDeliveryStatus = (typeof NOTIFICATION_DELIVERY_STATUSES)[number];
 export type AiProviderName = (typeof AI_PROVIDERS)[number];
+export type PaymentProviderName = (typeof PAYMENT_PROVIDERS)[number];
+export type PaymentProviderEnvironment = (typeof PAYMENT_PROVIDER_ENVIRONMENTS)[number];
+export type PaymentAttemptKind = (typeof PAYMENT_ATTEMPT_KINDS)[number];
+export type PaymentAttemptStatus = (typeof PAYMENT_ATTEMPT_STATUSES)[number];
+export type SavedCardStatus = (typeof SAVED_CARD_STATUSES)[number];

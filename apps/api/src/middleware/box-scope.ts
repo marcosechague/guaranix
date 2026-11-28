@@ -133,6 +133,8 @@ export function createBoxRouter() {
       router.post(path, authorize(roles), handler),
     patch: (path: string, roles: Roles, handler: Handler<BoxEnv>) =>
       router.patch(path, authorize(roles), handler),
+    put: (path: string, roles: Roles, handler: Handler<BoxEnv>) =>
+      router.put(path, authorize(roles), handler),
     delete: (path: string, roles: Roles, handler: Handler<BoxEnv>) =>
       router.delete(path, authorize(roles), handler),
   };

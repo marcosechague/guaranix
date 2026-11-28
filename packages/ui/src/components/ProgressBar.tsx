@@ -8,7 +8,7 @@ export interface ProgressBarProps {
   tone?: 'accent' | 'warning' | 'success';
 }
 
-const fills = { accent: 'bg-accent', warning: 'bg-warning', success: 'bg-success' } as const;
+const fills = { accent: 'bg-accent-strong', warning: 'bg-warning', success: 'bg-success' } as const;
 
 /** Fills with `transform: scaleX` so it animates without layout work. */
 export function ProgressBar({ value, max, label, className, tone = 'accent' }: ProgressBarProps) {

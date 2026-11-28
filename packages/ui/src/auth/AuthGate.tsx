@@ -39,10 +39,12 @@ function GateSkeleton() {
 
 export interface AuthGateProps {
   children: (session: Session) => ReactNode;
+  /** False for the platform: its accounts are created by GuaraniX, never signed up. */
+  allowSignup?: boolean;
 }
 
 /** Shows login, signup or password recovery until there is a session, then the app. */
-export function AuthGate({ children }: AuthGateProps) {
+export function AuthGate({ children, allowSignup = true }: AuthGateProps) {
   const { session } = useAuth();
   const [screen, setScreen] = useState<Screen>('login');
   const [redirectError] = useState(takeRedirectError);
@@ -65,12 +67,12 @@ export function AuthGate({ children }: AuthGateProps) {
     if (screen !== 'login') setScreen('login');
     return children(session);
   }
-  if (screen === 'signup') return <SignupForm onLogin={() => setScreen('login')} />;
+  if (screen === 'signup' && allowSignup) return <SignupForm onLogin={() => setScreen('login')} />;
   if (screen === 'forgot') return <ForgotPasswordForm onBack={() => setScreen('login')} />;
   return (
     <LoginForm
       initialError={redirectError}
-      onSignup={() => setScreen('signup')}
+      {...(allowSignup ? { onSignup: () => setScreen('signup') } : {})}
       onForgot={() => setScreen('forgot')}
     />
   );

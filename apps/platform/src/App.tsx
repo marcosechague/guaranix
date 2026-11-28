@@ -28,7 +28,7 @@ function NoPlatformAccess() {
 export function App() {
   return (
     <AuthProvider apiUrl={API_URL}>
-      <AuthGate>
+      <AuthGate allowSignup={false}>
         {(session) =>
           session.user.isPlatformAdmin ? (
             <ApiProvider apiUrl={API_URL}>

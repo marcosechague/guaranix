@@ -19,6 +19,8 @@ export const NOTIFICATION_ROUTING = {
   workout_published: { topic: 'workouts', channels: ['push'] },
   membership_due: { topic: 'billing', channels: ['push', 'whatsapp'] },
   membership_overdue: { topic: 'billing', channels: ['push', 'whatsapp'] },
+  // WhatsApp needs its own Meta template first; staff can send the link by wa.me meanwhile.
+  card_payment_failed: { topic: 'billing', channels: ['push'] },
   staff_class_cancelled: { topic: 'staff', channels: ['telegram'] },
   staff_overdue_digest: { topic: 'staff', channels: ['telegram'] },
 } as const satisfies Record<

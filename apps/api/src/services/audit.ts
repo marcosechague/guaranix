@@ -34,3 +34,19 @@ export function diff<T extends Record<string, unknown>>(
   }
   return changes;
 }
+
+/** A change made by GuaraniX itself (the autopay job, a processor webhook): no user behind it. */
+export async function recordSystemAudit(
+  transaction: ServiceContext['transaction'],
+  boxId: string,
+  entry: AuditEntry,
+): Promise<void> {
+  await transaction.insert(auditLogs).values({
+    boxId,
+    actorUserId: null,
+    action: entry.action,
+    entityType: entry.entityType,
+    entityId: entry.entityId,
+    changes: entry.changes ?? null,
+  });
+}

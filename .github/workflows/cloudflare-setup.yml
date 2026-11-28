@@ -1,0 +1,35 @@
+# Creates the Cloudflare resources of one environment, once: R2 bucket, the
+# notification queue with its dead-letter queue, and the Hyperdrive config that
+# points at Neon. Safe to run again: anything that exists is left alone.
+# It prints the Hyperdrive id to save as the HYPERDRIVE_ID variable (docs/despliegue.md).
+name: Cloudflare setup
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment to set up
+        required: true
+        type: choice
+        options: [staging, production]
+
+permissions:
+  contents: read
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      ENVIRONMENT: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - name: R2 bucket, queues and Hyperdrive
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: node scripts/deploy/setup-resources.mjs "$ENVIRONMENT"

@@ -25,7 +25,8 @@
     "prepare": "git config core.hooksPath .githooks 2>/dev/null || true",
     "check:ui": "node scripts/ui/check-reuse.mjs",
     "check:secrets": "node scripts/security/scan-secrets.mjs",
-    "ui:screenshots": "node scripts/ui/screenshots.mjs"
+    "ui:screenshots": "node scripts/ui/screenshots.mjs",
+    "check:deploy": "node scripts/deploy/check-config.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

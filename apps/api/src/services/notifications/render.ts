@@ -53,6 +53,13 @@ function texts(kind: NotificationKind, params: NotificationParams, box: string) 
           ? t('notifications.membership_due.bodyToday', values)
           : t('notifications.membership_due.body', values),
       };
+    case 'card_payment_failed':
+      return {
+        title: t('notifications.card_payment_failed.title'),
+        body: params['finalAttempt']
+          ? t('notifications.card_payment_failed.bodyFinal', values)
+          : t('notifications.card_payment_failed.body', values),
+      };
     case 'membership_overdue':
       return {
         title: t('notifications.membership_overdue.title'),
@@ -85,6 +92,7 @@ const MEMBER_PATHS: Partial<Record<NotificationKind, string>> = {
   workout_published: '/wod',
   membership_due: '/perfil',
   membership_overdue: '/perfil',
+  card_payment_failed: '/cuota',
 };
 const ADMIN_PATHS: Partial<Record<NotificationKind, string>> = {
   staff_class_cancelled: '/clases',

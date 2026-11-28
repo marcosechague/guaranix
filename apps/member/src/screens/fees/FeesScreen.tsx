@@ -4,6 +4,7 @@ import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { useState } from 'react';
 import { useMe, useMyAccount, useMyPlans, usePlans } from '../../api/queries';
 import { currentPlanHealth } from '../../lib/plan-status';
+import { CardEntryLink } from '../card/CardEntryLink';
 import { ChargesCard } from './ChargesCard';
 import { FeeSummaryCard } from './FeeSummaryCard';
 import { PaymentHistoryCard } from './PaymentHistoryCard';
@@ -44,6 +45,7 @@ export function FeesScreen() {
                 today={today}
                 onReport={() => setReporting(true)}
               />
+              <CardEntryLink />
               <ChargesCard account={account.data} today={today} />
             </>
           }

@@ -1,6 +1,6 @@
 import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
 import { Avatar, Button, Card, Skeleton, CardList, CardListItem } from '@guaranix/ui';
-import { useBoxClock } from '@guaranix/ui/data';
+import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { MessageCircle } from 'lucide-react';
 import { useDebtors } from '../../api/queries';
 import { whatsappUrl } from '../../lib/whatsapp';
@@ -22,6 +22,9 @@ export function DebtorsCard({ onCollect, limit = 5 }: DebtorsCardProps) {
       </div>
       {debtors.isPending ? (
         <Skeleton className="h-24" />
+      ) : debtors.isError ? (
+        // Never "nobody owes" when we simply could not ask.
+        <LoadError error={debtors.error} onRetry={() => void debtors.refetch()} />
       ) : (debtors.data ?? []).length === 0 ? (
         <p className="text-sm text-text-secondary">{t('admin.home.noDebtors')}</p>
       ) : (

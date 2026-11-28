@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, lt, ne, sum, type SQL } from 'drizzle-orm';
+import { and, desc, eq, gte, lt, notInArray, sum, type SQL } from 'drizzle-orm';
 import type { z } from 'zod';
 import { members, payments } from '@guaranix/db/schema';
 import type { PaymentStatus } from '@guaranix/shared/domain';
@@ -16,12 +16,15 @@ export type PaymentRow = typeof payments.$inferSelect;
 const isFrontDesk = (context: ServiceContext) =>
   (FRONT_DESK_ROLES as readonly string[]).includes(context.auth.role);
 
+/** Payments that no longer hold money: a rejected receipt, a refunded card payment. */
+const RELEASED_STATUSES: PaymentStatus[] = ['rejected', 'refunded'];
+
 /** Guaraníes already paid or waiting for review against a charge. */
 async function committedToCharge(context: ServiceContext, chargeId: string): Promise<number> {
   const [row] = await context.transaction
     .select({ total: sum(payments.amountGs).mapWith(Number) })
     .from(payments)
-    .where(and(eq(payments.chargeId, chargeId), ne(payments.status, 'rejected')));
+    .where(and(eq(payments.chargeId, chargeId), notInArray(payments.status, RELEASED_STATUSES)));
   return row?.total ?? 0;
 }
 
@@ -64,7 +67,7 @@ export async function recordPayment(
         and(
           eq(payments.method, input.method),
           eq(payments.reference, input.reference),
-          ne(payments.status, 'rejected'),
+          notInArray(payments.status, RELEASED_STATUSES),
         ),
       );
     if (duplicate) throw conflict('payment_duplicate');
