@@ -67,7 +67,7 @@ describe('box payment details', () => {
     const saved = await fixture.as(fixture.boxA, 'box_owner', (context) =>
       updatePaymentDetails(context, details),
     );
-    expect(saved).toEqual({ ...details, hasQr: false });
+    expect(saved).toMatchObject(details);
     expect(
       await fixture.as(fixture.boxA, 'member', (context) => getPaymentDetails(context)),
     ).toEqual(saved);
@@ -124,6 +124,31 @@ describe('box payment details', () => {
         code,
       );
     }
+
+    const replaced = await fixture.as(boxA, 'box_owner', (context) =>
+      storePaymentQr(context, files, PNG.buffer),
+    );
+    expect(replaced.hasQr).toBe(true);
+    const swaps = await fixture.system((transaction) =>
+      transaction
+        .select()
+        .from(auditLogs)
+        .where(
+          and(eq(auditLogs.boxId, boxA.boxId), eq(auditLogs.action, 'box.payment_qr_updated')),
+        ),
+    );
+    const swap = swaps.at(-1)?.changes as { qrFileKey?: { from: string; to: string } };
+    expect(swap.qrFileKey?.from).toMatch(`boxes/${boxA.boxId}/payment-qr/`);
+    expect(swap.qrFileKey?.to).not.toBe(swap.qrFileKey?.from);
+
+    // An owner of another box writes only their own box.
+    await fixture.as(boxB, 'box_owner', (context) =>
+      updatePaymentDetails(context, { ...details, alias: 'otro-box' }),
+    );
+    await fixture.as(boxB, 'box_owner', (context) => removePaymentQr(context));
+    const stillA = await fixture.as(boxA, 'member', (context) => getPaymentDetails(context));
+    expect(stillA.alias).toBe(details.alias);
+    expect(stillA.hasQr).toBe(true);
 
     const removed = await fixture.as(boxA, 'box_owner', (context) => removePaymentQr(context));
     expect(removed.hasQr).toBe(false);

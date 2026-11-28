@@ -1,5 +1,6 @@
 import { asc, eq, gte, inArray } from 'drizzle-orm';
 import {
+  boxes,
   boxUsers,
   bookings,
   classes,
@@ -83,6 +84,19 @@ export async function seedShowcase(
       .returning({ id: users.id });
     if (!frontDesk) throw new Error('Showcase reception user was not created');
     await transaction.insert(boxUsers).values({ boxId, userId: frontDesk.id, role: 'reception' });
+    // Where members pay; `pnpm demo:receipts` stores a sample QR under this key in the local R2.
+    await transaction
+      .update(boxes)
+      .set({
+        paymentBankName: 'Banco Continental',
+        paymentAccountNumber: '1234567890',
+        paymentAlias: '0981123456',
+        paymentHolderName: 'Box Demo Asunción S.A.',
+        paymentHolderDocument: '80012345-6',
+        paymentNote: 'Poné tu nombre en el concepto de la transferencia.',
+        paymentQrFileKey: `boxes/${boxId}/payment-qr/seed.png`,
+      })
+      .where(eq(boxes.id, boxId));
     return user.id;
   });
 

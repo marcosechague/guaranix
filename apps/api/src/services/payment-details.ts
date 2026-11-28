@@ -37,7 +37,8 @@ async function saveBox(
   values: Partial<BoxRow>,
   action: `box.${string}`,
 ): Promise<BoxPaymentDetails> {
-  const before = pickDetails(await currentBox(context));
+  const box = await currentBox(context);
+  const before = pickDetails(box);
   const [updated] = await context.transaction
     .update(boxes)
     .set({ ...values, updatedAt: context.now })
@@ -49,7 +50,13 @@ async function saveBox(
     action,
     entityType: 'box',
     entityId: context.auth.boxId,
-    changes: diff(before, after),
+    changes: {
+      ...diff(before, after),
+      // Which image members were sent to, before and after: hasQr alone hides a swap.
+      ...(box.paymentQrFileKey !== updated.paymentQrFileKey && {
+        qrFileKey: { from: box.paymentQrFileKey, to: updated.paymentQrFileKey },
+      }),
+    },
   });
   return after;
 }

@@ -48,21 +48,8 @@ export async function seedDemoBox(database: SchemaDatabase, options: DemoBoxOpti
         name: options.name ?? 'Box Demo Asunción',
         city: 'Asunción',
         platformPlanId: options.platformPlanId ?? null,
-        paymentBankName: 'Banco Continental',
-        paymentAccountNumber: '1234567890',
-        paymentAlias: '0981123456',
-        paymentHolderName: 'Box Demo Asunción S.A.',
-        paymentHolderDocument: '80012345-6',
-        paymentNote: 'Poné tu nombre en el concepto de la transferencia.',
       })
       .returning({ id: boxes.id });
-    if (box) {
-      // `pnpm demo:receipts` stores a sample image under this key in the local R2.
-      await transaction
-        .update(boxes)
-        .set({ paymentQrFileKey: `boxes/${box.id}/payment-qr/seed.png` })
-        .where(eq(boxes.id, box.id));
-    }
     const [owner, coach] = await transaction
       .insert(users)
       .values([
