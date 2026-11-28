@@ -67,6 +67,8 @@ export const createPlanSchema = z
     isActive: planShape.isActive.default(true),
     /** Empty means the plan gives access to every program. */
     programIds: z.array(idSchema).max(50).default([]),
+    /** Empty means the plan works at every location (the pass between locations). */
+    locationIds: z.array(idSchema).max(50).default([]),
   })
   .superRefine(refinePlanLimits);
 

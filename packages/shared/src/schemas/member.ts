@@ -26,6 +26,8 @@ export const memberSchema = z.object({
   status: z.enum(MEMBER_STATUSES),
   joinedOn: calendarDateSchema,
   externalRef: z.string().max(120).nullable(),
+  /** Where the member usually trains, for per-location reports. Null means the default. */
+  homeLocationId: idSchema.nullable(),
 });
 
 export const createMemberSchema = memberSchema

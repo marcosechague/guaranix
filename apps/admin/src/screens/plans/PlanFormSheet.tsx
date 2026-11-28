@@ -30,14 +30,15 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 /** Limits only apply to some kinds; the rest are sent as null (see `planLimitIssues`). */
-function toInput(values: FormValues, programIds: string[]) {
+function toInput(values: FormValues, plan: Plan | null) {
   return createPlanSchema.parse({
     ...values,
     description: values.description.trim() || null,
     classesPerWeek: values.kind === 'weekly_limit' ? values.classesPerWeek : null,
     classCount:
       values.kind === 'class_pack' ? values.classCount : values.kind === 'drop_in' ? 1 : null,
-    programIds,
+    programIds: plan?.programIds ?? [],
+    locationIds: plan?.locationIds ?? [],
   });
 }
 
@@ -80,7 +81,7 @@ export function PlanFormSheet({
     errors[field] ? t('errors.invalid_input') : undefined;
 
   const submit = form.handleSubmit((values) =>
-    save.mutate(toInput(values, plan?.programIds ?? []), {
+    save.mutate(toInput(values, plan), {
       onSuccess: () => {
         toast.show(t('admin.plans.saved'));
         onOpenChange(false);

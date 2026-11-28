@@ -46,6 +46,7 @@ export interface Member {
   notes: string | null;
   status: MemberStatus;
   joinedOn: string;
+  homeLocationId: string | null;
 }
 
 export interface Plan {
@@ -59,6 +60,18 @@ export interface Plan {
   description: string | null;
   isActive: boolean;
   programIds: string[];
+  /** Empty means every location. */
+  locationIds: string[];
+}
+
+export interface Location {
+  id: string;
+  name: string;
+  address: string | null;
+  city: string | null;
+  phone: string | null;
+  isDefault: boolean;
+  isActive: boolean;
 }
 
 export type MemberPlanState = 'upcoming' | 'active' | 'paused' | 'expired' | 'cancelled';
@@ -93,6 +106,7 @@ export interface Program {
 export interface ClassSchedule {
   id: string;
   programId: string;
+  locationId: string;
   weekday: number;
   startTime: string;
   durationMinutes: number;
@@ -111,6 +125,7 @@ export interface OwnBookingSummary {
 export interface ClassSession {
   id: string;
   programId: string;
+  locationId: string;
   scheduleId: string | null;
   coachUserId: string | null;
   startsAt: string;
