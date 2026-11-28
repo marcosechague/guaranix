@@ -12,6 +12,8 @@ export interface ImportRowOutcome {
   warnings: ImportIssue[];
   member: ImportedMember | null;
   existingMemberId: string | null;
+  /** The plan name as the file wrote it, also when it couldn't be found. */
+  requestedPlanName: string | null;
   /** Dates filled in from the plan's duration; null when there is no plan or it is skipped. */
   plan: {
     planName: string;

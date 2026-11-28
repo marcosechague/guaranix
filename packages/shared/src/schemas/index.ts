@@ -10,3 +10,5 @@ export * from './audit';
 export * from './auth';
 export * from './platform';
 export * from './data-import';
+export * from './features';
+export * from './ai-import';

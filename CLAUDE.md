@@ -44,7 +44,7 @@ packages/
   db/          # Esquema Drizzle, migraciones, seeds
   payments/    # Capa de pagos intercambiable (ver "Pagos")
   messaging/   # Push, Telegram, WhatsApp, email detrás de una interfaz común
-  ai/          # Asistente Brodi: herramientas, prompts, límites de uso
+  ai/          # Proveedores de IA (Anthropic, OpenAI, Gemini) detrás de una interfaz, claves cifradas; después Brodi
 ```
 
 Los paquetes internos no se compilan: exportan su código TypeScript directo (`"exports": "./src/index.ts"`) y cada app lo empaqueta con Vite o Wrangler.
@@ -153,7 +153,7 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 ## Mantenibilidad
 
 - Cada integración externa (pagos, WhatsApp, Telegram, SIFEN, IA) detrás de una interfaz propia, con su adaptador. Así se cambia o se testea con mocks.
-- Feature flags por box y por plan (ej. `sifen`, `whatsapp`, `branded_app`), configurables desde el superadmin.
+- Feature flags por box y por plan (ej. `ai_import`, `sifen`, `whatsapp`, `branded_app`), configurables desde el superadmin: `platform_plan_features` y `box_feature_overrides`, con `assertFeatureAvailable()` en la API (ver `docs/decisions/0009`).
 - Configuración en datos, no en código: planes, precios y límites se editan desde el superadmin.
 - Documentar decisiones importantes en `docs/decisions/` (un archivo corto por decisión).
 - Mantener este `CLAUDE.md` actualizado cuando cambie algo de arquitectura.

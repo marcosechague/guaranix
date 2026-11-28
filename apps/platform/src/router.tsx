@@ -19,6 +19,12 @@ export const router = createBrowserRouter([
         }),
       },
       {
+        path: 'ia',
+        lazy: async () => ({
+          Component: (await import('./screens/ai/AiScreen')).AiScreen,
+        }),
+      },
+      {
         path: '*',
         lazy: async () => ({
           Component: (await import('./screens/boxes/BoxesScreen')).BoxesScreen,

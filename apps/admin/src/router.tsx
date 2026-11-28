@@ -44,6 +44,12 @@ export const router = createBrowserRouter([
         }),
       },
       {
+        path: 'importar',
+        lazy: async () => ({
+          Component: (await import('./screens/imports/ImportScreen')).ImportScreen,
+        }),
+      },
+      {
         path: 'cuenta',
         lazy: async () => ({
           Component: (await import('./screens/account/AccountScreen')).AccountScreen,

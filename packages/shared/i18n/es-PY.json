@@ -519,6 +519,130 @@
         "credits_exceed_plan": "Tiene más clases restantes que las que da el plan.",
         "credits_defaulted": "Sin clases restantes: le dejamos todas las del plan.",
         "balance_already_imported": "Su saldo ya se importó antes: no lo cargamos de nuevo."
+      },
+      "open": "Importar",
+      "title": "Importar alumnos",
+      "subtitle": "Traé alumnos, planes y saldos desde Excel, CSV o CrossHero. Nada se guarda hasta que lo confirmes.",
+      "steps": {
+        "label": "Pasos de la importación",
+        "file": "Archivo",
+        "columns": "Columnas",
+        "review": "Revisión",
+        "rows": "Filas"
+      },
+      "upload": {
+        "dropLabel": "Elegí o arrastrá el archivo",
+        "dropHint": "Excel (.xlsx) o CSV, hasta 3.000 alumnos",
+        "reading": "Leyendo el archivo…",
+        "unreadable": "No pudimos leer el archivo. Guardalo como .xlsx o .csv y probá de nuevo.",
+        "empty": "El archivo no tiene filas de alumnos debajo de los encabezados.",
+        "tooMany": "El archivo tiene más de 3.000 alumnos. Dividilo en partes.",
+        "howTitle": "Cómo armar el archivo",
+        "howRows": "Una fila por alumno, con los encabezados en la primera fila.",
+        "howColumns": "Nombre y apellido, y al menos cédula, teléfono o email para reconocerlo.",
+        "howPlan": "Si tiene un plan vigente: el nombre del plan, el vencimiento y las clases que le quedan.",
+        "howBalance": "Si debe plata: el saldo en guaraníes. Queda como deuda abierta.",
+        "howPlansSheet": "En Excel podés sumar una hoja \"Planes\" con nombre, tipo, precio y duración de los planes que todavía no cargaste.",
+        "template": "Descargar planilla de ejemplo",
+        "templateFileName": "guaranix-alumnos.csv",
+        "templateHeaders": "Nombre;Apellido;Cédula;Teléfono;Email;Plan;Inicio del plan;Vencimiento;Clases restantes;Saldo",
+        "templateExample": "Ana;Duarte;4123456;0981 123 456;ana@mail.com;Pack 10 clases;01/11/2026;30/11/2026;4;150.000"
+      },
+      "history": {
+        "title": "Importaciones anteriores",
+        "empty": "Todavía no importaste ningún archivo.",
+        "summary": "{members} alumnos nuevos · {balance} en saldos",
+        "sources": {
+          "spreadsheet": "Planilla",
+          "crosshero": "CrossHero",
+          "ai": "Con Brodi"
+        }
+      },
+      "mapping": {
+        "membersTitle": "Columnas de alumnos",
+        "membersHint": "Hoja \"{sheet}\". Revisá qué dato tiene cada columna.",
+        "plansTitle": "Columnas de planes",
+        "plansHint": "Hoja \"{sheet}\". Los planes que ya existen en el box no se cambian.",
+        "sample": "Ej.: {value}",
+        "noSample": "Sin datos",
+        "ignore": "No importar",
+        "sourceLabel": "Origen del archivo",
+        "balanceDescription": "Cómo se llama la deuda importada",
+        "balanceDescriptionDefault": "Saldo anterior a GuaraniX",
+        "balanceDescriptionHint": "Así la ven el alumno y recepción.",
+        "nameRequired": "Elegí qué columna tiene el nombre del alumno.",
+        "back": "Cambiar archivo",
+        "review": "Revisar filas",
+        "reviewing": "Revisando…"
+      },
+      "preview": {
+        "newMembers": "Alumnos nuevos",
+        "existingMembers": "Ya estaban en el box",
+        "invalidRows": "Filas con errores",
+        "balance": "Saldos a cargar",
+        "plansHint": "Planes nuevos: {plans} · Planes de alumnos: {memberPlans}",
+        "filterLabel": "Qué filas mostrar",
+        "filters": {
+          "all": "Todas",
+          "errors": "Con errores",
+          "warnings": "Con avisos"
+        },
+        "line": "Fila {line}",
+        "status": {
+          "new": "Nuevo",
+          "existing": "Ya estaba",
+          "invalid": "Con errores"
+        },
+        "planLine": "{plan}: del {from} al {to}",
+        "credits": "clases restantes: {count}",
+        "balanceLine": "Debe {amount}",
+        "showing": "Mostrando {shown} de {total} filas.",
+        "noneMatching": "No hay filas con ese filtro.",
+        "missingTitle": "Planes que faltan",
+        "missingHint": "Estos planes aparecen en el archivo pero no existen en el box. Crealos y volvemos a revisar.",
+        "createPlan": "Crear plan",
+        "planSheetErrors": "La hoja de planes tiene errores en la fila {line}.",
+        "commit": "Importar {count} filas",
+        "commitValid": "Importar solo las {count} filas válidas",
+        "committing": "Importando…",
+        "errorsNotice": "{count} filas tienen errores y no se van a importar. Podés corregir el archivo y volver a subirlo: lo que ya se importó no se duplica.",
+        "nothingNew": "No hay nada nuevo para importar: todos estos alumnos, planes y saldos ya están en el box.",
+        "back": "Volver a columnas",
+        "noName": "Sin nombre",
+        "missingRows": "Filas que lo usan: {count}",
+        "backToAi": "Volver a las filas de Brodi"
+      },
+      "done": {
+        "title": "Listo, ya están en el box",
+        "body": "Importamos {members} alumnos nuevos, {memberPlans} planes y {charges} saldos por {balance}.",
+        "replayed": "Este archivo ya se había importado el {date}. No cargamos nada de nuevo.",
+        "seeMembers": "Ver alumnos",
+        "another": "Importar otro archivo"
+      },
+      "ai": {
+        "title": "Leer con Brodi",
+        "body": "¿Tenés una foto del cuaderno, un PDF o una planilla desordenada? Brodi la lee con IA y te propone los alumnos, planes y saldos. Vos revisás cada fila antes de importar.",
+        "dropLabel": "Elegí la foto o el archivo",
+        "dropHint": "Foto (JPG, PNG), PDF, Excel o CSV",
+        "reading": "Brodi está leyendo el archivo. Puede tardar un minuto…",
+        "remaining": "Te quedan {count} lecturas este mes.",
+        "unlimited": "Lecturas ilimitadas en tu plan.",
+        "limitReached": "Ya usaste las {limit} lecturas de este mes. Se renuevan el 1.° del mes que viene.",
+        "privacy": "Solo enviamos el archivo al proveedor de IA, sin otros datos del box. Nada se guarda hasta que confirmes.",
+        "tooLarge": "El archivo es muy grande para leerlo con IA. Probá con una foto o dividilo en partes.",
+        "unreadable": "No pudimos abrir el archivo. Probá con una foto JPG o PNG, un PDF o una planilla.",
+        "nothingFound": "Brodi no encontró alumnos en este archivo. Probá con una foto más clara.",
+        "reviewTitle": "Revisá lo que leyó Brodi",
+        "reviewHint": "La IA puede equivocarse. Corregí o quitá las filas que no estén bien antes de seguir.",
+        "membersTitle": "Alumnos ({count})",
+        "plansTitle": "Planes ({count})",
+        "row": "Fila {row}",
+        "edit": "Editar fila {row}",
+        "remove": "Quitar fila {row}",
+        "editTitle": "Editar fila {row}",
+        "editHint": "Dejá vacío lo que no sepas. Las fechas van como día/mes/año.",
+        "noMembersLeft": "Quitaste todas las filas. Volvé a subir el archivo para empezar de nuevo.",
+        "back": "Cambiar archivo"
       }
     }
   },
@@ -532,7 +656,8 @@
       "label": "Secciones de la plataforma",
       "boxes": "Boxes",
       "plans": "Planes",
-      "logout": "Cerrar sesión"
+      "logout": "Cerrar sesión",
+      "ai": "IA"
     },
     "noAccess": {
       "title": "Esta cuenta no administra GuaraniX",
@@ -733,6 +858,76 @@
       "program_updated": "Programa editado",
       "schedule_created": "Horario nuevo",
       "schedule_ended": "Horario terminado"
+    },
+    "features": {
+      "names": {
+        "ai_import": "Importación con IA"
+      },
+      "descriptions": {
+        "ai_import": "Lee fotos, PDF y planillas desordenadas y propone alumnos, planes y saldos para revisar."
+      },
+      "title": "Funciones",
+      "planHint": "Qué incluye este plan. Los boxes del plan lo ven desde el próximo pedido.",
+      "monthlyLimit": "Usos por mes",
+      "monthlyLimitHint": "Vacío para no limitar. Se reinicia el 1.° de cada mes.",
+      "save": "Guardar funciones",
+      "saved": "Funciones guardadas",
+      "invalidLimit": "Poné un número entero, 0 o más.",
+      "boxTitle": "Funciones de este box",
+      "fromPlanOn": "Su plan la incluye: {limit}",
+      "fromPlanOff": "Su plan no la incluye",
+      "unlimited": "sin límite",
+      "perMonth": "{count} por mes",
+      "used": "Este mes: {used} de {limit}",
+      "usedUnlimited": "Este mes: {used} usos",
+      "override": "Para este box",
+      "overrides": {
+        "plan": "Del plan",
+        "on": "Activada",
+        "off": "Desactivada"
+      },
+      "ownLimit": "Límite propio por mes",
+      "ownLimitHint": "Vacío para usar el del plan."
+    },
+    "ai": {
+      "title": "Inteligencia artificial",
+      "subtitle": "Proveedor, modelo y claves de las funciones con IA. Las claves se guardan cifradas y nunca se vuelven a mostrar.",
+      "providers": {
+        "anthropic": "Anthropic (Claude)",
+        "openai": "OpenAI",
+        "gemini": "Google Gemini"
+      },
+      "missingSecretsKey": "Falta la clave maestra AI_SECRETS_KEY en el Worker (wrangler secret put AI_SECRETS_KEY). Sin ella no se pueden guardar ni usar claves.",
+      "settings": "Proveedor y modelo",
+      "settingsHint": "Todas las funciones con IA usan este proveedor. Cambiarlo no borra las claves de los otros.",
+      "provider": "Proveedor",
+      "model": "Modelo",
+      "modelHint": "El identificador exacto del modelo en el proveedor, por ejemplo claude-opus-5-5.",
+      "modelInvalid": "Escribí el identificador del modelo, sin espacios.",
+      "notConfigured": "Todavía no elegiste proveedor: las funciones con IA están apagadas para todos los boxes.",
+      "save": "Guardar",
+      "saved": "Proveedor guardado",
+      "test": "Probar conexión",
+      "testing": "Probando…",
+      "testOk": "Conexión correcta: respondió {model}.",
+      "noKeyForProvider": "No hay clave cargada para este proveedor.",
+      "keys": "Claves de API",
+      "keysHint": "Una por proveedor. Para cambiarla, cargá una nueva: la anterior se reemplaza.",
+      "keyLoaded": "Cargada · termina en {hint}",
+      "keyMissing": "Sin clave",
+      "keyUpdated": "Actualizada el {date}",
+      "loadKey": "Cargar clave",
+      "replaceKey": "Cambiar",
+      "removeKey": "Quitar",
+      "removeKeyLabel": "Quitar la clave de {provider}",
+      "keyRemoved": "Clave quitada",
+      "keySheetTitle": "Clave de {provider}",
+      "keyField": "Clave de API",
+      "keyFieldHint": "Se guarda cifrada. Después solo vas a ver los últimos 4 caracteres.",
+      "keySave": "Guardar clave",
+      "keySaved": "Clave guardada",
+      "keyInvalid": "Pegá la clave completa, sin espacios.",
+      "cancel": "Cancelar"
     }
   },
   "brodi": {
@@ -907,7 +1102,24 @@
     "import_has_errors": "Hay filas con errores. Corregilas o elegí importar solo las filas válidas.",
     "import_empty": "No hay nada para importar.",
     "data_import_not_found": "No encontramos esa importación.",
-    "import_in_progress": "Esta importación ya se está guardando. Esperá un momento y revisá el historial."
+    "import_in_progress": "Esta importación ya se está guardando. Esperá un momento y revisá el historial.",
+    "feature_not_included": "Esta función no está incluida en el plan de tu box. Escribinos para sumarla.",
+    "feature_limit_reached": "Ya usaste todos los usos de este mes. Se renuevan el 1.° del mes que viene.",
+    "feature_not_found": "Esa función no existe.",
+    "ai_not_configured": "La IA todavía no está configurada. Probá más tarde.",
+    "ai_secrets_key_missing": "Falta la clave maestra AI_SECRETS_KEY en el servidor.",
+    "ai_key_unreadable": "No se pudo leer la clave guardada. Volvé a cargarla.",
+    "ai_provider_not_found": "Ese proveedor de IA no existe.",
+    "ai_provider_key_not_found": "No hay una clave cargada para ese proveedor.",
+    "ai_key_rejected": "El proveedor rechazó la clave o el modelo. Revisá los dos.",
+    "ai_rate_limited": "El proveedor de IA está recibiendo muchos pedidos. Probá en unos minutos.",
+    "ai_unavailable": "El proveedor de IA no responde. Probá de nuevo en unos minutos.",
+    "ai_request_rejected": "El proveedor de IA no aceptó el pedido. Revisá el modelo o probá con un archivo más chico.",
+    "ai_refused": "La IA no quiso procesar este archivo. Probá con otro.",
+    "ai_answer_too_long": "El archivo tiene demasiados datos para leerlo de una vez. Dividilo en partes.",
+    "ai_invalid_answer": "La IA respondió algo que no pudimos usar. Probá de nuevo.",
+    "ai_import_unavailable": "La lectura con IA no está disponible en este momento. Probá más tarde o importá una planilla.",
+    "ai_file_rejected": "La IA no aceptó este archivo. Probá con una foto más clara o un archivo más chico."
   },
   "workout": {
     "kinds": {

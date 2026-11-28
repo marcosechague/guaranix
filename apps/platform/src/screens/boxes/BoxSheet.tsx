@@ -7,6 +7,7 @@ import { formatInstantDate, STATUS_TONES, statusLabel, trialLabel } from '../../
 import type { ReasonAction } from './BoxActionSheet';
 import { BoxActivity } from './BoxActivity';
 import { BoxBillingForm } from './BoxBillingForm';
+import { BoxFeaturesSection } from './BoxFeaturesSection';
 
 export interface BoxSheetProps {
   boxId: string | null;
@@ -88,6 +89,8 @@ export function BoxSheet({ boxId, onClose, onAction }: BoxSheetProps) {
               box={box}
             />
           </Section>
+
+          <BoxFeaturesSection boxId={box.id} />
 
           <Section title={t('platform.box.actions')}>
             <div className="flex flex-wrap gap-2">

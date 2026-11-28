@@ -8,7 +8,7 @@ import { normalizePlanRow } from './plan-row';
 
 describe('parseCsv', () => {
   it('detects semicolons and keeps quoted delimiters and line breaks', () => {
-    const rows = parseCsv('﻿Nombre;Notas\r\n"Duarte; Ana";"dice ""hola""\notra línea"\r\n');
+    const rows = parseCsv('\uFEFFNombre;Notas\r\n"Duarte; Ana";"dice ""hola""\notra línea"\r\n');
     expect(rows).toEqual([
       ['Nombre', 'Notas'],
       ['Duarte; Ana', 'dice "hola"\notra línea'],

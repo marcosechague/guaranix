@@ -6,6 +6,8 @@ import {
   CHARGE_STATUSES,
   CLASS_STATUSES,
   IMPORT_SOURCES,
+  FEATURE_FLAGS,
+  AI_PROVIDERS,
   MEMBER_PLAN_STATUSES,
   MEMBER_STATUSES,
   MOVEMENT_CATEGORIES,
@@ -36,3 +38,5 @@ export const chargeStatusEnum = pgEnum('charge_status', CHARGE_STATUSES);
 export const paymentMethodEnum = pgEnum('payment_method', PAYMENT_METHODS);
 export const paymentStatusEnum = pgEnum('payment_status', PAYMENT_STATUSES);
 export const importSourceEnum = pgEnum('import_source', IMPORT_SOURCES);
+export const featureFlagEnum = pgEnum('feature_flag', FEATURE_FLAGS);
+export const aiProviderEnum = pgEnum('ai_provider', AI_PROVIDERS);

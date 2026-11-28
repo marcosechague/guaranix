@@ -1,6 +1,7 @@
 import { dataImportSchema } from '@guaranix/shared';
 import { createBoxRouter } from '../../middleware/box-scope';
 import { idParam, parseBody, respond } from '../../lib/service-route';
+import { aiImportStatus } from '../../services/ai-import';
 import { commitImport, getImport, listImports, previewImport } from '../../services/data-imports';
 import { MANAGERS } from './roles';
 
@@ -8,6 +9,10 @@ const imports = createBoxRouter();
 
 imports.get('/', MANAGERS, (context) =>
   respond(context, async (service) => ({ imports: await listImports(service) })),
+);
+
+imports.get('/ai-status', MANAGERS, (context) =>
+  respond(context, async (service) => ({ status: await aiImportStatus(service) })),
 );
 
 // A POST because the rows travel in the body; it writes nothing.

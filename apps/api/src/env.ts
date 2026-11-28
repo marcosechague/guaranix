@@ -1,5 +1,6 @@
 import type { SchemaDatabase } from '@guaranix/db';
 import type { EmailSender } from '@guaranix/messaging';
+import type { AiProviderFactory } from './services/ai-runtime';
 import type { CaptchaVerifier } from './integrations/captcha';
 import type { FileStorage } from './integrations/file-storage';
 import type { GoogleOAuth } from './integrations/google-oauth';
@@ -30,6 +31,12 @@ export interface Bindings {
   RESEND_API_KEY?: string;
   /** Verified Resend sender, e.g. `GuaraniX <no-responder@guaranix.com.py>`. */
   EMAIL_FROM?: string;
+  /**
+   * 32 random bytes in base64 (`openssl rand -base64 32`, then `wrangler secret
+   * put AI_SECRETS_KEY`). Encrypts the AI provider keys stored in the database.
+   * Without it AI features stay off; changing it means loading the keys again.
+   */
+  AI_SECRETS_KEY?: string;
 }
 
 /** External integrations, swapped for fakes in tests. */
@@ -42,6 +49,8 @@ export interface Services {
   captcha: CaptchaVerifier | null;
   /** Null when Google sign-in is off (development without Google keys). */
   google: GoogleOAuth | null;
+  /** Builds the AI provider the superadmin configured; tests pass a mock. */
+  aiProviderFactory: AiProviderFactory;
 }
 
 export interface AuthenticatedSession {

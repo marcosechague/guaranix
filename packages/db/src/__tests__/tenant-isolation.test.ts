@@ -27,6 +27,21 @@ beforeAll(async () => {
     slug: 'box-b',
     platformPlanId: platform.basePlanId,
   });
+  // Platform-only tables the demo seed leaves empty: one row per box so they are covered too.
+  await withSystemScope(testDatabase.database, async (transaction) => {
+    for (const box of [boxA, boxB]) {
+      await transaction
+        .insert(schema.boxFeatureOverrides)
+        .values({ boxId: box.boxId, feature: 'ai_import', enabled: true, monthlyLimit: 5 });
+      await transaction.insert(schema.aiUsage).values({
+        boxId: box.boxId,
+        userId: box.ownerId,
+        feature: 'ai_import',
+        provider: 'anthropic',
+        model: 'claude-opus-5-5',
+      });
+    }
+  });
 });
 
 afterAll(async () => {
@@ -40,8 +55,10 @@ describe('tenant tables', () => {
   it('covers every table with box data', () => {
     expect(tenantTables.map(getTableName).sort()).toMatchInlineSnapshot(`
       [
+        "ai_usage",
         "audit_logs",
         "bookings",
+        "box_feature_overrides",
         "box_users",
         "charges",
         "class_schedules",

@@ -12,6 +12,7 @@
     "demo:receipts": "tsx scripts/demo-receipts.ts"
   },
   "dependencies": {
+    "@guaranix/ai": "workspace:*",
     "@guaranix/db": "workspace:*",
     "@guaranix/messaging": "workspace:*",
     "@guaranix/shared": "workspace:*",
