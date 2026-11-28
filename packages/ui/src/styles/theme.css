@@ -76,6 +76,8 @@
   --color-success-soft: var(--gx-color-success-soft);
   --color-warning: var(--gx-color-warning);
   --color-warning-soft: var(--gx-color-warning-soft);
+  /* Dims the screen behind sheets, in both themes (Tailwind's black is reset above). */
+  --color-scrim: rgb(14 15 17 / 0.55);
 }
 
 @theme {

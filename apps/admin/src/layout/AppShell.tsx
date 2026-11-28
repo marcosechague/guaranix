@@ -1,7 +1,9 @@
 import { ToastProvider } from '@guaranix/ui';
+import { ImpersonationBanner } from '@guaranix/ui/auth';
 import { motion } from 'motion/react';
 import { Suspense } from 'react';
 import { Outlet, ScrollRestoration, useLocation } from 'react-router';
+import { API_URL, PLATFORM_URL } from '../config';
 import { MobileTabBar, MobileTopBar } from './MobileNav';
 import { PageSkeleton } from './PageSkeleton';
 import { Sidebar } from './Sidebar';
@@ -16,7 +18,10 @@ export function AppShell() {
       <div className="flex min-h-dvh">
         <Sidebar />
         <div className="flex min-w-0 flex-1 flex-col pb-tabbar md:pb-0">
-          {/* Impersonation banner (platform thread) goes here, above everything else. */}
+          <ImpersonationBanner
+            apiUrl={API_URL}
+            onExit={() => window.location.assign(PLATFORM_URL)}
+          />
           <MobileTopBar />
           <motion.div
             key={section}

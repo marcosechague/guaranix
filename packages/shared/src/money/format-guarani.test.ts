@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatGuarani } from './format-guarani';
+import { formatGuarani, formatGuaraniCompact } from './format-guarani';
 
 describe('formatGuarani', () => {
   it.each([
@@ -19,4 +19,15 @@ describe('formatGuarani', () => {
       expect(() => formatGuarani(amount)).toThrow(RangeError);
     },
   );
+});
+
+describe('formatGuaraniCompact', () => {
+  it.each([
+    [4_800_000, '₲ 4,8 M'],
+    [12_000_000, '₲ 12 M'],
+    [1_250_000, '₲ 1,3 M'],
+    [596_000, '₲ 596.000'],
+  ])('shows %i as %s', (amount, text) => {
+    expect(formatGuaraniCompact(amount)).toBe(text);
+  });
 });

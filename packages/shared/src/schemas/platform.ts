@@ -97,3 +97,32 @@ export type UpdatePlatformBoxInput = z.infer<typeof updatePlatformBoxSchema>;
 export type PlatformBoxFilter = (typeof PLATFORM_BOX_FILTERS)[number];
 export type PlatformBoxSummary = z.infer<typeof platformBoxSummarySchema>;
 export type PlatformMetrics = z.infer<typeof platformMetricsSchema>;
+
+/** `GET /platform/plans` rows. */
+export interface PlatformPlan {
+  id: string;
+  code: string;
+  name: string;
+  description: string | null;
+  monthlyPriceGs: number;
+  extraLocationMonthlyPriceGs: number;
+  boxLimit: number | null;
+  isActive: boolean;
+  /** Boxes holding a place on the plan (removed boxes free theirs). */
+  boxCount: number;
+}
+
+export interface PlatformBoxActivity {
+  id: string;
+  action: string;
+  createdAt: string;
+  actorName: string | null;
+  /** Done by a GuaraniX admin working inside the box. */
+  impersonated: boolean;
+}
+
+/** `GET /platform/boxes/:id` and every box action's answer. */
+export interface PlatformBoxDetail {
+  box: PlatformBoxSummary;
+  activity: PlatformBoxActivity[];
+}

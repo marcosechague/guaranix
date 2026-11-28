@@ -32,7 +32,7 @@ export function Sheet({
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="gx-fade fixed inset-0 z-40 bg-black/50" />
+        <Dialog.Overlay className="gx-fade fixed inset-0 z-40 bg-scrim" />
         <Dialog.Content
           {...(description ? {} : { 'aria-describedby': undefined })}
           className={classNames(
