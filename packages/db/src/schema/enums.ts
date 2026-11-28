@@ -8,6 +8,10 @@ import {
   IMPORT_SOURCES,
   FEATURE_FLAGS,
   AI_PROVIDERS,
+  NOTIFICATION_CHANNELS,
+  NOTIFICATION_DELIVERY_STATUSES,
+  NOTIFICATION_KINDS,
+  NOTIFICATION_TOPICS,
   MEMBER_PLAN_STATUSES,
   MEMBER_STATUSES,
   MOVEMENT_CATEGORIES,
@@ -40,3 +44,10 @@ export const paymentStatusEnum = pgEnum('payment_status', PAYMENT_STATUSES);
 export const importSourceEnum = pgEnum('import_source', IMPORT_SOURCES);
 export const featureFlagEnum = pgEnum('feature_flag', FEATURE_FLAGS);
 export const aiProviderEnum = pgEnum('ai_provider', AI_PROVIDERS);
+export const notificationChannelEnum = pgEnum('notification_channel', NOTIFICATION_CHANNELS);
+export const notificationTopicEnum = pgEnum('notification_topic', NOTIFICATION_TOPICS);
+export const notificationKindEnum = pgEnum('notification_kind', NOTIFICATION_KINDS);
+export const notificationDeliveryStatusEnum = pgEnum(
+  'notification_delivery_status',
+  NOTIFICATION_DELIVERY_STATUSES,
+);

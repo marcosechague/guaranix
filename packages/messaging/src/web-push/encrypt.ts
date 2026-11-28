@@ -1,6 +1,8 @@
 import { concatBytes, decodeBase64Url } from './base64url';
 
 const encoder = new TextEncoder();
+/** Copies into a plain `ArrayBuffer`, the only kind both Node's and Workers' typings accept. */
+const textBytes = (text: string) => new Uint8Array(encoder.encode(text));
 const RECORD_SIZE = 4096;
 /** A single record carries at most this much plaintext (record size minus tag and delimiter). */
 export const MAX_PAYLOAD_BYTES = RECORD_SIZE - 16 - 1 - 86;
@@ -64,25 +66,22 @@ export async function encryptPushPayload(
     ((await crypto.subtle.generateKey({ name: 'ECDH', namedCurve: 'P-256' }, true, [
       'deriveBits',
     ])) as KeyPair);
-  const senderPublic = new Uint8Array(await crypto.subtle.exportKey('raw', senderKeys.publicKey));
+  const senderPublic = new Uint8Array(
+    (await crypto.subtle.exportKey('raw', senderKeys.publicKey)) as ArrayBuffer,
+  );
+  // The spec and every runtime call the member `public`; Workers' typings name it `$public`.
+  const ecdh = { name: 'ECDH', public: receiverKey } as unknown as Parameters<
+    typeof crypto.subtle.deriveBits
+  >[0];
   const sharedSecret = new Uint8Array(
-    await crypto.subtle.deriveBits(
-      { name: 'ECDH', public: receiverKey },
-      senderKeys.privateKey,
-      256,
-    ),
+    await crypto.subtle.deriveBits(ecdh, senderKeys.privateKey, 256),
   );
 
-  const keyInfo = concatBytes(encoder.encode('WebPush: info\0'), receiverPublic, senderPublic);
+  const keyInfo = concatBytes(textBytes('WebPush: info\0'), receiverPublic, senderPublic);
   const inputKey = await hkdf(authSecret, sharedSecret, keyInfo, 32);
   const salt = secrets.salt ?? crypto.getRandomValues(new Uint8Array(16));
-  const contentKey = await hkdf(
-    salt,
-    inputKey,
-    encoder.encode('Content-Encoding: aes128gcm\0'),
-    16,
-  );
-  const nonce = await hkdf(salt, inputKey, encoder.encode('Content-Encoding: nonce\0'), 12);
+  const contentKey = await hkdf(salt, inputKey, textBytes('Content-Encoding: aes128gcm\0'), 16);
+  const nonce = await hkdf(salt, inputKey, textBytes('Content-Encoding: nonce\0'), 12);
 
   const aesKey = await crypto.subtle.importKey('raw', contentKey, 'AES-GCM', false, ['encrypt']);
   // 0x02 marks the last (and only) record; no padding.

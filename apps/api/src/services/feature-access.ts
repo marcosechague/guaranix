@@ -1,5 +1,11 @@
 import type { ScopedTransaction } from '@guaranix/db';
-import { aiUsage, boxes, boxFeatureOverrides, platformPlanFeatures } from '@guaranix/db/schema';
+import {
+  aiUsage,
+  boxes,
+  boxFeatureOverrides,
+  notificationDeliveries,
+  platformPlanFeatures,
+} from '@guaranix/db/schema';
 import {
   type BoxFeatureState,
   calendarDateIn,
@@ -7,7 +13,7 @@ import {
   zonedInstant,
 } from '@guaranix/shared';
 import type { FeatureFlag } from '@guaranix/shared/domain';
-import { and, count, eq, gte } from 'drizzle-orm';
+import { and, count, eq, gte, inArray } from 'drizzle-orm';
 import type { ServiceContext } from './context';
 import { notFound, unprocessable } from './errors';
 
@@ -17,6 +23,42 @@ const OFF: FeatureSetting = { enabled: false, monthlyLimit: null };
 export function monthStart(timeZone: string, now: Date): Date {
   const today = calendarDateIn(timeZone, now);
   return zonedInstant(`${today.slice(0, 8)}01`, '00:00', timeZone);
+}
+
+/** WhatsApp messages queued, in flight or sent; failed and skipped ones cost nothing. */
+const BILLABLE_DELIVERY_STATUSES = ['queued', 'sending', 'sent'] as const;
+
+/** What one "use" is: an AI request, or a WhatsApp message. */
+async function usesSince(
+  transaction: ScopedTransaction,
+  boxId: string,
+  feature: FeatureFlag,
+  since: Date,
+): Promise<number> {
+  const [used] =
+    feature === 'whatsapp'
+      ? await transaction
+          .select({ total: count() })
+          .from(notificationDeliveries)
+          .where(
+            and(
+              eq(notificationDeliveries.boxId, boxId),
+              eq(notificationDeliveries.channel, 'whatsapp'),
+              inArray(notificationDeliveries.status, [...BILLABLE_DELIVERY_STATUSES]),
+              gte(notificationDeliveries.createdAt, since),
+            ),
+          )
+      : await transaction
+          .select({ total: count() })
+          .from(aiUsage)
+          .where(
+            and(
+              eq(aiUsage.boxId, boxId),
+              eq(aiUsage.feature, feature),
+              gte(aiUsage.createdAt, since),
+            ),
+          );
+  return used?.total ?? 0;
 }
 
 /**
@@ -56,16 +98,7 @@ export async function boxFeatureState(
     })
     .from(boxFeatureOverrides)
     .where(and(eq(boxFeatureOverrides.boxId, boxId), eq(boxFeatureOverrides.feature, feature)));
-  const [used] = await transaction
-    .select({ total: count() })
-    .from(aiUsage)
-    .where(
-      and(
-        eq(aiUsage.boxId, boxId),
-        eq(aiUsage.feature, feature),
-        gte(aiUsage.createdAt, monthStart(box.timezone, now)),
-      ),
-    );
+  const usedThisMonth = await usesSince(transaction, boxId, feature, monthStart(box.timezone, now));
   const plan = planRow ?? OFF;
   return {
     feature,
@@ -75,7 +108,7 @@ export async function boxFeatureState(
       enabled: override?.enabled ?? plan.enabled,
       monthlyLimit: override?.monthlyLimit ?? plan.monthlyLimit,
     },
-    usedThisMonth: used?.total ?? 0,
+    usedThisMonth,
   };
 }
 

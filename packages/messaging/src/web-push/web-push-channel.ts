@@ -55,7 +55,7 @@ export function createWebPushChannel({
       try {
         body = await encryptPushPayload(
           address,
-          encoder.encode(JSON.stringify(payloadOf(message))),
+          new Uint8Array(encoder.encode(JSON.stringify(payloadOf(message)))),
         );
       } catch {
         // A malformed key from the browser will never work.

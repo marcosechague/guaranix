@@ -10,6 +10,7 @@ export interface VapidKeys {
 }
 
 const encoder = new TextEncoder();
+const textBytes = (text: string) => new Uint8Array(encoder.encode(text));
 /** Push services reject tokens valid for more than 24 h; 12 h leaves room for clock skew. */
 const TOKEN_LIFETIME_SECONDS = 12 * 60 * 60;
 
@@ -42,9 +43,9 @@ export async function vapidAuthorization(
   endpoint: string,
   now: Date,
 ): Promise<string> {
-  const header = encodeBase64Url(encoder.encode(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
+  const header = encodeBase64Url(textBytes(JSON.stringify({ typ: 'JWT', alg: 'ES256' })));
   const claims = encodeBase64Url(
-    encoder.encode(
+    textBytes(
       JSON.stringify({
         aud: new URL(endpoint).origin,
         exp: Math.floor(now.getTime() / 1000) + TOKEN_LIFETIME_SECONDS,
@@ -57,19 +58,21 @@ export async function vapidAuthorization(
   const signature = await crypto.subtle.sign(
     { name: 'ECDSA', hash: 'SHA-256' },
     await importSigningKey(keys),
-    encoder.encode(unsigned),
+    textBytes(unsigned),
   );
   return `vapid t=${unsigned}.${encodeBase64Url(new Uint8Array(signature))}, k=${keys.publicKey}`;
 }
 
 /** New VAPID key pair, for `pnpm --filter @guaranix/messaging vapid:generate`. */
 export async function generateVapidKeys(): Promise<{ publicKey: string; privateKey: string }> {
-  const pair = await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, [
+  const pair = (await crypto.subtle.generateKey({ name: 'ECDSA', namedCurve: 'P-256' }, true, [
     'sign',
     'verify',
-  ]);
-  const publicKey = new Uint8Array(await crypto.subtle.exportKey('raw', pair.publicKey));
-  const jwk = await crypto.subtle.exportKey('jwk', pair.privateKey);
+  ])) as { publicKey: CryptoKey; privateKey: CryptoKey };
+  const publicKey = new Uint8Array(
+    (await crypto.subtle.exportKey('raw', pair.publicKey)) as ArrayBuffer,
+  );
+  const jwk = (await crypto.subtle.exportKey('jwk', pair.privateKey)) as { d?: string };
   if (!jwk.d) throw new Error('Private key export failed');
   return { publicKey: encodeBase64Url(publicKey), privateKey: jwk.d };
 }

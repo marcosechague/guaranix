@@ -912,10 +912,12 @@
     },
     "features": {
       "names": {
-        "ai_import": "Importación con IA"
+        "ai_import": "Importación con IA",
+        "whatsapp": "WhatsApp"
       },
       "descriptions": {
-        "ai_import": "Lee fotos, PDF y planillas desordenadas y propone alumnos, planes y saldos para revisar."
+        "ai_import": "Lee fotos, PDF y planillas desordenadas y propone alumnos, planes y saldos para revisar.",
+        "whatsapp": "Recordatorios de cuota por WhatsApp a los alumnos. El límite es de mensajes por mes."
       },
       "title": "Funciones",
       "planHint": "Qué incluye este plan. Los boxes del plan lo ven desde el próximo pedido.",
@@ -1355,6 +1357,86 @@
       "plan": "{name}",
       "program": "Programa {name}",
       "general": "General"
+    }
+  },
+  "notifications": {
+    "booking_confirmed": {
+      "title": "Reserva confirmada",
+      "body": "Te reservamos {program} del {day} a las {time}."
+    },
+    "waitlist_promoted": {
+      "title": "Tenés lugar en la clase",
+      "body": "Se liberó un lugar en {program} del {day} a las {time} y ya es tuyo."
+    },
+    "class_cancelled": {
+      "title": "Clase cancelada",
+      "body": "Se canceló {program} del {day} a las {time}. Si usaste un crédito, ya te lo devolvimos.",
+      "bodyWithReason": "Se canceló {program} del {day} a las {time} ({reason}). Si usaste un crédito, ya te lo devolvimos."
+    },
+    "workout_published": {
+      "title": "WOD del {day}",
+      "body": "{program}: {title}",
+      "bodyWithoutTitle": "Ya podés ver el WOD de {program}."
+    },
+    "membership_due": {
+      "title": "Tu cuota vence pronto",
+      "body": "{description} en {box}: {amount}, vence el {date}.",
+      "bodyToday": "{description} en {box}: {amount}, vence hoy."
+    },
+    "membership_overdue": {
+      "title": "Tenés una cuota vencida",
+      "body": "{description} en {box}: {amount}, venció el {date}. Pagala desde la app o en recepción."
+    },
+    "staff_class_cancelled": {
+      "title": "Clase cancelada en {box}",
+      "body": "{program} del {day} a las {time}. Se cancelaron {count} reservas.",
+      "bodyOne": "{program} del {day} a las {time}. Se canceló 1 reserva.",
+      "bodyNone": "{program} del {day} a las {time}. No tenía reservas."
+    },
+    "staff_overdue_digest": {
+      "title": "Cuotas vencidas en {box}",
+      "body": "{count} alumnos deben {amount} en cuotas vencidas.",
+      "bodyOne": "1 alumno debe {amount} en cuotas vencidas."
+    },
+    "telegram": {
+      "linked": "Listo, vas a recibir los avisos de GuaraniX en este chat.",
+      "invalidCode": "Ese enlace ya no sirve. Generá uno nuevo desde el panel, en Ajustes > Notificaciones.",
+      "help": "Para recibir avisos, abrí el enlace que te da el panel en Ajustes > Notificaciones."
+    },
+    "settings": {
+      "title": "Notificaciones",
+      "subtitle": "Elegí qué avisos recibís y por dónde.",
+      "topics": {
+        "bookings": "Reservas y clases",
+        "workouts": "WOD publicado",
+        "billing": "Cuotas por vencer y vencidas",
+        "staff": "Avisos del box (clases canceladas, cuotas vencidas)"
+      },
+      "channels": {
+        "push": "En este dispositivo",
+        "telegram": "Telegram",
+        "whatsapp": "WhatsApp"
+      },
+      "push": {
+        "enable": "Activar notificaciones",
+        "enabled": "Activadas en este dispositivo",
+        "disable": "Desactivar en este dispositivo",
+        "denied": "Bloqueaste las notificaciones para GuaraniX. Activalas desde los ajustes del navegador.",
+        "unsupported": "Este navegador no permite notificaciones. En iPhone, agregá GuaraniX a la pantalla de inicio y abrila desde ahí.",
+        "unavailable": "Las notificaciones todavía no están configuradas."
+      },
+      "telegram": {
+        "connect": "Conectar Telegram",
+        "connected": "Conectado como {username}",
+        "connectedNoUsername": "Conectado",
+        "disconnect": "Desconectar",
+        "hint": "Abrí el enlace en tu celular, tocá Iniciar y listo. El enlace vence en 15 minutos.",
+        "open": "Abrir Telegram",
+        "unavailable": "El bot de Telegram todavía no está configurado."
+      },
+      "whatsappHint": "Los recordatorios por WhatsApp llegan al número que tiene cargado el box, si tu box los tiene activados.",
+      "saved": "Guardado",
+      "loadError": "No pudimos cargar tus notificaciones."
     }
   }
 }

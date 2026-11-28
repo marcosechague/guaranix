@@ -4,6 +4,7 @@ import { addDays, daysBetween, zonedInstant } from '@guaranix/shared';
 import { recordAudit } from './audit';
 import { currentBox } from './box-calendar';
 import { SPOT_STATUSES, lockClass, promoteFromWaitlist, takenSpots } from './bookings';
+import { notifyClassCancelled, notifyWaitlistPromoted } from './notifications/events';
 import {
   CLASS_STAFF_ROLES,
   MANAGER_ROLES,
@@ -137,6 +138,7 @@ export async function cancelClass(context: ServiceContext, classId: string, reas
     .where(eq(classes.id, classId))
     .returning();
   if (!cancelled) throw notFound('class');
+  await notifyClassCancelled(context, classRow, affected, reason);
   await recordAudit(context, {
     action: 'class.cancelled',
     entityType: 'class',
@@ -167,5 +169,6 @@ export async function updateClass(
     .returning();
   if (!updated) throw notFound('class');
   const promoted = await promoteFromWaitlist(context, updated, await currentBox(context));
+  await notifyWaitlistPromoted(context, promoted, updated);
   return { class: updated, promoted };
 }

@@ -4,6 +4,7 @@ import { Hono, type Handler, type MiddlewareHandler } from 'hono';
 import type { AppEnv, AuthenticatedSession } from '../env';
 import { fail } from '../lib/http';
 import { runRequestInTransaction } from '../lib/request-transaction';
+import { queueOutbox } from '../services/notifications/outbox';
 import { boxStatusOf, listMemberships } from '../services/sessions';
 
 /** Who is calling and in which box. `boxId` always comes from the session, never the request. */
@@ -21,6 +22,8 @@ export interface BoxEnv extends AppEnv {
     auth: BoxAuth;
     /** Transaction already scoped to `auth.boxId` (Row Level Security). */
     transaction: ScopedTransaction;
+    /** Notifications recorded by this request, queued once it commits. */
+    outbox: string[];
   };
 }
 
@@ -67,10 +70,13 @@ const boxScope: MiddlewareHandler<BoxEnv> = async (context, next) => {
   if ('error' in auth) return fail(context, 403, auth.error);
 
   context.set('auth', auth);
+  context.set('outbox', []);
   const database = context.var.services.database();
   await runRequestInTransaction(context, next, (work) =>
     withBoxScope(database, { boxId: auth.boxId, userId: auth.userId }, work),
   );
+  if (context.error || context.res.status >= 400) return;
+  await queueOutbox(context.var.services.notifications.queue, context.var.outbox);
 };
 
 /** Box routes that open their own short transactions (see `createBoxRouterWithoutTransaction`). */

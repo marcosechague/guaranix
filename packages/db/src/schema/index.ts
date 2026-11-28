@@ -13,3 +13,4 @@ export * from './classes';
 export * from './workouts';
 export * from './billing';
 export * from './audit';
+export * from './notifications';

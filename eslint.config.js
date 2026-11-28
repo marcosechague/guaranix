@@ -43,6 +43,14 @@ const SYSTEM_SCOPE_FILES = [
   'apps/api/src/jobs/upcoming-classes.ts',
   // AI import: reads the platform's provider key and fills in the tokens of the box's own use row.
   'apps/api/src/services/ai-import.ts',
+  // Notification queue consumer and crons: push subscriptions, Telegram links and
+  // preferences belong to a person, not a box. Every query names the box or user.
+  'apps/api/src/services/notifications/expand.ts',
+  'apps/api/src/services/notifications/deliver.ts',
+  'apps/api/src/services/notifications/targets.ts',
+  'apps/api/src/services/notifications/telegram-webhook.ts',
+  'apps/api/src/jobs/notification-sweeper.ts',
+  'apps/api/src/jobs/membership-reminders.ts',
 ];
 
 export default tseslint.config(
