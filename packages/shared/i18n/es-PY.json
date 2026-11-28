@@ -571,7 +571,8 @@
     "platform_plan_limit_below_usage": "Hay más boxes en este plan que el límite que pusiste.",
     "platform_plan_inactive": "Ese plan ya no se ofrece.",
     "platform_plan_full": "Ese plan ya no tiene lugares. Elegí otro.",
-    "box_status_unchanged": "El box ya está en ese estado."
+    "box_status_unchanged": "El box ya está en ese estado.",
+    "signup_unavailable": "Por ahora no estamos sumando boxes nuevos. Escribinos y te avisamos."
   },
   "workout": {
     "kinds": {
@@ -627,5 +628,29 @@
     "duration": "{days} días",
     "creditsLeft": "Te quedan {count} clases",
     "perMonth": "por {days} días"
+  },
+  "onboarding": {
+    "issues": {
+      "programs_name_repeated": "Ya tenés un programa con ese nombre.",
+      "slots_empty": "Cargá al menos un horario.",
+      "slot_unknown_program": "Elegí un programa para este horario.",
+      "slot_ends_after_midnight": "Esta clase termina después de medianoche. Acortala o empezala antes.",
+      "slot_duration_invalid": "La clase tiene que durar entre {min} y {max} minutos.",
+      "slot_capacity_invalid": "El cupo máximo es de {max} lugares.",
+      "slot_repeated": "Ya hay una clase de este programa a las {time} esos días.",
+      "slot_overlap": "La clase de las {time} se pisa con la de las {other}.",
+      "slot_unusual_hour": "¿Seguro que es a las {time}? Es un horario poco común.",
+      "plans_empty": "Cargá al menos un plan.",
+      "plan_name_repeated": "Ya tenés un plan con ese nombre.",
+      "plan_limits_invalid": "Revisá las clases de este plan: no coinciden con su tipo.",
+      "plan_unknown_program": "Este plan usa un programa que ya no está.",
+      "plan_price_zero": "Este plan es gratis. ¿Es a propósito?",
+      "plan_price_low": "¿Le faltó un cero? Es poco para este plan.",
+      "plan_price_high": "¿Le sobra un cero? Es mucho para este plan.",
+      "plan_price_not_round": "El precio no es redondo. ¿Está bien?",
+      "plan_drop_in_above_monthly": "La clase suelta sale más que un plan mensual.",
+      "plan_weekly_above_unlimited": "Este plan sale más que el ilimitado.",
+      "plan_pack_above_drop_in": "Cada clase del pack sale más que la clase suelta."
+    }
   }
 }

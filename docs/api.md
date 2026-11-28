@@ -53,3 +53,7 @@ Rutas del superadmin (`apps/platform`). Solo para cuentas con `users.is_platform
 | `POST /platform/boxes/:id/reactivate`          | Reactivar                                                               |
 | `POST /platform/boxes/:id/impersonate`         | "Entrar como" el box durante una hora                                   |
 | `POST /platform/impersonation/end`             | Salir del box                                                           |
+
+## Alta del box
+
+`POST /onboarding/box` (con sesión, sin box). Cuerpo: `boxSignupSchema` (nombre, ciudad, teléfono, rubro, `setup` con programas, horarios y planes, `bookingOpensHoursBefore`, `acceptWarnings`). Responde `201` con el box, el plan de GuaraniX y el fin de la prueba; `422 setup_invalid` o `setup_needs_confirmation` con `issues`; `429 rate_limited` después de 3 altas en el día. Ver `docs/decisions/0007-alta-del-box-y-plantillas.md`.

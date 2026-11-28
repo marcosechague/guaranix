@@ -43,6 +43,13 @@
       "when": 1795825146964,
       "tag": "0005_platform_admin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1795826058374,
+      "tag": "0006_booking_opens_24h",
+      "breakpoints": true
     }
   ]
 }

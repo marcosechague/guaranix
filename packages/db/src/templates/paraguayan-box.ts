@@ -4,10 +4,11 @@ import type {
   CreateProgramInput,
   MovementInput,
 } from '@guaranix/shared/schemas';
+import { BOX_TEMPLATES, type BoxSetup } from '@guaranix/shared';
 import { classSchedules, movements, planPrograms, plans, programs } from '../schema';
 import type { ScopedTransaction } from '../scope';
 
-type ProgramKey = 'crossfit' | 'openBox';
+type ProgramKey = string;
 
 export interface BoxTemplate {
   programs: Record<ProgramKey, Required<Pick<CreateProgramInput, 'name' | 'color'>>>;
@@ -16,85 +17,32 @@ export interface BoxTemplate {
   movements: MovementInput[];
 }
 
-const WEEKDAYS = [1, 2, 3, 4, 5];
-
-const weekdaySlots = (
-  program: ProgramKey,
-  times: string[],
-  durationMinutes: number,
-  capacity: number,
-) =>
-  WEEKDAYS.flatMap((weekday) =>
-    times.map((startTime) => ({ program, weekday, startTime, durationMinutes, capacity })),
-  );
+/** Expands the sign-up form's setup (one row per time, several weekdays) into rows to insert. */
+export function boxTemplateFromSetup(setup: BoxSetup): BoxTemplate {
+  return {
+    programs: Object.fromEntries(
+      setup.programs.map(({ key, name, color }) => [key, { name, color }]),
+    ),
+    schedules: setup.slots.flatMap(({ programKey, weekdays, ...slot }) =>
+      weekdays.map((weekday) => ({ ...slot, weekday, program: programKey })),
+    ),
+    plans: setup.plans.map(({ programKeys = [], ...plan }) => ({
+      ...plan,
+      classesPerWeek: plan.classesPerWeek ?? null,
+      classCount: plan.classCount ?? null,
+      ...(programKeys.length > 0 ? { programs: programKeys } : {}),
+    })),
+    movements: setup.movements ?? [],
+  };
+}
 
 /**
- * Typical box in Gran Asunción, offered at sign-up so a box is usable in minutes.
- * Names are seed data the box edits afterwards, not interface text. Prices are
- * reference values in guaraníes for late 2026 and should be reviewed with pilots.
+ * Typical box in Gran Asunción (see `BOX_TEMPLATES` in packages/shared for
+ * every business type). Kept as rows for the seeds and their tests.
  */
-export const PARAGUAYAN_BOX_TEMPLATE: BoxTemplate = {
-  programs: {
-    crossfit: { name: 'CrossFit', color: '#D9F24A' },
-    openBox: { name: 'Open Box', color: '#6EE7A0' },
-  },
-  schedules: [
-    ...weekdaySlots('crossfit', ['06:00', '07:00', '08:00', '18:00', '19:00', '20:00'], 60, 16),
-    ...[8, 9].map((hour) => ({
-      program: 'crossfit' as const,
-      weekday: 6,
-      startTime: `0${hour}:00`,
-      durationMinutes: 60,
-      capacity: 20,
-    })),
-    ...weekdaySlots('openBox', ['09:00', '16:00'], 120, 10),
-  ],
-  plans: [
-    { name: 'Ilimitado', kind: 'unlimited', priceGs: 350_000, durationDays: 30 },
-    {
-      name: '3 veces por semana',
-      kind: 'weekly_limit',
-      classesPerWeek: 3,
-      priceGs: 280_000,
-      durationDays: 30,
-    },
-    {
-      name: '2 veces por semana',
-      kind: 'weekly_limit',
-      classesPerWeek: 2,
-      priceGs: 230_000,
-      durationDays: 30,
-    },
-    {
-      name: 'Pack 10 clases',
-      kind: 'class_pack',
-      classCount: 10,
-      priceGs: 300_000,
-      durationDays: 60,
-    },
-    { name: 'Clase suelta', kind: 'drop_in', classCount: 1, priceGs: 50_000, durationDays: 7 },
-    {
-      name: 'Solo Open Box',
-      kind: 'unlimited',
-      priceGs: 200_000,
-      durationDays: 30,
-      programs: ['openBox'],
-    },
-  ],
-  movements: [
-    ...['Back Squat', 'Front Squat', 'Overhead Squat', 'Deadlift', 'Clean', 'Power Clean']
-      .concat(['Snatch', 'Power Snatch', 'Clean & Jerk', 'Push Press', 'Strict Press'])
-      .concat(['Push Jerk', 'Thruster', 'Bench Press'])
-      .map((name) => ({ name, category: 'weightlifting' as const })),
-    ...['Pull-up', 'Chest to Bar', 'Muscle-up', 'Handstand Push-up', 'Toes to Bar']
-      .concat(['Double Under', 'Burpee', 'Box Jump', 'Wall Ball'])
-      .map((name) => ({ name, category: 'gymnastics' as const })),
-    ...['Row', 'Run', 'Assault Bike', 'Ski Erg'].map((name) => ({
-      name,
-      category: 'monostructural' as const,
-    })),
-  ],
-};
+export const PARAGUAYAN_BOX_TEMPLATE: BoxTemplate = boxTemplateFromSetup(
+  BOX_TEMPLATES.functional_box,
+);
 
 /** Creates the template's programs, schedules, plans and movements in one box. */
 export async function applyBoxTemplate(
@@ -103,23 +51,32 @@ export async function applyBoxTemplate(
   options: { validFrom: string; template?: BoxTemplate },
 ) {
   const template = options.template ?? PARAGUAYAN_BOX_TEMPLATE;
-  const programKeys = Object.keys(template.programs) as ProgramKey[];
+  const programEntries = Object.entries(template.programs);
   const createdPrograms = await transaction
     .insert(programs)
-    .values(programKeys.map((key) => ({ boxId, ...template.programs[key] })))
+    .values(programEntries.map(([, program]) => ({ boxId, ...program })))
     .returning({ id: programs.id });
-  const programIds = Object.fromEntries(
-    programKeys.map((key, index) => [key, createdPrograms[index]?.id]),
-  ) as Record<ProgramKey, string>;
+  const programIds: Record<ProgramKey, string> = {};
+  programEntries.forEach(([key], index) => {
+    const id = createdPrograms[index]?.id;
+    if (id) programIds[key] = id;
+  });
+  const programId = (key: ProgramKey) => {
+    const id = programIds[key];
+    if (!id) throw new Error(`Template references unknown program "${key}"`);
+    return id;
+  };
 
-  await transaction.insert(classSchedules).values(
-    template.schedules.map(({ program, ...schedule }) => ({
-      boxId,
-      ...schedule,
-      programId: programIds[program],
-      validFrom: options.validFrom,
-    })),
-  );
+  if (template.schedules.length > 0) {
+    await transaction.insert(classSchedules).values(
+      template.schedules.map(({ program, ...schedule }) => ({
+        boxId,
+        ...schedule,
+        programId: programId(program),
+        validFrom: options.validFrom,
+      })),
+    );
+  }
 
   for (const { programs: planProgramKeys = [], ...plan } of template.plans) {
     const [created] = await transaction
@@ -130,13 +87,15 @@ export async function applyBoxTemplate(
       await transaction
         .insert(planPrograms)
         .values(
-          planProgramKeys.map((key) => ({ boxId, planId: created.id, programId: programIds[key] })),
+          planProgramKeys.map((key) => ({ boxId, planId: created.id, programId: programId(key) })),
         );
     }
   }
 
-  await transaction
-    .insert(movements)
-    .values(template.movements.map((movement) => ({ boxId, ...movement })));
+  if (template.movements.length > 0) {
+    await transaction
+      .insert(movements)
+      .values(template.movements.map((movement) => ({ boxId, ...movement })));
+  }
   return { programIds };
 }
