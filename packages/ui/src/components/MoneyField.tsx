@@ -30,7 +30,12 @@ export function MoneyField({ value, onValueChange, onBlur, ...props }: MoneyFiel
       inputMode="numeric"
       autoComplete="off"
       value={focused ? shown : shown && `₲ ${shown}`}
-      onFocus={() => setFocused(true)}
+      onFocus={(event) => {
+        setFocused(true);
+        // The text changes from "₲ 350.000" to "350.000" on focus; select it again so typing replaces it.
+        const input = event.currentTarget;
+        requestAnimationFrame(() => input.select());
+      }}
       onBlur={(event) => {
         setFocused(false);
         onBlur?.(event);

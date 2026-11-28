@@ -1,9 +1,10 @@
-import { type BoxRole, type Session, t } from '@guaranix/shared';
-import { Page, PageHeader } from '@guaranix/ui';
-import { AccountSecurity, AuthGate, AuthProvider } from '@guaranix/ui/auth';
+import type { BoxRole, Session } from '@guaranix/shared';
+import { AuthGate, AuthProvider } from '@guaranix/ui/auth';
 import { ApiProvider } from '@guaranix/ui/data';
+import { lazy, Suspense } from 'react';
 import { RouterProvider } from 'react-router';
 import { API_URL } from './config';
+import { PageSkeleton } from './layout/PageSkeleton';
 import { router } from './router';
 
 const STAFF_ROLES: readonly BoxRole[] = ['box_owner', 'box_admin', 'coach', 'reception'];
@@ -16,18 +17,10 @@ function hasStaffBox(session: Session): boolean {
   );
 }
 
-// The onboarding thread replaces this with <BoxOnboarding session={session} /> for new owners.
-function NoStaffAccess() {
-  return (
-    <Page layout="centered">
-      <PageHeader
-        title={t('auth.noStaffAccess.title')}
-        subtitle={t('auth.noStaffAccess.subtitle')}
-      />
-      <AccountSecurity />
-    </Page>
-  );
-}
+// Separate chunk: staff never download the sign-up, new owners never download the panel.
+const BoxOnboarding = lazy(() =>
+  import('./onboarding').then((module) => ({ default: module.BoxOnboarding })),
+);
 
 export function App() {
   return (
@@ -39,7 +32,11 @@ export function App() {
               <RouterProvider router={router} />
             </ApiProvider>
           ) : (
-            <NoStaffAccess />
+            <ApiProvider apiUrl={API_URL}>
+              <Suspense fallback={<PageSkeleton />}>
+                <BoxOnboarding />
+              </Suspense>
+            </ApiProvider>
           )
         }
       </AuthGate>
