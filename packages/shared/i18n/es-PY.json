@@ -1065,12 +1065,14 @@
       "names": {
         "ai_import": "Importación con IA",
         "whatsapp": "WhatsApp",
-        "card_payments": "Cobro con tarjeta"
+        "card_payments": "Cobro con tarjeta",
+        "brodi": "Brodi"
       },
       "descriptions": {
         "ai_import": "Lee fotos, PDF y planillas desordenadas y propone alumnos, planes y saldos para revisar.",
         "whatsapp": "Recordatorios de cuota por WhatsApp a los alumnos. El límite es de mensajes por mes.",
-        "card_payments": "Débito automático de cuotas con la cuenta del box en Bancard, reintentos y link de pago si falla."
+        "card_payments": "Débito automático de cuotas con la cuenta del box en Bancard, reintentos y link de pago si falla.",
+        "brodi": "El asistente del panel: responde preguntas del dueño sobre cobros, alumnos y asistencia, y manda un resumen cada lunes. El límite es de preguntas por mes."
       },
       "title": "Funciones",
       "planHint": "Qué incluye este plan. Los boxes del plan lo ven desde el próximo pedido.",

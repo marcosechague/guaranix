@@ -8,6 +8,8 @@ import {
   IMPORT_SOURCES,
   FEATURE_FLAGS,
   AI_PROVIDERS,
+  BRODI_MESSAGE_ROLES,
+  BRODI_SUMMARY_SOURCES,
   PAYMENT_ATTEMPT_KINDS,
   PAYMENT_ATTEMPT_STATUSES,
   PAYMENT_PROVIDERS,
@@ -49,6 +51,8 @@ export const paymentStatusEnum = pgEnum('payment_status', PAYMENT_STATUSES);
 export const importSourceEnum = pgEnum('import_source', IMPORT_SOURCES);
 export const featureFlagEnum = pgEnum('feature_flag', FEATURE_FLAGS);
 export const aiProviderEnum = pgEnum('ai_provider', AI_PROVIDERS);
+export const brodiMessageRoleEnum = pgEnum('brodi_message_role', BRODI_MESSAGE_ROLES);
+export const brodiSummarySourceEnum = pgEnum('brodi_summary_source', BRODI_SUMMARY_SOURCES);
 export const paymentProviderEnum = pgEnum('payment_provider', PAYMENT_PROVIDERS);
 export const paymentProviderEnvironmentEnum = pgEnum(
   'payment_provider_environment',
