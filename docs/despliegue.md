@@ -139,17 +139,18 @@ En cada environment de GitHub. Los **secretos** no se pueden volver a ver; las *
 
 ### De la API (opcionales: cada uno prende una función)
 
-| Nombre                     | Tipo     | Para qué                                                                           |
-| -------------------------- | -------- | ---------------------------------------------------------------------------------- |
-| `AI_SECRETS_KEY`           | secreto  | IA. `openssl rand -base64 32`. Si cambia, hay que cargar de nuevo las claves de IA |
-| `VAPID_PUBLIC_KEY`         | variable | Push (`pnpm --filter @guaranix/messaging vapid:generate`)                          |
-| `VAPID_PRIVATE_KEY`        | secreto  | Push                                                                               |
-| `VAPID_SUBJECT`            | secreto  | Push: `mailto:soporte@guaranix.com.py`                                             |
-| `TELEGRAM_BOT_TOKEN`       | secreto  | Telegram (un bot por ambiente)                                                     |
-| `TELEGRAM_BOT_USERNAME`    | variable | Telegram, sin `@`                                                                  |
-| `TELEGRAM_WEBHOOK_SECRET`  | secreto  | Telegram: `openssl rand -hex 32`                                                   |
-| `WHATSAPP_ACCESS_TOKEN`    | secreto  | WhatsApp                                                                           |
-| `WHATSAPP_PHONE_NUMBER_ID` | variable | WhatsApp                                                                           |
+| Nombre                     | Tipo     | Para qué                                                                                                                                                                    |
+| -------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AI_SECRETS_KEY`           | secreto  | IA. `openssl rand -base64 32`. Si cambia, hay que cargar de nuevo las claves de IA                                                                                          |
+| `PAYMENTS_SECRETS_KEY`     | secreto  | Cobro con tarjeta: cifra las claves privadas de Bancard de cada box. `openssl rand -base64 32`, distinta de `AI_SECRETS_KEY`. Si cambia, cada box carga de nuevo sus claves |
+| `VAPID_PUBLIC_KEY`         | variable | Push (`pnpm --filter @guaranix/messaging vapid:generate`)                                                                                                                   |
+| `VAPID_PRIVATE_KEY`        | secreto  | Push                                                                                                                                                                        |
+| `VAPID_SUBJECT`            | secreto  | Push: `mailto:soporte@guaranix.com.py`                                                                                                                                      |
+| `TELEGRAM_BOT_TOKEN`       | secreto  | Telegram (un bot por ambiente)                                                                                                                                              |
+| `TELEGRAM_BOT_USERNAME`    | variable | Telegram, sin `@`                                                                                                                                                           |
+| `TELEGRAM_WEBHOOK_SECRET`  | secreto  | Telegram: `openssl rand -hex 32`                                                                                                                                            |
+| `WHATSAPP_ACCESS_TOKEN`    | secreto  | WhatsApp                                                                                                                                                                    |
+| `WHATSAPP_PHONE_NUMBER_ID` | variable | WhatsApp                                                                                                                                                                    |
 
 `APP_ENV`, `ALLOWED_ORIGINS`, `PUBLIC_API_URL`, `ADMIN_APP_URL` y `WHATSAPP_TEMPLATE_LANGUAGE` no van en GitHub: están en `apps/api/wrangler.jsonc` por ambiente.
 
