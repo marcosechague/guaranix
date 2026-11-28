@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 import { APPS } from './support/apps';
+import { LAYOUT_VIEWPORTS } from './support/layout';
 
 const CI = Boolean(process.env.CI);
 
@@ -28,7 +29,13 @@ export default defineConfig({
   },
   projects: [
     { name: 'phone', use: { ...devices['Pixel 7'] }, testMatch: /member|auth/ },
-    { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testIgnore: /member|auth/ },
+    { name: 'desktop', use: { ...devices['Desktop Chrome'] }, testIgnore: /member|auth|layout/ },
+    // Every main screen at the three sizes (see tests/layout.spec.ts).
+    ...Object.entries(LAYOUT_VIEWPORTS).map(([size, viewport]) => ({
+      name: `layout-${size}`,
+      use: { ...devices['Desktop Chrome'], viewport },
+      testMatch: /layout/,
+    })),
   ],
   webServer: {
     command: 'pnpm --dir .. dev',
