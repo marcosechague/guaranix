@@ -1220,7 +1220,16 @@
   },
   "brodi": {
     "name": "Brodi",
-    "greeting": "¡Vamos que se puede!"
+    "greeting": "¡Vamos que se puede!",
+    "weekly": {
+      "collected": "La semana pasada cobraste {amount}.",
+      "classes": "Diste {classes} clases con {occupancy}% de ocupación.",
+      "noClasses": "No hubo clases.",
+      "members": "Tenés {active} alumnos activos: {joined} nuevos y {left} que dejaron.",
+      "absent": "{count} alumnos activos no vinieron en toda la semana.",
+      "debt": "Te deben {amount} en cuotas vencidas entre {count} alumnos.",
+      "noDebt": "Nadie tiene cuotas vencidas."
+    }
   },
   "auth": {
     "login": {
@@ -1734,6 +1743,10 @@
       "title": "Cuotas vencidas en {box}",
       "body": "{count} alumnos deben {amount} en cuotas vencidas.",
       "bodyOne": "1 alumno debe {amount} en cuotas vencidas."
+    },
+    "staff_weekly_summary": {
+      "title": "Brodi: tu semana en {box}",
+      "body": "{summary}"
     },
     "telegram": {
       "linked": "Listo, vas a recibir los avisos de GuaraniX en este chat.",

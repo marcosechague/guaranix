@@ -138,6 +138,7 @@ export async function createHarness() {
 
   return {
     app,
+    services,
     database: testDatabase.database,
     platform,
     boxA,

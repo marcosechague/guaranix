@@ -1,4 +1,5 @@
 import type { Bindings, Services } from './env';
+import { sendBrodiWeeklySummaries } from './jobs/brodi-weekly-summaries';
 import { runCardAutopay } from './jobs/card-autopay';
 import { announceTomorrowsWorkouts } from './jobs/workout-announcements';
 import { sendMembershipReminders } from './jobs/membership-reminders';
@@ -18,6 +19,8 @@ export const CRONS = {
   cardAutopay: '30 12 * * *',
   workouts: '0 23 * * *',
   sweeper: '*/10 * * * *',
+  // Mondays 08:00 in Asunción; its own trigger so slow AI calls never hold up the reminders.
+  brodiWeekly: '0 11 * * 1',
 } as const;
 
 function failIfAnyBoxFailed(label: string, result: BoxJobResult) {
@@ -52,6 +55,16 @@ async function runJob(env: Bindings, services: Services, cron: string, now: Date
       return failIfAnyBoxFailed(
         'Membership reminders',
         await sendMembershipReminders(database, queue, now),
+      );
+    case CRONS.brodiWeekly:
+      return failIfAnyBoxFailed(
+        'Brodi weekly summaries',
+        await sendBrodiWeeklySummaries(
+          database,
+          queue,
+          { secretsKey: env.AI_SECRETS_KEY, factory: services.aiProviderFactory },
+          now,
+        ),
       );
     case CRONS.cardAutopay: {
       const result = await runCardAutopay(
