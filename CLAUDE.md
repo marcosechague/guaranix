@@ -168,6 +168,7 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 - Requisitos: Node 22+, pnpm (vía `corepack enable`) y Docker.
 - `cp .env.example .env`, `pnpm install` y `pnpm db:up` (Postgres 17 en Docker). Detalles en `README.md`.
 - La base local reemplaza a Neon + Hyperdrive solo en desarrollo; nunca apuntes `.env` a la base de producción.
+- Los scripts de datos demo (`db:seed`, `demo:passwords`, `demo:receipts`) solo escriben en una base local y no corren si el shell tiene variables de producción (`PROD_DATABASE_URL`, `NODE_ENV=production`). Los secretos de `.dev.vars` le ganan a los del shell, igual que en `wrangler dev`.
 
 ## Despliegue
 

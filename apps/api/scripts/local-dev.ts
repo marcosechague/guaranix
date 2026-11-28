@@ -1,8 +1,7 @@
 /** Shared by the demo scripts: local settings and the guard that keeps them off shared databases. */
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-
-const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
+import { assertNoProductionEnv, readLocalDatabaseUrl } from '@guaranix/db';
 
 /** `wrangler dev` reads `.dev.vars`; reading it here keeps one local secret. */
 function devVars(): Record<string, string> {
@@ -21,14 +20,18 @@ function devVars(): Record<string, string> {
   }
 }
 
-export const localVars: Record<string, string | undefined> = { ...devVars(), ...process.env };
+/**
+ * `.dev.vars` wins over the shell, like it does for `wrangler dev`: a secret
+ * exported in the shell (say, the production AUTH_SECRET) must not leak into
+ * local demo data.
+ */
+export const localVars: Record<string, string | undefined> = { ...process.env, ...devVars() };
 
-/** The local database URL; throws unless it points at this machine. */
+/** The local database URL; throws unless it points at this machine and the shell is a dev one. */
 export function localDatabaseUrl(purpose: string): string {
-  const databaseUrl = localVars.DATABASE_URL;
-  if (!databaseUrl) throw new Error('DATABASE_URL is needed (copy apps/api/.dev.vars.example).');
-  if (process.env.NODE_ENV === 'production' || !LOCAL_HOSTS.has(new URL(databaseUrl).hostname)) {
-    throw new Error(`${purpose} only runs against a local development database.`);
+  assertNoProductionEnv(process.env, purpose);
+  if (!localVars.DATABASE_URL) {
+    throw new Error('DATABASE_URL is needed (copy apps/api/.dev.vars.example).');
   }
-  return databaseUrl;
+  return readLocalDatabaseUrl(localVars, purpose);
 }
