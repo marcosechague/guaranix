@@ -2,15 +2,24 @@ import { t } from '@guaranix/shared';
 import { classNames } from '@guaranix/ui';
 import { Check } from 'lucide-react';
 
-const STEPS = ['file', 'columns', 'review'] as const;
+const FILE_STEPS = ['file', 'columns', 'review'] as const;
+// An AI read has no columns to map; its middle step is checking the proposed rows.
+const AI_STEPS = ['file', 'rows', 'review'] as const;
 
-export function StepIndicator({ current, done }: { current: number; done: boolean }) {
+export interface StepIndicatorProps {
+  current: number;
+  done: boolean;
+  ai?: boolean;
+}
+
+export function StepIndicator({ current, done, ai = false }: StepIndicatorProps) {
+  const steps = ai ? AI_STEPS : FILE_STEPS;
   return (
     <ol
       aria-label={t('admin.imports.steps.label')}
       className="flex flex-wrap items-center gap-2 sm:gap-3"
     >
-      {STEPS.map((step, index) => {
+      {steps.map((step, index) => {
         const complete = done || index < current;
         const active = !done && index === current;
         return (

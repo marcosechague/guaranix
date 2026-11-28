@@ -2,6 +2,7 @@ import { MAX_IMPORT_MEMBER_ROWS, t } from '@guaranix/shared';
 import { Button, Card, Eyebrow, FileDropZone } from '@guaranix/ui';
 import { Download } from 'lucide-react';
 import { useState } from 'react';
+import { AiReadCard } from './AiReadCard';
 import { createDraft, type ImportDraft } from './import-draft';
 import { ImportHistory } from './ImportHistory';
 import { readSpreadsheet, SPREADSHEET_ACCEPT } from './read-spreadsheet';
@@ -50,6 +51,7 @@ export function UploadStep({ onRead }: { onRead: (draft: ImportDraft) => void })
             onFile={(file) => void read(file)}
           />
         </Card>
+        <AiReadCard onRead={onRead} />
         <ImportHistory />
       </div>
       <Card className="lg:col-span-2">

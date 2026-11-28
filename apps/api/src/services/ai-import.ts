@@ -16,6 +16,7 @@ import { z } from 'zod';
 import { aiImportParts, AI_IMPORT_INSTRUCTIONS } from './ai-import-prompt';
 import { callProvider, loadConfiguredProvider } from './ai-runtime';
 import { assertRole, MANAGER_ROLES, type ServiceAuth, type ServiceContext } from './context';
+import { ServiceError, unprocessable } from './errors';
 import { assertFeatureAvailable, boxFeatureState, recordAiUsage } from './feature-access';
 import type { AiRuntime } from './platform-ai';
 
@@ -72,6 +73,31 @@ export interface AiImportDependencies {
  * the provider works.
  */
 export async function extractImportWithAi(
+  dependencies: AiImportDependencies,
+  request: AiImportRequest,
+): Promise<AiImportProposal> {
+  try {
+    return await extract(dependencies, request);
+  } catch (error) {
+    throw error instanceof ServiceError ? forBoxStaff(error) : error;
+  }
+}
+
+// Key and model problems are the platform's to fix; box staff get a plain message instead.
+const PLATFORM_SIDE = new Set([
+  'ai_not_configured',
+  'ai_secrets_key_missing',
+  'ai_key_unreadable',
+  'ai_key_rejected',
+]);
+
+function forBoxStaff(error: ServiceError): ServiceError {
+  if (PLATFORM_SIDE.has(error.code)) return unprocessable('ai_import_unavailable');
+  if (error.code === 'ai_request_rejected') return unprocessable('ai_file_rejected');
+  return error;
+}
+
+async function extract(
   dependencies: AiImportDependencies,
   request: AiImportRequest,
 ): Promise<AiImportProposal> {

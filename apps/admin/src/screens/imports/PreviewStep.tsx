@@ -80,7 +80,9 @@ export function PreviewStep({ draft, review, onReviewed, onBack, onCommitted }: 
       {commit.isError ? <FormMessage tone="error">{errorText(commit.error)}</FormMessage> : null}
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
         <Button variant="secondary" onClick={onBack}>
-          {t('admin.imports.preview.back')}
+          {draft.source === 'ai'
+            ? t('admin.imports.preview.backToAi')
+            : t('admin.imports.preview.back')}
         </Button>
         <Button
           disabled={nothingNew || validRows === 0 || commit.isPending || preview.isPending}

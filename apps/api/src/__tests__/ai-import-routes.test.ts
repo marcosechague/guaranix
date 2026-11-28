@@ -182,6 +182,14 @@ describe('AI import', () => {
     expect(((await statusB.json()) as { status: AiImportStatus }).status.usedThisMonth).toBe(1);
   });
 
+  it('gives box staff a plain message when the platform key is the problem', async () => {
+    await allow(harness.boxA.boxId, null);
+    const owner = await staff('box_owner');
+    harness.ai.failWith = new AiProviderError('auth', 401);
+    const response = await owner.post('/box/ai-imports/extract', SHEET);
+    expect(await response.json()).toEqual({ error: 'ai_import_unavailable' });
+  });
+
   it('rejects an answer that does not match the rows', async () => {
     await allow(harness.boxA.boxId, null);
     const owner = await staff('box_owner');

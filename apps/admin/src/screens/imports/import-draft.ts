@@ -1,5 +1,8 @@
 import {
+  type AiImportProposal,
   applyColumnMapping,
+  MEMBER_IMPORT_FIELDS,
+  PLAN_IMPORT_FIELDS,
   normalizeText,
   suggestMemberColumns,
   suggestPlanColumns,
@@ -57,6 +60,33 @@ export function createDraft(fileName: string, sheets: SpreadsheetSheet[]): Impor
   };
 }
 
+function sheetOf<Field extends string>(
+  name: string,
+  fields: readonly Field[],
+  rows: Partial<Record<Field, string>>[],
+): SpreadsheetSheet {
+  return {
+    name,
+    rows: [[...fields], ...rows.map((row) => fields.map((field) => row[field] ?? ''))],
+  };
+}
+
+/** AI rows as a sheet whose columns are already the import fields, so the rest of the flow is shared. */
+export function draftFromProposal(
+  fileName: string,
+  proposal: AiImportProposal,
+): ImportDraft | null {
+  if (proposal.members.length === 0) return null;
+  return {
+    fileName,
+    source: 'ai',
+    members: sheetOf(fileName, MEMBER_IMPORT_FIELDS, proposal.members),
+    plans: proposal.plans.length > 0 ? sheetOf(fileName, PLAN_IMPORT_FIELDS, proposal.plans) : null,
+    memberMapping: [...MEMBER_IMPORT_FIELDS],
+    planMapping: [...PLAN_IMPORT_FIELDS],
+  };
+}
+
 /** The spreadsheet line a member row came from: data starts on line 2, under the headers. */
 export type LineNumbers = number[];
 
@@ -77,7 +107,8 @@ export function buildRequest(
       members: members.rows,
       plans,
     },
-    lines: members.sourceIndexes.map((index) => index + 2),
+    // AI rows are numbered from 1, as the admin saw them; a sheet's data starts under its headers.
+    lines: members.sourceIndexes.map((index) => index + (draft.source === 'ai' ? 1 : 2)),
   };
 }
 
