@@ -65,6 +65,13 @@ export const sessions = pgTable(
       .references(() => users.id, { onDelete: 'cascade' }),
     /** Box the session is working in; sets `app.box_id` for Row Level Security. */
     activeBoxId: uuid().references(() => boxes.id),
+    /**
+     * A platform admin working "as" this box for support. Wins over
+     * `activeBoxId` until `impersonationEndsAt`; every write is audited with
+     * the admin as impersonator.
+     */
+    impersonatedBoxId: uuid().references(() => boxes.id),
+    impersonationEndsAt: timestamp({ withTimezone: true }),
     expiresAt: timestamp({ withTimezone: true }).notNull(),
     revokedAt: timestamp({ withTimezone: true }),
     lastUsedAt: timestamp({ withTimezone: true }).notNull().defaultNow(),

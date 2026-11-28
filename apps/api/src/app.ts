@@ -10,6 +10,7 @@ import { sessionRoutes } from './routes/auth-session';
 import { boxRoutes } from './routes/box';
 import { mountBoxRoutes } from './routes/box/index';
 import { healthRoutes } from './routes/health';
+import { platformRoutes } from './routes/platform';
 import { createRuntimeServices } from './services/runtime';
 
 export interface AppOptions {
@@ -49,6 +50,7 @@ export function createApp(options: AppOptions = {}) {
   app.route('/auth', sessionRoutes);
   app.route('/auth/google', googleAuthRoutes);
   // Before `/box`: its catch-all box scope would otherwise open a second, nested transaction.
+  app.route('/platform', platformRoutes);
   mountBoxRoutes(app);
   app.route('/box', boxRoutes);
 

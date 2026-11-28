@@ -12,12 +12,15 @@ export async function seedPlatform(database: SchemaDatabase) {
           name: 'Plan base',
           monthlyPriceGs: 199_000,
           extraLocationMonthlyPriceGs: 99_000,
+          description: 'Alumnos ilimitados, todo el núcleo y Brodi con límite.',
         },
         {
           code: 'founders',
           name: 'Precio fundador',
           monthlyPriceGs: 169_000,
           extraLocationMonthlyPriceGs: 99_000,
+          description: 'De por vida para los primeros centros.',
+          boxLimit: 20,
         },
       ])
       .returning({ id: platformPlans.id });

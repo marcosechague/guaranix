@@ -18,6 +18,7 @@ const SERVER_SOURCES = [
 const PUBLIC_ROUTE_FILES = [
   'apps/api/src/app.ts',
   'apps/api/src/middleware/box-scope.ts',
+  'apps/api/src/middleware/platform-scope.ts',
   'apps/api/src/routes/auth-*.ts',
   'apps/api/src/routes/health.ts',
 ];
@@ -33,6 +34,8 @@ const SYSTEM_SCOPE_FILES = [
   'apps/api/src/services/google-auth.ts',
   'apps/api/src/services/password-auth.ts',
   'apps/api/src/services/rate-limit.ts',
+  // Superadmin: requires users.is_platform_admin and audits every change to a box.
+  'apps/api/src/middleware/platform-scope.ts',
 ];
 
 export default tseslint.config(

@@ -19,13 +19,22 @@ export function serviceContext(context: BoxContext): ServiceContext {
  * `{ error: code }` when it breaks a business rule. Any error response rolls
  * the request's transaction back (see `createBoxRouter`).
  */
-export async function respond(
+export function respond(
   context: BoxContext,
   work: (service: ServiceContext) => Promise<unknown>,
   status: ContentfulStatusCode = 200,
 ) {
+  return respondWith(context, () => work(serviceContext(context)), status);
+}
+
+/** `respond` for routers that build their own service context (platform). */
+export async function respondWith(
+  context: Context,
+  work: () => Promise<unknown>,
+  status: ContentfulStatusCode = 200,
+) {
   try {
-    const result = await work(serviceContext(context));
+    const result = await work();
     return context.json(result as object, status);
   } catch (error) {
     if (error instanceof ServiceError) return context.json({ error: error.code }, error.status);
@@ -34,7 +43,7 @@ export async function respond(
 }
 
 export async function parseBody<Schema extends z.ZodType>(
-  context: BoxContext,
+  context: Context,
   schema: Schema,
   extra: Record<string, unknown> = {},
 ): Promise<z.output<Schema>> {
@@ -51,7 +60,7 @@ export async function parseBody<Schema extends z.ZodType>(
 }
 
 export function parseQuery<Schema extends z.ZodType>(
-  context: BoxContext,
+  context: Context,
   schema: Schema,
 ): z.output<Schema> {
   const result = schema.safeParse(context.req.query());
@@ -60,7 +69,7 @@ export function parseQuery<Schema extends z.ZodType>(
 }
 
 /** Path ids that are not UUIDs can't exist, so they get the same 404 as a missing row. */
-export function idParam(context: BoxContext, name: string, entity: string): string {
+export function idParam(context: Context, name: string, entity: string): string {
   const result = idSchema.safeParse(context.req.param(name));
   if (!result.success) throw new ServiceError(404, `${entity}_not_found`);
   return result.data;

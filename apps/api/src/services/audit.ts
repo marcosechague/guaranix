@@ -13,6 +13,7 @@ export async function recordAudit(context: ServiceContext, entry: AuditEntry): P
   await context.transaction.insert(auditLogs).values({
     boxId: context.auth.boxId,
     actorUserId: context.auth.userId,
+    impersonatorUserId: context.auth.impersonatorUserId ?? null,
     action: entry.action,
     entityType: entry.entityType,
     entityId: entry.entityId,

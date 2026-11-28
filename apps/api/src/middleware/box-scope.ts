@@ -1,8 +1,9 @@
-import { type ScopedTransaction, withBoxScope } from '@guaranix/db';
+import { type SchemaDatabase, type ScopedTransaction, withBoxScope } from '@guaranix/db';
 import type { BoxRole } from '@guaranix/shared';
 import { Hono, type Handler, type MiddlewareHandler } from 'hono';
 import type { AppEnv, AuthenticatedSession } from '../env';
 import { fail } from '../lib/http';
+import { runRequestInTransaction } from '../lib/request-transaction';
 import { listMemberships } from '../services/sessions';
 
 /** Who is calling and in which box. `boxId` always comes from the session, never the request. */
@@ -10,6 +11,8 @@ export interface BoxAuth {
   userId: string;
   boxId: string;
   role: BoxRole;
+  /** The platform admin behind an "entrar como" request; audit entries carry it. */
+  impersonatorUserId?: string;
 }
 
 export interface BoxEnv extends AppEnv {
@@ -21,7 +24,34 @@ export interface BoxEnv extends AppEnv {
   };
 }
 
-class Rollback extends Error {}
+type BoxAuthResult = BoxAuth | { error: 'not_a_member' | 'box_suspended' | 'box_cancelled' };
+
+/**
+ * A platform admin impersonating a box acts as its owner (support needs to see
+ * everything) without being on its staff. Everyone else needs an active
+ * membership, and the box must not be suspended or removed.
+ */
+async function resolveBoxAuth(
+  database: SchemaDatabase,
+  session: AuthenticatedSession | null,
+): Promise<BoxAuthResult> {
+  if (!session) return { error: 'not_a_member' };
+  if (session.impersonation) {
+    return {
+      userId: session.userId,
+      boxId: session.impersonation.boxId,
+      role: 'box_owner',
+      impersonatorUserId: session.userId,
+    };
+  }
+  if (!session.activeBoxId) return { error: 'not_a_member' };
+  const memberships = await listMemberships(database, session.userId);
+  const membership = memberships.find((candidate) => candidate.boxId === session.activeBoxId);
+  if (!membership) return { error: 'not_a_member' };
+  if (membership.boxStatus === 'suspended') return { error: 'box_suspended' };
+  if (membership.boxStatus === 'cancelled') return { error: 'box_cancelled' };
+  return { userId: session.userId, boxId: membership.boxId, role: membership.role };
+}
 
 /**
  * Resolves the session's box and role, then runs the rest of the request in a
@@ -30,28 +60,14 @@ class Rollback extends Error {}
  */
 const boxScope: MiddlewareHandler<BoxEnv> = async (context, next) => {
   const session = context.var.session;
-  if (!session?.activeBoxId) return fail(context, 403, 'not_a_member');
-  const database = context.var.services.database();
-  const memberships = await listMemberships(database, session.userId);
-  const membership = memberships.find((candidate) => candidate.boxId === session.activeBoxId);
-  if (!membership) return fail(context, 403, 'not_a_member');
+  const auth = await resolveBoxAuth(context.var.services.database(), session);
+  if ('error' in auth) return fail(context, 403, auth.error);
 
-  context.set('auth', { userId: session.userId, boxId: membership.boxId, role: membership.role });
-  try {
-    await withBoxScope(
-      database,
-      { boxId: membership.boxId, userId: session.userId },
-      async (transaction) => {
-        context.set('transaction', transaction);
-        await next();
-        // Hono turns thrown errors into a 500 response before we get here.
-        if (context.error) throw context.error;
-        if (context.res.status >= 400) throw new Rollback();
-      },
-    );
-  } catch (error) {
-    if (!(error instanceof Rollback)) throw error;
-  }
+  context.set('auth', auth);
+  const database = context.var.services.database();
+  await runRequestInTransaction(context, next, (work) =>
+    withBoxScope(database, { boxId: auth.boxId, userId: auth.userId }, work),
+  );
 };
 
 type Roles = readonly [BoxRole, ...BoxRole[]];
@@ -83,9 +99,3 @@ export function createBoxRouter() {
       router.delete(path, authorize(roles), handler),
   };
 }
-
-/** For GuaraniX's own superadmin routes. */
-export const requirePlatformAdmin: MiddlewareHandler<AppEnv> = async (context, next) => {
-  if (!context.var.session?.isPlatformAdmin) return fail(context, 403, 'forbidden');
-  return next();
-};

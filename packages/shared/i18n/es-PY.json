@@ -418,7 +418,9 @@
       "forbidden": "No tenés permiso para hacer esto.",
       "csrf_failed": "La página quedó desactualizada. Recargala y probá de nuevo.",
       "validation_failed": "Revisá los datos e intentá de nuevo.",
-      "internal_error": "Algo salió mal de nuestro lado. Probá de nuevo en un rato."
+      "internal_error": "Algo salió mal de nuestro lado. Probá de nuevo en un rato.",
+      "box_suspended": "Tu box está suspendido. Escribile al dueño para reactivarlo.",
+      "box_cancelled": "Este box ya no usa GuaraniX."
     },
     "email": {
       "resetSubject": "Creá tu nueva contraseña de GuaraniX",
@@ -492,7 +494,13 @@
     "payment_not_found": "No encontramos ese pago.",
     "payment_requires_front_desk": "Los pagos los registra recepción o la administración.",
     "receipt_required": "Adjuntá el comprobante de la transferencia o del QR.",
-    "internal_error": "Algo salió mal. Probá de nuevo en un rato."
+    "internal_error": "Algo salió mal. Probá de nuevo en un rato.",
+    "platform_plan_not_found": "No encontramos ese plan de GuaraniX.",
+    "platform_plan_code_taken": "Ya hay un plan con ese código.",
+    "platform_plan_limit_below_usage": "Hay más boxes en este plan que el límite que pusiste.",
+    "platform_plan_inactive": "Ese plan ya no se ofrece.",
+    "platform_plan_full": "Ese plan ya no tiene lugares. Elegí otro.",
+    "box_status_unchanged": "El box ya está en ese estado."
   },
   "workout": {
     "kinds": {
