@@ -2,6 +2,7 @@ import { boolean, date, index, pgTable, text, unique, uuid } from 'drizzle-orm/p
 import { sql } from 'drizzle-orm';
 import { boxRoleEnum, memberStatusEnum } from './enums';
 import { dataImports } from './imports';
+import { locations } from './locations';
 import { users } from './platform';
 import { sameBoxReference, tenantColumns, tenantIsolationPolicy, tenantKey } from './tenant';
 
@@ -51,6 +52,8 @@ export const members = pgTable(
     externalRef: text(),
     /** The import that created this row, if any. */
     importId: uuid(),
+    /** Location the member usually trains at, for per-location reports. Null means the default. */
+    homeLocationId: uuid(),
   },
   (table) => [
     tenantKey('members', table.boxId, table.id),
@@ -66,6 +69,11 @@ export const members = pgTable(
       'members_import_fk',
       [table.boxId, table.importId],
       [dataImports.boxId, dataImports.id],
+    ),
+    sameBoxReference(
+      'members_home_location_fk',
+      [table.boxId, table.homeLocationId],
+      [locations.boxId, locations.id],
     ),
     tenantIsolationPolicy(table.boxId),
   ],

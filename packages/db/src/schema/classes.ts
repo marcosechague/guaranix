@@ -14,6 +14,8 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 import { bookingStatusEnum, classStatusEnum } from './enums';
+import { locationColumn } from './location-column';
+import { locations } from './locations';
 import { boxUsers, members } from './people';
 import { memberPlans } from './plans';
 import { sameBoxReference, tenantColumns, tenantIsolationPolicy, tenantKey } from './tenant';
@@ -41,6 +43,7 @@ export const classSchedules = pgTable(
   {
     ...tenantColumns(),
     programId: uuid().notNull(),
+    locationId: locationColumn(),
     coachUserId: uuid(),
     /** 0 = Sunday … 6 = Saturday, like `extract(dow)`. */
     weekday: smallint().notNull(),
@@ -56,6 +59,11 @@ export const classSchedules = pgTable(
       'class_schedules_program_fk',
       [table.boxId, table.programId],
       [programs.boxId, programs.id],
+    ),
+    sameBoxReference(
+      'class_schedules_location_fk',
+      [table.boxId, table.locationId],
+      [locations.boxId, locations.id],
     ),
     sameBoxReference(
       'class_schedules_coach_fk',
@@ -79,6 +87,7 @@ export const classes = pgTable(
   {
     ...tenantColumns(),
     programId: uuid().notNull(),
+    locationId: locationColumn(),
     scheduleId: uuid(),
     coachUserId: uuid(),
     startsAt: timestamp({ withTimezone: true }).notNull(),
@@ -95,6 +104,11 @@ export const classes = pgTable(
       [programs.boxId, programs.id],
     ),
     sameBoxReference(
+      'classes_location_fk',
+      [table.boxId, table.locationId],
+      [locations.boxId, locations.id],
+    ),
+    sameBoxReference(
       'classes_schedule_fk',
       [table.boxId, table.scheduleId],
       [classSchedules.boxId, classSchedules.id],
@@ -107,6 +121,11 @@ export const classes = pgTable(
     // Generating classes twice from the same schedule must not duplicate them.
     unique('classes_schedule_id_starts_at_unique').on(table.scheduleId, table.startsAt),
     index('classes_box_id_starts_at_idx').on(table.boxId, table.startsAt),
+    index('classes_box_id_location_id_starts_at_idx').on(
+      table.boxId,
+      table.locationId,
+      table.startsAt,
+    ),
     check('classes_ends_after_start', sql`${table.endsAt} > ${table.startsAt}`),
     check('classes_capacity_positive', sql`${table.capacity} > 0`),
     tenantIsolationPolicy(table.boxId),
