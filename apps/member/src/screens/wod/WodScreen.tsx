@@ -8,7 +8,7 @@ import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { mainScoredComponent } from '../../lib/workout-summary';
 import { ComponentCard } from './ComponentCard';
 import { ResultCard } from './ResultCard';
-import { Whiteboard } from './Whiteboard';
+import { Whiteboard, type WhiteboardStatus } from './Whiteboard';
 
 function WodSkeleton() {
   return (
@@ -117,7 +117,8 @@ export function WodScreen() {
                   }))}
                 />
               ) : null}
-              {board.isPending ? (
+              {/* Offline the board stays paused: the result can still be logged (it syncs later). */}
+              {board.isPending && board.fetchStatus === 'fetching' ? (
                 <Skeleton className="h-56 rounded-xl" />
               ) : (
                 <ResultCard
@@ -132,7 +133,8 @@ export function WodScreen() {
               <Whiteboard
                 componentId={selected.id}
                 board={board.data}
-                isPending={board.isPending}
+                status={boardStatus(board)}
+                onRetry={() => void board.refetch()}
                 ownMemberId={me?.id}
               />
             </>
@@ -141,4 +143,14 @@ export function WodScreen() {
       />
     </Page>
   );
+}
+
+function boardStatus(board: {
+  data: unknown;
+  isError: boolean;
+  fetchStatus: 'fetching' | 'paused' | 'idle';
+}): WhiteboardStatus {
+  if (board.data !== undefined) return 'ready';
+  if (board.fetchStatus === 'paused') return 'offline';
+  return board.isError ? 'error' : 'loading';
 }

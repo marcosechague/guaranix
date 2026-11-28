@@ -19,7 +19,7 @@ export function ChipGroup<T extends string>({ className, ...props }: ChipGroupPr
       className={classNames('flex gap-2 overflow-x-auto', className)}
       optionClassName={(selected) =>
         classNames(
-          'min-h-10 shrink-0 rounded-pill border px-4 text-sm font-semibold',
+          'min-h-touch shrink-0 rounded-pill border px-4 text-sm font-semibold',
           selected
             ? 'border-text bg-text text-background'
             : 'border-border bg-surface text-text-soft hover:text-text',

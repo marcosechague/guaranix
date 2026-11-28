@@ -58,7 +58,7 @@ export function DayPicker({ label, days, value, onChange, className }: DayPicker
                 aria-hidden="true"
                 className={classNames(
                   'absolute bottom-1.5 size-1 rounded-pill',
-                  selected ? 'bg-on-accent' : 'bg-accent',
+                  selected ? 'bg-on-accent' : 'bg-accent-strong',
                 )}
               />
             ) : null}

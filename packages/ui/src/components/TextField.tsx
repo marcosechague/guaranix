@@ -1,5 +1,6 @@
 import { type InputHTMLAttributes, type Ref, useId } from 'react';
 import { classNames } from '../lib/class-names';
+import { fieldControlClasses } from './field-control';
 
 export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -36,12 +37,7 @@ export function TextField({
         ref={ref}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy}
-        className={classNames(
-          'min-h-touch rounded-md border bg-surface px-3 text-base text-text',
-          'transition-[border-color] duration-fast ease-out outline-none',
-          'placeholder:text-text-secondary focus-visible:border-accent',
-          error ? 'border-warning' : 'border-border',
-        )}
+        className={fieldControlClasses(Boolean(error), 'min-h-touch bg-surface px-3 text-base')}
         {...props}
       />
       {error ? (

@@ -1,6 +1,7 @@
 import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
 import type { MemberPlan } from '@guaranix/shared/api';
 import { Badge, type BadgeTone, Skeleton } from '@guaranix/ui';
+import { LoadError } from '@guaranix/ui/data';
 import { useMemberPlans, usePlans } from '../../api/queries';
 
 export const PLAN_STATE_TONES: Record<MemberPlan['state'], BadgeTone> = {
@@ -15,6 +16,9 @@ export function MemberPlansList({ memberId }: { memberId: string }) {
   const memberPlans = useMemberPlans(memberId);
   const plans = usePlans();
   if (memberPlans.isPending) return <Skeleton className="h-16" />;
+  if (memberPlans.isError) {
+    return <LoadError error={memberPlans.error} onRetry={() => void memberPlans.refetch()} />;
+  }
   if ((memberPlans.data ?? []).length === 0) {
     return <p className="text-sm text-text-secondary">{t('admin.members.noPlans')}</p>;
   }

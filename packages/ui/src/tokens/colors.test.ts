@@ -50,6 +50,24 @@ describe.each(['dark', 'light'] as const)('%s color scheme', (theme) => {
   });
 });
 
+/** Focus rings, progress fills and dots: WCAG 1.4.11 asks 3:1 against what surrounds them. */
+const MIN_MARK_CONTRAST = 3;
+const markPairs: ReadonlyArray<[ColorTokenName, ColorTokenName]> = [
+  ['accentStrong', 'background'],
+  ['accentStrong', 'surface'],
+  ['accentStrong', 'border'],
+  ['accentStrong', 'surfaceSunken'],
+];
+
+describe.each(['dark', 'light'] as const)('%s marks', (theme) => {
+  it.each(markPairs)('%s on %s meets 3:1', (foreground, background) => {
+    const scheme = colorSchemes[theme];
+    expect(contrastRatio(scheme[foreground], scheme[background])).toBeGreaterThanOrEqual(
+      MIN_MARK_CONTRAST,
+    );
+  });
+});
+
 describe('colorVariableName', () => {
   it('converts camelCase to a kebab-case custom property', () => {
     expect(colorVariableName('textSecondary')).toBe('--gx-color-text-secondary');
