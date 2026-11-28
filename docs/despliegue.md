@@ -44,6 +44,8 @@ Copiá `env.production` como `env.staging` en `apps/api/wrangler.jsonc` y `apps/
 
 ## Cómo se publica
 
+Hay dos formas de hacer lo mismo: con los workflows de GitHub Actions o desde tu compu con `pnpm deploy:production` (ver "Publicar desde tu compu"). Mientras el repo sea privado y no queden minutos de Actions en el mes, usá la de tu compu: los workflows no corren.
+
 | Workflow (`.github/workflows/`) | Cuándo corre                   | Qué hace                                                    |
 | ------------------------------- | ------------------------------ | ----------------------------------------------------------- |
 | `ci.yml`                        | Cada PR y cada push a `main`   | Formato, lint, guardas, typecheck, tests, build             |
@@ -74,9 +76,26 @@ git push origin v0.1.0
 
 O en GitHub, **Actions > Deploy production > Run workflow**. Si al environment `production` le ponés "Required reviewers" (Settings > Environments), cada deploy espera tu aprobación.
 
+### Publicar desde tu compu (sin GitHub Actions)
+
+Hace exactamente los mismos pasos que `deploy.yml` (migraciones, bootstrap, API, apps + gateway, Telegram, prueba de humo), con los valores de un archivo local en vez de los del environment de GitHub.
+
+Requisitos: Node 22+, pnpm (`corepack enable`) y el repo clonado y actualizado.
+
+1. Una sola vez: `cp deploy/production.env.example .env.production` y completalo con los mismos nombres y valores de la tabla "Secretos y variables". Está en `.gitignore` y `pnpm check:secrets` impide commitearlo; aun así, tratalo como una contraseña.
+2. Una sola vez: `pnpm install` y después `pnpm deploy:setup`. Crea el bucket, las colas y el Hyperdrive, y muestra el `HYPERDRIVE_ID`: copialo a `.env.production`.
+3. Cada vez que publiques:
+   ```sh
+   git checkout main && git pull
+   pnpm deploy:production
+   ```
+   Publica el commit en el que estás, y se niega si hay cambios sin commitear. Al terminar muestra los cuatro links.
+
+El script cambia `apps/api/wrangler.jsonc` solo mientras corre (para poner el `HYPERDRIVE_ID`) y lo deja como estaba, y el archivo temporal con los secretos se borra siempre, aunque algo falle. Tu `.env` de desarrollo no se mezcla: lo de `.env.production` tiene prioridad.
+
 ### Volver atrás
 
-- **Código**: **Actions > Deploy production > Run workflow** eligiendo el tag anterior. Para algo urgente, en Cloudflare: **Workers > guaranix-api-production > Deployments > Rollback** (y lo mismo con `guaranix`).
+- **Código**: **Actions > Deploy production > Run workflow** eligiendo el tag anterior, o desde tu compu `git checkout <tag anterior>` y `pnpm deploy:production`. Para algo urgente, en Cloudflare: **Workers > guaranix-api-production > Deployments > Rollback** (y lo mismo con `guaranix`).
 - **Base de datos**: las migraciones solo van para adelante. Cada migración tiene que dejar andando la versión anterior del código (primero se agrega, en otro release se saca), así un rollback de código no rompe nada. Si se rompen datos, Neon permite restaurar la base a un momento anterior (**Branches > Restore**), dentro del historial que guarda tu plan.
 
 ## Costos
@@ -107,13 +126,15 @@ Se puede arrancar en el plan gratis para probar. Si el login con contraseña fal
 
 El **Account ID** está en la portada de Workers & Pages (columna de la derecha).
 
-### 3. Environment de GitHub
+### 3. Environment de GitHub (o `.env.production`)
+
+Si vas a publicar solo desde tu compu, podés saltear GitHub y poner todo en `.env.production` (ver "Publicar desde tu compu"). Conviene cargarlo igual en GitHub para cuando vuelvan los minutos de Actions.
 
 En el repo, **Settings > Environments > New environment**: `production`. Ahí van los secretos y variables de abajo. Guardá una copia de cada secreto en un gestor de contraseñas: GitHub no deja volver a verlos.
 
 ### 4. Recursos de Cloudflare
 
-Con `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` y `DATABASE_URL` ya cargados: **Actions > Cloudflare setup > Run workflow**. Al terminar, el resumen muestra el `HYPERDRIVE_ID`: cargalo como variable del environment.
+Con `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` y `DATABASE_URL` ya cargados: **Actions > Cloudflare setup > Run workflow**, o desde tu compu `pnpm deploy:setup`. Al terminar muestra el `HYPERDRIVE_ID`: cargalo como variable del environment (y en `.env.production` si publicás desde tu compu).
 
 ### 5. Servicios externos
 
@@ -131,7 +152,7 @@ Con la dirección `https://guaranix.<tu-subdominio>.workers.dev`:
 
 ### 6. Primer deploy y primer login
 
-1. **Actions > Deploy production > Run workflow**. La primera vez la dirección puede tardar un minuto; la prueba de humo reintenta.
+1. **Actions > Deploy production > Run workflow**, o desde tu compu `pnpm deploy:production`. La primera vez la dirección puede tardar un minuto; la prueba de humo reintenta.
 2. Entrá a `/plataforma/` con Google, usando el email de `PLATFORM_ADMIN_EMAIL`.
 3. Creá el primer box y probá el flujo completo.
 
