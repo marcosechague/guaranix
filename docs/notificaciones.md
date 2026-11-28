@@ -8,7 +8,7 @@ En producción todo lo de abajo se carga en el environment `production` de GitHu
 
 La crea el workflow **Cloudflare setup** junto con su cola de mensajes fallidos (`guaranix-notifications-production` y `…-dlq`). En desarrollo, `wrangler dev` la simula.
 
-`wrangler.jsonc` ya declara la cola, el consumidor y los cron (`0 12 * * *` recordatorios, `0 23 * * *` WOD de mañana, `*/10 * * * *` barrido). Sin la cola no sale nada, pero tampoco se pierde: los eventos quedan en la base y el barrido los encola cuando exista.
+`wrangler.jsonc` ya declara la cola, el consumidor y los cron (`0 12 * * *` recordatorios, `0 23 * * *` WOD de mañana, `*/10 * * * *` barrido, `0 11 * * 1` resumen semanal de Brodi). Sin la cola no sale nada, pero tampoco se pierde: los eventos quedan en la base y el barrido los encola cuando exista.
 
 ## 2. Push (Web Push con VAPID, gratis)
 

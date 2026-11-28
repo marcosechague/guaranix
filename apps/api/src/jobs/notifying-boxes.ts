@@ -21,6 +21,16 @@ export interface BoxJobResult {
   failedBoxIds: string[];
 }
 
+/** Boxes in trial or active. Unscoped only to list them; the work itself runs under RLS. */
+export function listWorkingBoxes(database: SchemaDatabase): Promise<BoxTarget[]> {
+  return withSystemScope(database, (transaction) =>
+    transaction
+      .select({ id: boxes.id, name: boxes.name, timezone: boxes.timezone })
+      .from(boxes)
+      .where(inArray(boxes.status, ['trial', 'active'])),
+  );
+}
+
 /**
  * Visits every working box in its own scoped transaction, collects the
  * notifications `work` records and queues them once that box commits. One
@@ -32,13 +42,7 @@ export async function forEachNotifyingBox(
   label: string,
   work: (transaction: ScopedTransaction, box: BoxTarget) => Promise<string[]>,
 ): Promise<BoxJobResult> {
-  // Unscoped only to list which boxes to visit; the work itself runs under RLS.
-  const targets = await withSystemScope(database, (transaction) =>
-    transaction
-      .select({ id: boxes.id, name: boxes.name, timezone: boxes.timezone })
-      .from(boxes)
-      .where(inArray(boxes.status, ['trial', 'active'])),
-  );
+  const targets = await listWorkingBoxes(database);
   const result: BoxJobResult = { boxes: targets.length, notifications: 0, failedBoxIds: [] };
   for (const box of targets) {
     try {

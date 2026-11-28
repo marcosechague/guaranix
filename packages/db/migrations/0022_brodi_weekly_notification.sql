@@ -1,0 +1,1 @@
+ALTER TYPE "public"."notification_kind" ADD VALUE 'staff_weekly_summary';

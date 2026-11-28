@@ -73,6 +73,7 @@ export const NOTIFICATION_KINDS = [
   'card_payment_failed',
   'staff_class_cancelled',
   'staff_overdue_digest',
+  'staff_weekly_summary',
 ] as const;
 export const NOTIFICATION_DELIVERY_STATUSES = [
   'queued',

@@ -23,6 +23,7 @@ export const NOTIFICATION_ROUTING = {
   card_payment_failed: { topic: 'billing', channels: ['push'] },
   staff_class_cancelled: { topic: 'staff', channels: ['telegram'] },
   staff_overdue_digest: { topic: 'staff', channels: ['telegram'] },
+  staff_weekly_summary: { topic: 'staff', channels: ['telegram'] },
 } as const satisfies Record<
   NotificationKind,
   { topic: NotificationTopic; channels: readonly NotificationChannel[] }

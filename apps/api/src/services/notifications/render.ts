@@ -81,6 +81,11 @@ function texts(kind: NotificationKind, params: NotificationParams, box: string) 
             ? t('notifications.staff_overdue_digest.bodyOne', values)
             : t('notifications.staff_overdue_digest.body', values),
       };
+    case 'staff_weekly_summary':
+      return {
+        title: t('notifications.staff_weekly_summary.title', values),
+        body: t('notifications.staff_weekly_summary.body', values),
+      };
   }
 }
 
@@ -97,6 +102,7 @@ const MEMBER_PATHS: Partial<Record<NotificationKind, string>> = {
 const ADMIN_PATHS: Partial<Record<NotificationKind, string>> = {
   staff_class_cancelled: '/clases',
   staff_overdue_digest: '/cobros',
+  staff_weekly_summary: '/brodi',
 };
 
 /** The message for one person on one channel, in es-PY. Pure, so retries resend the same text. */

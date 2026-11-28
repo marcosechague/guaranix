@@ -155,6 +155,13 @@
       "when": 1795864897062,
       "tag": "0021_brodi_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1795865225583,
+      "tag": "0022_brodi_weekly_notification",
+      "breakpoints": true
     }
   ]
 }
