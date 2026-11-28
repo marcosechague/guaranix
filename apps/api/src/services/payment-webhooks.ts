@@ -8,10 +8,11 @@ import {
 import { calendarDateIn, idSchema } from '@guaranix/shared';
 import { eq } from 'drizzle-orm';
 import { logPaymentEvent, settleAttempt } from './card-attempts';
+import { reverseDuplicatePayment } from './card-duplicates';
 import { type PaymentRuntime, providerForAccount } from './card-payment-runtime';
 
 export interface WebhookResponse {
-  status: 200 | 401 | 404;
+  status: 200 | 401 | 404 | 503;
   body: Record<string, unknown>;
 }
 
@@ -61,10 +62,13 @@ export async function processPaymentWebhook(
         createdAt: now,
       }),
     );
-    return { status: error.code === 'invalid_signature' ? 401 : 200, body: REJECTED };
+    // Unavailable: we could not double-check with the processor; a 503 makes it send again.
+    const status =
+      error.code === 'invalid_signature' ? 401 : error.code === 'unavailable' ? 503 : 200;
+    return { status, body: REJECTED };
   }
 
-  await withBoxScope(database, { boxId }, async (transaction) => {
+  const settled = await withBoxScope(database, { boxId }, async (transaction) => {
     const [attempt] = await transaction
       .select()
       .from(paymentAttempts)
@@ -82,7 +86,7 @@ export async function processPaymentWebhook(
     };
     if (!attempt || attempt.accountId !== accountId) {
       await logPaymentEvent(transaction, { ...base, outcome: 'ignored' });
-      return;
+      return null;
     }
     const first = await logPaymentEvent(transaction, {
       ...base,
@@ -91,13 +95,14 @@ export async function processPaymentWebhook(
     });
     if (!first) {
       await logPaymentEvent(transaction, { ...base, outcome: 'duplicate' });
-      return;
+      return null;
     }
-    await settleAttempt(
+    return settleAttempt(
       { transaction, boxId, now, today: calendarDateIn(timezone, now) },
       attempt.id,
       event.outcome,
     );
   });
+  if (settled?.duplicate) await reverseDuplicatePayment(database, runtime, account, settled, now);
   return { status: 200, body: provider.webhookAcknowledgement() };
 }

@@ -32,12 +32,7 @@ function failIfAnyBoxFailed(label: string, result: BoxJobResult) {
   }
 }
 
-async function runJob(
-  env: Bindings,
-  services: Services,
-  cron: string,
-  now: Date,
-): Promise<void> {
+async function runJob(env: Bindings, services: Services, cron: string, now: Date): Promise<void> {
   const database = services.database();
   const queue = services.notifications.queue;
   switch (cron) {

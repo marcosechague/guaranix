@@ -89,6 +89,9 @@ export function createMockPaymentProvider(
     async startHostedPayment({ orderNumber }) {
       return { kind: 'mock', form: 'payment', processId: `mock-pay-${orderNumber}` };
     },
+    resumeHostedPayment(processId) {
+      return { kind: 'mock', form: 'payment', processId };
+    },
     async getPaymentStatus(orderNumber) {
       return behaviour.statuses?.get(orderNumber) ?? { status: 'not_found' };
     },
@@ -111,7 +114,7 @@ export function createMockPaymentProvider(
         : { status: 'declined', declineCode: '05', declineMessage: 'Rechazada' };
       return {
         type: 'payment',
-        eventKey: `confirm:${payload.orderNumber}`,
+        eventKey: `confirm:${payload.orderNumber}:${payload.approved ? 'approved' : 'declined'}`,
         orderNumber: payload.orderNumber,
         outcome,
         summary: { ...payload },

@@ -222,7 +222,22 @@ describe('Bancard adapter', () => {
 });
 
 describe('Bancard confirmation webhook', () => {
-  const { provider } = bancard(() => json({}));
+  const confirmedAs = (fields: Record<string, unknown>) =>
+    bancard(() =>
+      json({
+        status: 'success',
+        confirmation: {
+          shop_process_id: 4321,
+          amount: '150000.00',
+          currency: 'PYG',
+          response_code: '00',
+          authorization_number: '999',
+          ticket_number: '888',
+          ...fields,
+        },
+      }),
+    );
+  const { provider } = confirmedAs({});
   const webhook = (operation: Record<string, unknown>) => ({
     body: JSON.stringify({ operation }),
     headers: new Headers(),
@@ -238,15 +253,34 @@ describe('Bancard confirmation webhook', () => {
     ...fields,
   });
 
-  it('accepts a confirmation signed with the private key', async () => {
+  it('accepts an approval signed with the private key once Bancard confirms it', async () => {
     const event = await provider.parseWebhook(webhook(signed({})));
     expect(event).toMatchObject({
-      eventKey: 'confirm:4321',
+      eventKey: 'confirm:4321:00',
       orderNumber: 4321,
       outcome: { status: 'approved', amountGs: 150_000, authorizationCode: '999' },
     });
     expect(JSON.stringify(event.summary)).not.toContain(PRIVATE_KEY);
     expect(event.summary).not.toHaveProperty('token');
+  });
+
+  it('does not trust an approval Bancard does not confirm (the token skips response_code)', async () => {
+    const declined = confirmedAs({ response_code: '51' });
+    expect(await errorCode(declined.provider.parseWebhook(webhook(signed({}))))).toBe(
+      'bad_request',
+    );
+    const unknown = bancard(() =>
+      json({ status: 'error', messages: [{ key: 'PaymentNotFoundError' }] }),
+    );
+    expect(await errorCode(unknown.provider.parseWebhook(webhook(signed({}))))).toBe('bad_request');
+  });
+
+  it('takes a decline as it comes, under its own event key', async () => {
+    const quiet = bancard(() => {
+      throw new Error('a decline needs no confirmation call');
+    });
+    const event = await quiet.provider.parseWebhook(webhook(signed({ response_code: '51' })));
+    expect(event).toMatchObject({ eventKey: 'confirm:4321:51', outcome: { status: 'declined' } });
   });
 
   it('rejects a forged token, a changed amount or a broken body', async () => {

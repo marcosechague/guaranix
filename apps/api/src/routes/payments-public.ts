@@ -76,7 +76,8 @@ paymentLinkRoutes.post('/:token/checkout', (context) =>
 
 // Development only: what the mock processor's form would do, through the real webhook path.
 paymentLinkRoutes.post('/:token/simulate', async (context) => {
-  if (context.env.APP_ENV === 'production') return context.json({ error: 'not_found' }, 404);
+  // Not even staging: anyone holding a link there could mark a charge paid.
+  if (context.env.APP_ENV !== 'development') return context.json({ error: 'not_found' }, 404);
   return respondWith(context, async () => {
     const database = context.var.services.database();
     const runtime = runtimeOf(context);

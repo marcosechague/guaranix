@@ -29,6 +29,7 @@ import {
   type PaymentRuntime,
   providerForAccount,
 } from '../services/card-payment-runtime';
+import { reverseDuplicatePayment } from '../services/card-duplicates';
 import { isUniqueViolation } from '../services/errors';
 import { createPaymentLink, outstandingOf } from '../services/payment-links';
 import { insertNotification } from '../services/notifications/record';
@@ -118,19 +119,12 @@ async function dueCharges(transaction: ScopedTransaction, accountId: string, tod
 }
 
 /** The next try number for a charge, or null when it must not be tried today. */
-function nextAttemptNumber(attempts: PaymentAttemptRow[], today: string, now: Date): number | null {
-  const autopay = attempts.filter((attempt) => attempt.kind === 'autopay');
-  if (autopay.some((attempt) => attempt.status === 'pending' || attempt.status === 'approved')) {
+function nextAttemptNumber(attempts: PaymentAttemptRow[], today: string): number | null {
+  // Anything in flight (autopay or a link form) or already paid by card: leave the charge alone.
+  if (attempts.some((attempt) => attempt.status === 'pending' || attempt.status === 'approved')) {
     return null;
   }
-  const payingByLink = attempts.some(
-    (attempt) =>
-      attempt.kind === 'link' &&
-      (attempt.status === 'approved' ||
-        (attempt.status === 'pending' &&
-          now.getTime() - attempt.createdAt.getTime() < LINK_STALE_MS)),
-  );
-  if (payingByLink) return null;
+  const autopay = attempts.filter((attempt) => attempt.kind === 'autopay');
   const last = autopay.reduce<PaymentAttemptRow | null>(
     (latest, attempt) =>
       !latest || attempt.attemptNumber > latest.attemptNumber ? attempt : latest,
@@ -147,6 +141,7 @@ async function reconcile(
   run: Run,
   target: BoxTarget,
   today: string,
+  account: PaymentAccountRow,
   provider: PaymentProvider,
   stale: PaymentAttemptRow[],
 ) {
@@ -158,14 +153,24 @@ async function reconcile(
       if (error instanceof PaymentProviderError) continue;
       throw error;
     }
-    await inBox(run, target.boxId, async (transaction) => {
+    if (status.status === 'not_found' && attempt.kind === 'link') {
+      // The member may still have the form open: close it so it can't be paid
+      // after the saved card is charged. Best effort; a late approval is reversed anyway.
+      await provider
+        .refund({ orderNumber: attempt.orderNumber, amountGs: attempt.amountGs })
+        .catch(() => undefined);
+    }
+    const settled = await inBox(run, target.boxId, async (transaction) => {
       const scope = { transaction, boxId: target.boxId, now: run.now, today };
       if (status.status === 'not_found') {
         await abandonAttempt(scope, attempt, 'no_answer');
-      } else {
-        await settleAttempt(scope, attempt.id, status);
+        return null;
       }
+      return settleAttempt(scope, attempt.id, status);
     });
+    if (settled?.duplicate) {
+      await reverseDuplicatePayment(run.database, run.runtime, account, settled, run.now);
+    }
   }
 }
 
@@ -230,11 +235,17 @@ async function chargeOnce(
   due: DueCharge,
 ) {
   const attempt = await inBox(run, target.boxId, async (transaction) => {
+    // Same lock as a payment link checkout: only one of them may start a payment.
+    await transaction
+      .select({ id: charges.id })
+      .from(charges)
+      .where(eq(charges.id, due.chargeId))
+      .for('update');
     const existing = await transaction
       .select()
       .from(paymentAttempts)
       .where(eq(paymentAttempts.chargeId, due.chargeId));
-    const attemptNumber = nextAttemptNumber(existing, today, run.now);
+    const attemptNumber = nextAttemptNumber(existing, today);
     if (attemptNumber === null) return null;
     const { outstandingGs } = await outstandingOf(transaction, due.chargeId);
     if (outstandingGs === 0) return null;
@@ -342,7 +353,7 @@ async function autopayBox(run: Run, target: BoxTarget) {
       run.now.getTime() - attempt.createdAt.getTime() >=
       (attempt.kind === 'autopay' ? AUTOPAY_STALE_MS : LINK_STALE_MS),
   );
-  await reconcile(run, target, today, provider, stale);
+  await reconcile(run, target, today, prepared.account, provider, stale);
   const due = await inBox(run, target.boxId, (transaction) =>
     dueCharges(transaction, prepared.account.id, today),
   );

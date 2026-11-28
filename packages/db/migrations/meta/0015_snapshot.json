@@ -1,5 +1,5 @@
 {
-  "id": "e51c2f48-fdeb-4038-ba36-424c67ea7f2d",
+  "id": "c5fbb7b1-c0e4-463b-a538-56cbbab71902",
   "prevId": "d1b4e912-9346-4d7f-a365-98bcacf93031",
   "version": "7",
   "dialect": "postgresql",
@@ -5079,8 +5079,8 @@
           "method": "btree",
           "with": {}
         },
-        "payment_attempts_one_pending_autopay": {
-          "name": "payment_attempts_one_pending_autopay",
+        "payment_attempts_one_pending_per_charge": {
+          "name": "payment_attempts_one_pending_per_charge",
           "columns": [
             {
               "expression": "charge_id",
@@ -5090,7 +5090,7 @@
             }
           ],
           "isUnique": true,
-          "where": "\"payment_attempts\".\"kind\" = 'autopay' and \"payment_attempts\".\"status\" = 'pending'",
+          "where": "\"payment_attempts\".\"status\" = 'pending'",
           "concurrently": false,
           "method": "btree",
           "with": {}

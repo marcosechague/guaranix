@@ -17,7 +17,7 @@ import {
 } from './card-payment-runtime';
 import { confirmedPaidByCharge } from './charges';
 import { FRONT_DESK_ROLES, assertRole, type ServiceContext } from './context';
-import { notFound, unprocessable } from './errors';
+import { conflict, notFound, unprocessable } from './errors';
 
 /** A week: long enough to pay after payday, short enough that a leaked link soon dies. */
 const LINK_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000;
@@ -168,6 +168,23 @@ export async function startLinkCheckout(
     if (state.status !== 'payable') throw unprocessable(`payment_link_${state.status}`);
     const account = await activePaymentAccount(transaction, runtime, boxId, now);
     if (!account) throw unprocessable('card_payments_unavailable');
+    // One payment in flight per charge: the autopay cron takes the same lock.
+    await transaction
+      .select({ id: charges.id })
+      .from(charges)
+      .where(eq(charges.id, state.charge.id))
+      .for('update');
+    const [inFlight] = await transaction
+      .select()
+      .from(paymentAttempts)
+      .where(
+        and(eq(paymentAttempts.chargeId, state.charge.id), eq(paymentAttempts.status, 'pending')),
+      );
+    if (inFlight) {
+      const sameForm = inFlight.kind === 'link' && inFlight.paymentLinkId === id;
+      if (!sameForm || !inFlight.checkoutRef) throw conflict('payment_in_progress');
+      return { resume: inFlight.checkoutRef, account } as const;
+    }
     const [attempt] = await transaction
       .insert(paymentAttempts)
       .values({
@@ -186,6 +203,7 @@ export async function startLinkCheckout(
   });
 
   const provider = await providerForAccount(runtime, prepared.account);
+  if ('resume' in prepared) return { checkout: provider.resumeHostedPayment(prepared.resume) };
   const returnUrl = memberAppUrl(runtime, `/pagar/${token}`);
   let checkout: HostedCheckout;
   try {

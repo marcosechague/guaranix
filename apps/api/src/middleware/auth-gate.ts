@@ -26,11 +26,12 @@ export const PUBLIC_ROUTES = new Set([
  * card processor's signature, checked first thing in its handler.
  */
 export const WEBHOOK_ROUTES = new Set(['POST /integrations/telegram/webhook']);
-/** Card processor confirmations: `/webhooks/payments/<account id>`. */
-export const WEBHOOK_PREFIX = '/webhooks/payments/';
+/** Card processor confirmations, one URL per box account. Exact shape, so nothing else slips in. */
+const PAYMENT_WEBHOOK = /^POST \/webhooks\/payments\/[0-9a-f-]{36}$/;
 
-/** Pages reached from a link with a secret token (payment links). Writes still need our Origin. */
-export const PUBLIC_PREFIXES = ['/pay/'];
+/** Payment link pages (secret token in the URL). Writes still need our Origin. */
+const PAYMENT_LINK =
+  /^(GET \/pay\/[A-Za-z0-9_-]{43}|POST \/pay\/[A-Za-z0-9_-]{43}\/(checkout|simulate))$/;
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
@@ -43,11 +44,8 @@ const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
  */
 export const authGate: MiddlewareHandler<AppEnv> = async (context, next) => {
   const method = context.req.method;
-  const path = context.req.path;
-  if (
-    WEBHOOK_ROUTES.has(`${method} ${path}`) ||
-    (method === 'POST' && path.startsWith(WEBHOOK_PREFIX))
-  ) {
+  const route = `${method} ${context.req.path}`;
+  if (WEBHOOK_ROUTES.has(route) || PAYMENT_WEBHOOK.test(route)) {
     context.set('session', null);
     return next();
   }
@@ -65,7 +63,7 @@ export const authGate: MiddlewareHandler<AppEnv> = async (context, next) => {
   context.set('session', session);
 
   if (PUBLIC_ROUTES.has(`${method} ${context.req.path}`)) return next();
-  if (PUBLIC_PREFIXES.some((prefix) => context.req.path.startsWith(prefix))) return next();
+  if (PAYMENT_LINK.test(route)) return next();
   if (!session) return fail(context, 401, 'unauthenticated');
   if (isWrite) {
     const expected = await csrfTokenFor(context.env.AUTH_SECRET, session.token);

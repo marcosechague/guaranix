@@ -147,7 +147,7 @@ ALTER TABLE "saved_cards" ADD CONSTRAINT "saved_cards_account_fk" FOREIGN KEY ("
 ALTER TABLE "saved_cards" ADD CONSTRAINT "saved_cards_customer_fk" FOREIGN KEY ("box_id","customer_id") REFERENCES "public"."payment_customers"("box_id","id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "saved_cards" ADD CONSTRAINT "saved_cards_member_fk" FOREIGN KEY ("box_id","member_id") REFERENCES "public"."members"("box_id","id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "payment_attempts_autopay_number" ON "payment_attempts" USING btree ("charge_id","attempt_number") WHERE "payment_attempts"."kind" = 'autopay';--> statement-breakpoint
-CREATE UNIQUE INDEX "payment_attempts_one_pending_autopay" ON "payment_attempts" USING btree ("charge_id") WHERE "payment_attempts"."kind" = 'autopay' and "payment_attempts"."status" = 'pending';--> statement-breakpoint
+CREATE UNIQUE INDEX "payment_attempts_one_pending_per_charge" ON "payment_attempts" USING btree ("charge_id") WHERE "payment_attempts"."status" = 'pending';--> statement-breakpoint
 CREATE INDEX "payment_attempts_box_id_charge_id_idx" ON "payment_attempts" USING btree ("box_id","charge_id");--> statement-breakpoint
 CREATE UNIQUE INDEX "payment_events_account_id_event_key" ON "payment_events" USING btree ("account_id","event_key") WHERE "payment_events"."event_key" is not null;--> statement-breakpoint
 CREATE INDEX "payment_events_box_id_created_at_idx" ON "payment_events" USING btree ("box_id","created_at");--> statement-breakpoint

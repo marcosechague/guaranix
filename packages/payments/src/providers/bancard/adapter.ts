@@ -5,6 +5,7 @@ import type {
   PaymentProvider,
   PaymentProviderConfig,
   RegisteredCard,
+  PaymentStatusResult,
 } from '../../types';
 import {
   type BancardResponse,
@@ -59,6 +60,17 @@ export function createBancardProvider(config: PaymentProviderConfig): PaymentPro
     );
     if (!found?.alias_token) throw new PaymentProviderError('bad_request', 'CardNotFound');
     return found.alias_token;
+  }
+
+  async function confirmedStatus(orderNumber: number): Promise<PaymentStatusResult> {
+    const body = await call('POST', 'single_buy/confirmations', {
+      token: bancardTokens.confirmation(privateKey, orderNumber),
+      shop_process_id: orderNumber,
+    });
+    if (isNotFound(body)) return { status: 'not_found' };
+    const confirmation = confirmationIn(expectSuccess(body));
+    if (!confirmation?.response_code) return { status: 'not_found' };
+    return outcomeOf(confirmation);
   }
 
   return {
@@ -170,16 +182,16 @@ export function createBancardProvider(config: PaymentProviderConfig): PaymentPro
       };
     },
 
-    async getPaymentStatus(orderNumber) {
-      const body = await call('POST', 'single_buy/confirmations', {
-        token: bancardTokens.confirmation(privateKey, orderNumber),
-        shop_process_id: orderNumber,
-      });
-      if (isNotFound(body)) return { status: 'not_found' };
-      const confirmation = confirmationIn(expectSuccess(body));
-      if (!confirmation?.response_code) return { status: 'not_found' };
-      return outcomeOf(confirmation);
+    resumeHostedPayment(processId) {
+      return {
+        kind: 'bancard',
+        form: 'payment',
+        processId,
+        scriptUrl: bancardScriptUrl(environment),
+      };
     },
+
+    getPaymentStatus: confirmedStatus,
 
     async refund({ orderNumber }) {
       const body = await call('POST', 'single_buy/rollback', {
@@ -216,11 +228,21 @@ export function createBancardProvider(config: PaymentProviderConfig): PaymentPro
       if (!Number.isSafeInteger(orderNumber)) {
         throw new PaymentProviderError('bad_request', 'invalid_order');
       }
+      const outcome = outcomeOf(operation);
+      if (outcome.status === 'approved') {
+        // The confirmation token does not cover response_code, so an approval
+        // only counts once Bancard says the same thing when we ask it directly.
+        const confirmed = await confirmedStatus(orderNumber);
+        if (confirmed.status !== 'approved' || confirmed.amountGs !== outcome.amountGs) {
+          throw new PaymentProviderError('bad_request', 'approval_not_confirmed');
+        }
+      }
       return {
         type: 'payment',
-        eventKey: `confirm:${orderNumber}`,
+        // A decline and a later approval of the same order are different events.
+        eventKey: `confirm:${orderNumber}:${operation.response_code ?? ''}`,
         orderNumber,
-        outcome: outcomeOf(operation),
+        outcome,
         summary: summaryOf(operation),
       };
     },

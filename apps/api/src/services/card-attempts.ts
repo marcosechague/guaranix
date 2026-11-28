@@ -8,6 +8,8 @@ import { settleCharge } from './charges';
 import { notFound } from './errors';
 
 export type PaymentAttemptRow = typeof paymentAttempts.$inferSelect;
+/** `duplicate`: approved on a charge that was already paid or voided; give it back. */
+export type SettledAttempt = PaymentAttemptRow & { duplicate: boolean };
 
 /**
  * Days to wait after each declined automatic try: the 1st try is on the due
@@ -50,9 +52,13 @@ async function approve(
   scope: SettleScope,
   attempt: PaymentAttemptRow,
   outcome: Extract<ChargeOutcome, { status: 'approved' }>,
-): Promise<PaymentAttemptRow> {
+): Promise<SettledAttempt> {
   const { transaction, boxId, now } = scope;
-  const [charge] = await transaction.select().from(charges).where(eq(charges.id, attempt.chargeId));
+  const [charge] = await transaction
+    .select()
+    .from(charges)
+    .where(eq(charges.id, attempt.chargeId))
+    .for('update');
   if (!charge) throw notFound('charge');
   // The money is taken whatever happened meanwhile, so it is always recorded;
   // the audit flags when it did not match what was owed, for staff to refund.
@@ -101,7 +107,7 @@ async function approve(
       ...(charge.status !== 'open' && { chargeWasAlready: charge.status }),
     },
   });
-  return approved;
+  return { ...approved, duplicate: charge.status !== 'open' };
 }
 
 /**
@@ -114,16 +120,16 @@ export async function settleAttempt(
   scope: SettleScope,
   attemptId: string,
   outcome: ChargeOutcome,
-): Promise<PaymentAttemptRow> {
+): Promise<SettledAttempt> {
   const [attempt] = await scope.transaction
     .select()
     .from(paymentAttempts)
     .where(eq(paymentAttempts.id, attemptId))
     .for('update');
   if (!attempt) throw notFound('payment_attempt');
-  if (!UNSETTLED.has(attempt.status)) return attempt;
+  if (!UNSETTLED.has(attempt.status)) return { ...attempt, duplicate: false };
   if (outcome.status === 'approved') return approve(scope, attempt, outcome);
-  if (attempt.status !== 'pending') return attempt;
+  if (attempt.status !== 'pending') return { ...attempt, duplicate: false };
   const [declined] = await scope.transaction
     .update(paymentAttempts)
     .set({
@@ -137,7 +143,7 @@ export async function settleAttempt(
     .where(eq(paymentAttempts.id, attempt.id))
     .returning();
   if (!declined) throw notFound('payment_attempt');
-  return declined;
+  return { ...declined, duplicate: false };
 }
 
 /**

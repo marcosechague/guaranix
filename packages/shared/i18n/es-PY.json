@@ -1327,7 +1327,8 @@
     "card_not_saved": "La tarjeta no se guardó. Probá cargarla de nuevo.",
     "refund_not_available": "Este pago ya no se puede devolver desde acá. Hacelo desde el portal de Bancard.",
     "refund_card_only": "Solo los pagos con tarjeta se devuelven desde acá.",
-    "payment_not_refundable": "Este pago no se puede devolver."
+    "payment_not_refundable": "Este pago no se puede devolver.",
+    "payment_in_progress": "Ya hay un pago de esta cuota en curso. Esperá unos minutos y volvé a abrir el link."
   },
   "workout": {
     "kinds": {

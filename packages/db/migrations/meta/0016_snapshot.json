@@ -1,6 +1,6 @@
 {
-  "id": "093c2a14-c97b-4933-9e82-4222de87942c",
-  "prevId": "e51c2f48-fdeb-4038-ba36-424c67ea7f2d",
+  "id": "f54615a6-c56b-4634-a796-ee000c66bb8e",
+  "prevId": "c5fbb7b1-c0e4-463b-a538-56cbbab71902",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -5079,8 +5079,8 @@
           "where": "\"payment_attempts\".\"kind\" = 'autopay'",
           "concurrently": false
         },
-        "payment_attempts_one_pending_autopay": {
-          "name": "payment_attempts_one_pending_autopay",
+        "payment_attempts_one_pending_per_charge": {
+          "name": "payment_attempts_one_pending_per_charge",
           "columns": [
             {
               "expression": "charge_id",
@@ -5092,7 +5092,7 @@
           "isUnique": true,
           "with": {},
           "method": "btree",
-          "where": "\"payment_attempts\".\"kind\" = 'autopay' and \"payment_attempts\".\"status\" = 'pending'",
+          "where": "\"payment_attempts\".\"status\" = 'pending'",
           "concurrently": false
         },
         "payment_attempts_box_id_charge_id_idx": {

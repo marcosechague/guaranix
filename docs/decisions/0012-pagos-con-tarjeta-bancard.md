@@ -34,7 +34,9 @@ Con la caída de ueno Bank y uPay quedó claro que no podemos depender de un sol
 
 - Reintentos: 4 intentos en total, a los días 1, 3 y 7 después del primero. Aviso al alumno en el primer rechazo y en el último: push `card_payment_failed` por el outbox de notificaciones (`0011-notificaciones`), que abre Mi cuota y nunca lleva el link (es un secreto). Un error de claves no avisa al alumno (es del box).
 - Dos fases: primero se guarda el intento con su número de pedido, después se llama al procesador fuera de la transacción y al final se aplica el resultado. Así un corte nunca cobra dos veces: el intento queda y se concilia.
-- No se cobra automáticamente si hay un pago por link pendiente o aprobado para ese cargo.
+- **Un solo pago en curso por cargo**, sea débito automático o link: índice único parcial sobre los intentos `pending` y bloqueo de la fila del cargo (`FOR UPDATE`) antes de crear un intento. Si el alumno abre el link en dos pestañas, recibe el mismo formulario; si hay un débito sin respuesta, el link responde `payment_in_progress`.
+- Un intento de link que Bancard no conoce se cierra con un rollback antes de darlo por perdido, para que el formulario viejo no se pueda pagar después del débito.
+- Si igual llega una aprobación para un cargo que ya estaba pagado o anulado, ese pago se devuelve solo (rollback). Si Bancard ya no lo permite, queda `payment.card_duplicate_needs_refund` en la auditoría.
 
 ### Link de pago
 
@@ -44,6 +46,8 @@ Con la caída de ueno Bank y uPay quedó claro que no podemos depender de un sol
 ### Webhooks
 
 - `POST /webhooks/payments/:accountId`: el id dice con qué clave se verifica la firma. Firma inválida → `401` y queda registrado.
+- El token de Bancard no firma el resultado (`response_code`), así que una aprobación por webhook solo cuenta si Bancard la confirma cuando le preguntamos (`single_buy/confirmations`) con el mismo monto. Un rechazo y una aprobación de la misma orden son eventos distintos.
+- Las rutas sin sesión se abren por forma exacta (`POST /webhooks/payments/<uuid>`, `/pay/<token>`), no por prefijo. El simulador del mock solo existe en desarrollo.
 - Todo evento se guarda en `payment_events` (solo inserción: el rol de la app no puede editar ni borrar). Un evento repetido se reconoce y no se aplica dos veces (índice único por `event_key` y bloqueo del intento).
 - Un pago aprobado crea un pago `card` confirmado y salda el cargo. Si el monto no coincide o el cargo ya estaba pagado, se registra igual y la auditoría lo marca para revisión.
 
@@ -64,6 +68,10 @@ Confirmado con el SDK público de Bancard (vPOS 0.3): `single_buy`, `single_buy/
 3. El dueño carga sus claves de Bancard en Ajustes y le pasa a Bancard la URL de confirmación.
 
 ## Pendiente
+
+- Rate limit en el webhook para firmas inválidas (hoy cada una queda en `payment_events`) y en el alta de tarjetas.
+- Reembolso manual: registrar el evento antes de llamar a Bancard, en su propia transacción.
+- `returnUrl` del link sin el token y `Referrer-Policy: no-referrer` en la app del alumno.
 
 - Aviso por WhatsApp con el link de pago: necesita una plantilla nueva aprobada por Meta. Mientras tanto, recepción lo manda con el botón de WhatsApp (`wa.me`).
 - Probar contra el sandbox de Bancard cuando estén las claves.

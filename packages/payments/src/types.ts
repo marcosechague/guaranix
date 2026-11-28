@@ -125,6 +125,8 @@ export interface PaymentProvider {
   chargeCard(input: CardChargeInput): Promise<ChargeOutcome>;
   /** Opens the hosted form for a one-off payment (payment link). */
   startHostedPayment(input: HostedPaymentInput): Promise<HostedCheckout>;
+  /** The same payment form again (a second tab, a reload), without a new order. */
+  resumeHostedPayment(processId: string): HostedCheckout;
   /** What happened to an order, to settle attempts whose answer never arrived. */
   getPaymentStatus(orderNumber: number): Promise<PaymentStatusResult>;
   /** Gives the money back. Throws `not_supported` when the processor no longer allows it. */

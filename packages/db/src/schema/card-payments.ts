@@ -250,9 +250,10 @@ export const paymentAttempts = pgTable(
     uniqueIndex('payment_attempts_autopay_number')
       .on(table.chargeId, table.attemptNumber)
       .where(sql`${table.kind} = 'autopay'`),
-    uniqueIndex('payment_attempts_one_pending_autopay')
+    // One payment in flight per charge, autopay or link: never two charges for one debt.
+    uniqueIndex('payment_attempts_one_pending_per_charge')
       .on(table.chargeId)
-      .where(sql`${table.kind} = 'autopay' and ${table.status} = 'pending'`),
+      .where(sql`${table.status} = 'pending'`),
     index('payment_attempts_box_id_charge_id_idx').on(table.boxId, table.chargeId),
     check('payment_attempts_amount_positive', sql`${table.amountGs} > 0`),
     check(

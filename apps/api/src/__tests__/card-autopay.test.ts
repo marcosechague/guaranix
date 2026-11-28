@@ -176,10 +176,7 @@ describe('card autopay', () => {
     expect(harness.payments.notifier.sent.at(-1)?.finalAttempt).toBe(true);
     // The member hears it by push too, through the outbox, without the secret link.
     const pushes = await systemRows(harness, (transaction) =>
-      transaction
-        .select()
-        .from(notifications)
-        .where(eq(notifications.kind, 'card_payment_failed')),
+      transaction.select().from(notifications).where(eq(notifications.kind, 'card_payment_failed')),
     );
     const forCharge = pushes.filter((row) => row.idempotencyKey.includes(charge.id));
     expect(forCharge.map((row) => row.params)).toEqual([
@@ -372,7 +369,8 @@ describe('processor webhook', () => {
 
   it('answers 404 for accounts that do not exist', async () => {
     expect((await send('{}', 'x', crypto.randomUUID())).status).toBe(404);
-    expect((await send('{}', 'x', 'not-a-uuid')).status).toBe(404);
+    // Not even a webhook URL: the auth gate turns it away before any lookup.
+    expect((await send('{}', 'x', 'not-a-uuid')).status).toBe(403);
   });
 });
 
