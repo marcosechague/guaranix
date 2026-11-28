@@ -15,7 +15,7 @@ export function SideRail() {
       <div className="flex items-center gap-3 lg:px-2">
         <BoxMark name={boxName ?? ''} />
         <span className="hidden min-w-0 flex-col lg:flex">
-          <span className="truncate font-display font-bold">{boxName}</span>
+          <span className="line-clamp-2 font-display leading-tight font-bold">{boxName}</span>
           <span className="text-xs text-text-secondary">{t('app.name')}</span>
         </span>
       </div>
