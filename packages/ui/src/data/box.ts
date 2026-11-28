@@ -25,5 +25,7 @@ export function useBoxClock() {
     today: calendarDateIn(timeZone, new Date()),
     boxName: data?.box?.name,
     role: data?.role,
+    /** Undefined until the box loads. */
+    checkInModes: data?.box?.checkInModes,
   };
 }

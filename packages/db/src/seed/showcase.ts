@@ -95,6 +95,8 @@ export async function seedShowcase(
         paymentHolderDocument: '80012345-6',
         paymentNote: 'Poné tu nombre en el concepto de la transferencia.',
         paymentQrFileKey: `boxes/${boxId}/payment-qr/seed.png`,
+        // The demo shows every way of checking in.
+        checkInDeskEnabled: true,
       })
       .where(eq(boxes.id, boxId));
     return user.id;

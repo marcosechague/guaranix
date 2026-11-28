@@ -1,10 +1,12 @@
 import { t } from '@guaranix/shared';
 import { Page, PageHeader, Skeleton } from '@guaranix/ui';
 import { LoadError, useBoxClock, usePaymentDetails } from '@guaranix/ui/data';
+import { useCheckInPolicy } from '../../api/check-in-settings';
 import { useBookingPolicy } from '../../api/queries';
 import { canManage } from '../../lib/roles';
 import { BookingPolicyCard } from './BookingPolicyCard';
 import { CardPaymentsCard } from './CardPaymentsCard';
+import { CheckInModesCard } from './CheckInModesCard';
 import { LocationsCard } from './LocationsCard';
 import { PaymentDetailsCard } from './PaymentDetailsCard';
 import { SchedulesCard } from './SchedulesCard';
@@ -12,6 +14,7 @@ import { SchedulesCard } from './SchedulesCard';
 export function SettingsScreen() {
   const { role } = useBoxClock();
   const policy = useBookingPolicy();
+  const checkIn = useCheckInPolicy();
   const paymentDetails = usePaymentDetails();
   const editable = canManage(role);
   return (
@@ -27,6 +30,13 @@ export function SettingsScreen() {
         <LoadError error={policy.error} onRetry={() => void policy.refetch()} />
       ) : (
         <BookingPolicyCard policy={policy.data} editable={editable} />
+      )}
+      {checkIn.isPending ? (
+        <Skeleton className="h-72 rounded-xl" />
+      ) : checkIn.isError ? (
+        <LoadError error={checkIn.error} onRetry={() => void checkIn.refetch()} />
+      ) : (
+        <CheckInModesCard policy={checkIn.data} editable={editable} />
       )}
       <LocationsCard editable={editable} />
       <SchedulesCard editable={editable} />

@@ -32,6 +32,20 @@ export const bookingPolicySchema = z.object({
   waitlistAutoPromote: z.boolean(),
 });
 
+export const CHECK_IN_RADIUS_METERS = { min: 30, max: 1000 } as const;
+
+/** Which ways of marking attendance the box uses, and how close the wall QR must be read. */
+export const checkInPolicySchema = z.object({
+  checkInDeskEnabled: z.boolean(),
+  checkInCoachEnabled: z.boolean(),
+  checkInWallQrEnabled: z.boolean(),
+  checkInRadiusMeters: z
+    .number()
+    .int()
+    .min(CHECK_IN_RADIUS_METERS.min)
+    .max(CHECK_IN_RADIUS_METERS.max),
+});
+
 export const boxSchema = z.object({
   id: idSchema,
   name: nameSchema,
@@ -78,3 +92,11 @@ export function slugFromName(name: string): string {
 
 /** Staff send the whole policy, so the form and the stored rules never drift apart. */
 export type BookingPolicy = z.infer<typeof bookingPolicySchema>;
+export type CheckInPolicy = z.infer<typeof checkInPolicySchema>;
+
+/** Which ways of marking attendance the box turned on in Ajustes. */
+export interface CheckInModes {
+  desk: boolean;
+  coach: boolean;
+  wallQr: boolean;
+}

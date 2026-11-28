@@ -8,7 +8,7 @@ import { LoadError, useBoxClock } from '@guaranix/ui/data';
 import { CancelBookingSheet } from '../book/CancelBookingSheet';
 
 export function NextClassCard() {
-  const { timeZone, today } = useBoxClock();
+  const { timeZone, today, checkInModes } = useBoxClock();
   const bookings = useMyBookings();
   const next = bookings.data?.[0];
   const classDate = next ? dateOfInstant(timeZone, next.class.startsAt) : today;
@@ -89,7 +89,7 @@ export function NextClassCard() {
       ) : (
         <Skeleton className="h-1.5" />
       )}
-      {!isWaitlisted && classDate === today ? (
+      {!isWaitlisted && classDate === today && checkInModes?.desk !== false ? (
         <Button asChild>
           <Link to="/entrar">
             <QrCodeIcon aria-hidden="true" size={18} />

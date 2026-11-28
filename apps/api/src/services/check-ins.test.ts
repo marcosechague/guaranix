@@ -22,7 +22,12 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-  await world.setPolicy({ bookingOpensHoursBefore: 168, bookingClosesMinutesBefore: 0 });
+  await world.setPolicy({
+    bookingOpensHoursBefore: 168,
+    bookingClosesMinutesBefore: 0,
+    checkInDeskEnabled: true,
+  });
+  await otherWorld.setPolicy({ checkInDeskEnabled: true });
 });
 
 afterAll(async () => {
@@ -229,5 +234,14 @@ describe('the pass', () => {
       member.act((context) => checkInWithPass(context, SECRET, pass), now),
       'forbidden',
     );
+  });
+
+  it('stops working when the box turns the entrance off in Ajustes', async () => {
+    const { now, today } = freshDay();
+    const member = await world.memberWith(await world.createPlanOf({ kind: 'unlimited' }), today);
+    const pass = await passOf(member, now);
+    await world.setPolicy({ checkInDeskEnabled: false });
+    await expectServiceError(scan(pass, now), 'check_in_mode_disabled');
+    await expectServiceError(passOf(member, now), 'check_in_mode_disabled');
   });
 });

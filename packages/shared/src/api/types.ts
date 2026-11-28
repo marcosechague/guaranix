@@ -17,6 +17,9 @@ import type {
   TimerType,
   WorkoutComponentKind,
 } from '../domain/enums';
+import type { CheckInModes } from '../schemas/box';
+
+export type { CheckInModes };
 
 export interface BoxProfile {
   id: string;
@@ -24,6 +27,7 @@ export interface BoxProfile {
   slug: string;
   city: string | null;
   timezone: string;
+  checkInModes: CheckInModes;
 }
 
 export interface CurrentBoxResponse {
@@ -70,6 +74,8 @@ export interface Location {
   address: string | null;
   city: string | null;
   phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
   isDefault: boolean;
   isActive: boolean;
 }

@@ -94,6 +94,8 @@ export * from './notifications';
 export { QrCode } from './components/QrCode';
 export type { QrCodeProps } from './components/QrCode';
 export { useWakeLock } from './lib/use-wake-lock';
+export { getDevicePosition, PositionError } from './lib/geolocation';
+export type { DevicePosition, PositionProblem } from './lib/geolocation';
 export * from './share';
 export {
   BottomBarButton,
