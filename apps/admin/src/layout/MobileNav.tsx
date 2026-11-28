@@ -42,7 +42,7 @@ export function MobileTopBar() {
 export function MobileTabBar() {
   return (
     <BottomBar as="nav" aria-label={t('admin.nav.label')} className="md:hidden">
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-6">
         {NAV_ITEMS.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <NavLink
