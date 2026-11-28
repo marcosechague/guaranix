@@ -101,7 +101,7 @@
       "waitlisted": "En espera #{position}",
       "past": "Terminó",
       "cancelledClass": "Suspendida",
-      "full": "Llena · {count} en espera",
+      "full": "{count} en espera",
       "bookedToast": "Listo, reservaste {time}.",
       "waitlistedToast": "Estás #{position} en la lista de espera.",
       "cancelledToast": "Cancelaste tu reserva.",
@@ -113,7 +113,8 @@
       "keep": "Mantener",
       "emptyTitle": "No hay clases este día",
       "emptyBody": "Probá con otro día de la semana.",
-      "noneLeftTitle": "No quedan clases hoy"
+      "noneLeftTitle": "No quedan clases hoy",
+      "waitlistedShort": "#{position}"
     },
     "wod": {
       "title": "WOD",

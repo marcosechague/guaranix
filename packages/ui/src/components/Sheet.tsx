@@ -9,7 +9,7 @@ export interface SheetProps {
   title: string;
   description?: string;
   closeLabel: string;
-  children: ReactNode;
+  children?: ReactNode;
   /** Sticky actions at the bottom (save, cancel). */
   footer?: ReactNode;
   size?: 'md' | 'lg';
@@ -42,7 +42,12 @@ export function Sheet({
             size === 'lg' ? 'md:w-[640px]' : 'md:w-[480px]',
           )}
         >
-          <header className="flex items-start justify-between gap-4 border-b border-divider px-5 pt-5 pb-4">
+          <header
+            className={classNames(
+              'flex items-start justify-between gap-4 px-5 pt-5 pb-4',
+              children ? 'border-b border-divider' : '',
+            )}
+          >
             <div className="flex flex-col gap-1">
               <Dialog.Title className="font-display text-xl font-bold">{title}</Dialog.Title>
               {description ? (
@@ -58,9 +63,14 @@ export function Sheet({
               <X aria-hidden="true" size={20} />
             </Dialog.Close>
           </header>
-          <div className="flex-1 overflow-y-auto px-5 py-5">{children}</div>
+          {children ? <div className="flex-1 overflow-y-auto px-5 py-5">{children}</div> : null}
           {footer ? (
-            <footer className="flex gap-3 border-t border-divider px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+            <footer
+              className={classNames(
+                'mt-auto flex gap-3 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]',
+                children ? 'border-t border-divider' : '',
+              )}
+            >
               {footer}
             </footer>
           ) : null}

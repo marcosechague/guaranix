@@ -29,7 +29,7 @@ function ActionButton({ item, now, busy, onAction }: Omit<ClassRowProps, 'timeZo
     return (
       <Button
         variant="secondary"
-        className="min-w-28 px-3.5 border-success/40 text-success"
+        className="min-w-28 shrink-0 border-success/40 px-3.5 text-success"
         disabled={busy}
         onClick={() => onAction(item, 'cancel')}
       >
@@ -39,15 +39,17 @@ function ActionButton({ item, now, busy, onAction }: Omit<ClassRowProps, 'timeZo
     );
   }
   if (own?.status === 'waitlisted') {
+    const position = own.waitlistPosition ?? 1;
     return (
       <Button
         variant="secondary"
-        className="min-w-28 px-3.5 text-warning"
+        className="min-w-20 px-3.5 text-warning"
+        aria-label={t('member.book.waitlisted', { position })}
         disabled={busy}
         onClick={() => onAction(item, 'cancel')}
       >
         <Clock aria-hidden="true" size={18} />
-        {t('member.book.waitlisted', { position: own.waitlistPosition ?? 1 })}
+        {t('member.book.waitlistedShort', { position })}
       </Button>
     );
   }
@@ -84,13 +86,13 @@ export function ClassRow(props: ClassRowProps) {
         {formatTimeIn(timeZone, item.startsAt)}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-        <span className="flex items-center gap-2 truncate font-semibold">
+        <span className="flex min-w-0 items-center gap-2 font-semibold">
           <span
             aria-hidden="true"
             className="size-2 shrink-0 rounded-pill"
             style={{ backgroundColor: item.programColor }}
           />
-          {item.programName}
+          <span className="truncate">{item.programName}</span>
         </span>
         <div className="flex items-center gap-2">
           <ProgressBar
@@ -107,7 +109,9 @@ export function ClassRow(props: ClassRowProps) {
           </span>
         </div>
       </div>
-      <ActionButton {...props} />
+      <div className="shrink-0">
+        <ActionButton {...props} />
+      </div>
     </motion.li>
   );
 }

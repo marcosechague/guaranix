@@ -66,8 +66,6 @@ export function CancelBookingSheet({ open, onOpenChange, target }: CancelBooking
           </Button>
         </>
       }
-    >
-      {null}
-    </Sheet>
+    />
   );
 }

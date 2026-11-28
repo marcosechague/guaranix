@@ -185,7 +185,7 @@ async function seedBookings(
     );
     const isEvening = hour >= 18;
     const target = Math.min(
-      classIndex === 1
+      classRow.id === full?.id
         ? classRow.capacity + 2
         : isEvening
           ? 10 + (classIndex % 6)

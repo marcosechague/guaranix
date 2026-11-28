@@ -24,7 +24,7 @@ export function PrCelebration({ show, onDone }: { show: boolean; onDone: () => v
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
-          className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface/95 text-center"
+          className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-surface text-center"
         >
           {CONFETTI.map((piece) => (
             <motion.span
