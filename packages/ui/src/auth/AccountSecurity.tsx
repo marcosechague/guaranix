@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '../components/Button';
+import { Card } from '../components/Card';
 import { FormMessage } from '../components/FormMessage';
 import { GoogleButton } from '../components/GoogleButton';
 import { TextField } from '../components/TextField';
@@ -108,10 +109,7 @@ export function AccountSecurity() {
   };
 
   return (
-    <section
-      aria-labelledby="account-security-title"
-      className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-5"
-    >
+    <Card aria-labelledby="account-security-title">
       <h2 id="account-security-title" className="font-display text-lg font-bold">
         {t('auth.account.title')}
       </h2>
@@ -122,6 +120,6 @@ export function AccountSecurity() {
           {t('auth.account.logout')}
         </Button>
       </div>
-    </section>
+    </Card>
   );
 }
