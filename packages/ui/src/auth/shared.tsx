@@ -1,7 +1,7 @@
 import { AUTH_ERROR_CODES, type AuthErrorCode, t } from '@guaranix/shared';
 import { AuthApiError } from '@guaranix/shared/auth-client';
 import { type ReactNode, useCallback, useState } from 'react';
-import { Brodi } from '../components/Brodi';
+import { GuaranixLogo } from '../components/GuaranixLogo';
 import { GoogleButton } from '../components/GoogleButton';
 import { Turnstile } from '../components/Turnstile';
 import { useAuth } from './AuthProvider';
@@ -34,8 +34,7 @@ export function AuthLayout({
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-sm flex-col justify-center gap-6 px-5 py-10">
       <header className="flex flex-col items-center gap-3 text-center">
-        <Brodi alt="" size={72} />
-        <span className="text-sm text-text-secondary">{t('app.name')}</span>
+        <GuaranixLogo size="large" />
         <h1 className="font-display text-2xl font-bold">{title}</h1>
         {subtitle ? <p className="text-text-secondary">{subtitle}</p> : null}
       </header>
