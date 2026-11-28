@@ -8,7 +8,7 @@ export function ComponentCard({ component }: { component: WorkoutComponent }) {
   return (
     <Card as="article" className="flex flex-col gap-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <span className="text-xs font-semibold tracking-[0.12em] text-accent-text uppercase">
+        <span className="text-xs font-semibold tracking-widest text-accent-text uppercase">
           {t(`workout.kinds.${component.kind}`)}
         </span>
         {chips.length > 0 ? (

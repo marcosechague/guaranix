@@ -1,9 +1,9 @@
 import { t } from '@guaranix/shared';
 import type { LeaderboardEntry, WorkoutComponent } from '@guaranix/shared/api';
 import type { Scaling } from '@guaranix/shared/domain';
-import { Button, Card, Eyebrow, SegmentedControl, useToast } from '@guaranix/ui';
+import { Button, Card, Eyebrow, ScoreField, SegmentedControl, useToast } from '@guaranix/ui';
 import { errorText } from '@guaranix/ui/data';
-import { useId, useState } from 'react';
+import { useState } from 'react';
 import { useLogResult } from '../../api/mutations';
 import { PrCelebration } from './PrCelebration';
 import { EMPTY_SCORE_TEXT, parseScore, type ScoreText, scoreToText } from './score-form';
@@ -11,44 +11,6 @@ import { EMPTY_SCORE_TEXT, parseScore, type ScoreText, scoreToText } from './sco
 export interface ResultCardProps {
   component: WorkoutComponent;
   ownEntry: LeaderboardEntry | undefined;
-}
-
-const fieldClass =
-  'min-h-14 w-full rounded-md border bg-surface-sunken px-4 font-display text-3xl font-bold tabular-nums text-text outline-none placeholder:text-text-secondary/60 focus-visible:border-accent';
-
-function ScoreInput({
-  label,
-  value,
-  onChange,
-  placeholder,
-  invalid,
-  inputMode = 'numeric',
-}: {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  invalid: boolean;
-  inputMode?: 'numeric' | 'decimal' | 'text';
-}) {
-  const id = useId();
-  return (
-    <div className="flex min-w-0 flex-1 flex-col gap-1.5">
-      <label htmlFor={id} className="text-xs font-medium text-text-secondary">
-        {label}
-      </label>
-      <input
-        id={id}
-        value={value}
-        inputMode={inputMode}
-        autoComplete="off"
-        placeholder={placeholder}
-        aria-invalid={invalid || undefined}
-        onChange={(event) => onChange(event.target.value)}
-        className={`${fieldClass} ${invalid ? 'border-warning' : 'border-border'}`}
-      />
-    </div>
-  );
 }
 
 /** One screen, one save: score, Rx or scaled, done. */
@@ -88,7 +50,7 @@ export function ResultCard({ component, ownEntry }: ResultCardProps) {
     switch (component.scoreType) {
       case 'time':
         return (
-          <ScoreInput
+          <ScoreField
             label={t('member.wod.time')}
             value={text.time}
             onChange={set('time')}
@@ -100,25 +62,27 @@ export function ResultCard({ component, ownEntry }: ResultCardProps) {
       case 'rounds_reps':
         return (
           <>
-            <ScoreInput
+            <ScoreField
               label={t('member.wod.rounds')}
               value={text.rounds}
               onChange={set('rounds')}
               placeholder="7"
+              inputMode="numeric"
               invalid={invalidField === 'rounds'}
             />
-            <ScoreInput
+            <ScoreField
               label={t('member.wod.reps')}
               value={text.reps}
               onChange={set('reps')}
               placeholder="12"
+              inputMode="numeric"
               invalid={invalidField === 'reps'}
             />
           </>
         );
       case 'load':
         return (
-          <ScoreInput
+          <ScoreField
             label={t('member.wod.load')}
             value={text.load}
             onChange={set('load')}
@@ -132,11 +96,12 @@ export function ResultCard({ component, ownEntry }: ResultCardProps) {
       case 'calories':
       case 'points':
         return (
-          <ScoreInput
+          <ScoreField
             label={t(`member.wod.${component.scoreType}`)}
             value={text.value}
             onChange={set('value')}
             placeholder="0"
+            inputMode="numeric"
             invalid={invalidField === 'value'}
           />
         );

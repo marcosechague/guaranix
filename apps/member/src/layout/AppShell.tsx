@@ -8,8 +8,8 @@ import { TabBar } from './TabBar';
 export function AppShell() {
   const location = useLocation();
   return (
-    <ToastProvider offsetClassName="bottom-[calc(5rem+env(safe-area-inset-bottom))]">
-      <div className="mx-auto min-h-dvh max-w-md pb-[calc(5rem+env(safe-area-inset-bottom))]">
+    <ToastProvider offsetClassName="bottom-tabbar">
+      <div className="mx-auto min-h-dvh max-w-md pb-tabbar">
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 8 }}

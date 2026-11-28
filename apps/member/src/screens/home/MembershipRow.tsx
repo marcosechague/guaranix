@@ -36,7 +36,7 @@ export function MembershipRow() {
     <Link
       to="/perfil"
       aria-label={t('member.home.openPlan')}
-      className="flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-4 transition-transform duration-fast ease-out hover:border-text-secondary active:scale-[0.99]"
+      className="flex items-center gap-3 rounded-xl border border-border bg-surface px-5 py-4 transition-transform duration-fast ease-out hover:border-text-secondary active:scale-99"
     >
       <span aria-hidden="true" className={classNames('size-2.5 shrink-0 rounded-pill', tone)} />
       <span className="flex min-w-0 flex-1 flex-col">

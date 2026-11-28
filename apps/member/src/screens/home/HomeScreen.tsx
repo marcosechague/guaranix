@@ -1,5 +1,5 @@
 import { t } from '@guaranix/shared';
-import { Avatar } from '@guaranix/ui';
+import { Avatar, Page, PageHeader } from '@guaranix/ui';
 import { useSession } from '@guaranix/ui/auth';
 import { Link } from 'react-router';
 import { useMe } from '../../api/queries';
@@ -16,26 +16,24 @@ export function HomeScreen() {
   const firstName = me?.firstName ?? session.user.fullName.split(' ')[0] ?? '';
   const lastName = me?.lastName ?? '';
   return (
-    <main className="flex flex-col gap-4 px-5 pt-7 pb-6">
-      <header className="flex items-center justify-between gap-4 pb-1">
-        <div className="flex min-w-0 flex-col">
-          <span className="truncate text-sm text-text-secondary">{boxName ?? t('app.name')}</span>
-          <h1 className="font-display text-2xl font-bold">
-            {t('member.home.greeting', { name: firstName })}
-          </h1>
-        </div>
-        <Link
-          to="/perfil"
-          aria-label={t('member.nav.profile')}
-          className="rounded-pill transition-transform duration-fast ease-out active:scale-[0.94]"
-        >
-          <Avatar firstName={firstName} lastName={lastName} className="size-touch" />
-        </Link>
-      </header>
+    <Page layout="mobile" className="gap-4">
+      <PageHeader
+        eyebrow={boxName ?? t('app.name')}
+        title={t('member.home.greeting', { name: firstName })}
+        actions={
+          <Link
+            to="/perfil"
+            aria-label={t('member.nav.profile')}
+            className="rounded-pill transition-press active:scale-95"
+          >
+            <Avatar firstName={firstName} lastName={lastName} className="size-touch" />
+          </Link>
+        }
+      />
       <NextClassCard />
       <TodayWodCard />
       <StatsRow />
       <MembershipRow />
-    </main>
+    </Page>
   );
 }

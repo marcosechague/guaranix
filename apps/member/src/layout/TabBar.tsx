@@ -22,7 +22,7 @@ export function TabBar() {
   return (
     <nav
       aria-label={t('member.nav.label')}
-      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 pb-safe backdrop-blur"
     >
       <ul className="mx-auto grid max-w-md grid-cols-5">
         {TABS.map(({ to, label, icon: Icon }) => (
@@ -32,8 +32,8 @@ export function TabBar() {
               end={to === '/'}
               className={({ isActive }) =>
                 classNames(
-                  'flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-semibold',
-                  'transition-[transform,opacity] duration-fast ease-out active:scale-[0.94]',
+                  'flex min-h-16 flex-col items-center justify-center gap-1 text-micro font-semibold',
+                  'transition-press active:scale-95',
                   isActive ? 'text-accent-text' : 'text-text-secondary hover:text-text',
                 )
               }

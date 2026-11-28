@@ -57,7 +57,7 @@ export function Whiteboard({ componentId, board, isPending, ownMemberId }: White
                   </span>
                   <Badge
                     tone={entry.scaling === 'rx' ? 'outline' : 'neutral'}
-                    className="w-fit px-2 py-0.5 text-[10px]"
+                    className="w-fit px-2 py-0.5 text-tiny"
                   >
                     {entry.scaling === 'rx' ? t('common.rx') : t('common.scaledLong')}
                   </Badge>

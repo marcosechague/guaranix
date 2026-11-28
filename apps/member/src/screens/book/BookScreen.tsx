@@ -1,13 +1,12 @@
 import { addDays, dateOfInstant, formatTimeIn, relativeDayLabel, t } from '@guaranix/shared';
 import type { ClassListItem, Plan } from '@guaranix/shared/api';
-import { ChipGroup, EmptyState, Skeleton, useToast } from '@guaranix/ui';
+import { ChipGroup, EmptyState, Page, PageHeader, Skeleton, useToast } from '@guaranix/ui';
 import { errorText } from '@guaranix/ui/data';
 import { CalendarDays } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { useBookClass } from '../../api/mutations';
 import { useClasses, useMyPlans, usePlans } from '../../api/queries';
 import { LoadError } from '../../layout/LoadError';
-import { ScreenHeader } from '../../layout/ScreenHeader';
 import { currentPlanHealth } from '../../lib/plan-status';
 import { useBoxClock } from '../../lib/use-box-clock';
 import { useNow } from '../../lib/use-now';
@@ -90,67 +89,61 @@ export function BookScreen() {
   };
 
   return (
-    <main className="flex flex-col">
-      <ScreenHeader title={t('member.book.title')} subtitle={subtitle} />
-      <div className="flex flex-col gap-4 px-5 pb-6">
-        <DayStrip
-          days={days}
-          selected={selectedDay}
-          onSelect={setPickedDay}
-          markedDays={markedDays}
+    <Page layout="mobile" className="gap-4">
+      <PageHeader size="large" title={t('member.book.title')} subtitle={subtitle} />
+      <DayStrip
+        days={days}
+        selected={selectedDay}
+        onSelect={setPickedDay}
+        markedDays={markedDays}
+      />
+      {programs.length > 1 ? (
+        <ChipGroup
+          label={t('member.book.programs')}
+          value={program}
+          onChange={setProgram}
+          options={[
+            { value: ALL_PROGRAMS, label: t('common.all') },
+            ...programs.map(([value, label]) => ({ value, label })),
+          ]}
         />
-        {programs.length > 1 ? (
-          <ChipGroup
-            label={t('member.book.programs')}
-            value={program}
-            onChange={setProgram}
-            options={[
-              { value: ALL_PROGRAMS, label: t('common.all') },
-              ...programs.map(([value, label]) => ({ value, label })),
-            ]}
-          />
-        ) : null}
-        {classes.isPending ? (
-          <div aria-busy="true" className="flex flex-col gap-3">
-            {[0, 1, 2, 3].map((index) => (
-              <Skeleton key={index} className="h-18 rounded-xl" />
-            ))}
-          </div>
-        ) : classes.isError ? (
-          <LoadError error={classes.error} onRetry={() => void classes.refetch()} />
-        ) : visible.length === 0 ? (
-          <EmptyState
-            className="rounded-xl border border-border bg-surface p-5"
-            icon={
-              <span className="flex size-12 items-center justify-center rounded-pill bg-surface-sunken text-text-secondary">
-                <CalendarDays aria-hidden="true" size={22} />
-              </span>
-            }
-            title={
-              selectedDay === today ? t('member.book.noneLeftTitle') : t('member.book.emptyTitle')
-            }
-            description={t('member.book.emptyBody')}
-          />
-        ) : (
-          <ul className="flex flex-col gap-2.5">
-            {visible.map((item) => (
-              <ClassRow
-                key={item.id}
-                item={item}
-                timeZone={timeZone}
-                now={now}
-                busy={book.isPending && book.variables === item.id}
-                onAction={onAction}
-              />
-            ))}
-          </ul>
-        )}
-      </div>
+      ) : null}
+      {classes.isPending ? (
+        <div aria-busy="true" className="flex flex-col gap-3">
+          {[0, 1, 2, 3].map((index) => (
+            <Skeleton key={index} className="h-18 rounded-xl" />
+          ))}
+        </div>
+      ) : classes.isError ? (
+        <LoadError error={classes.error} onRetry={() => void classes.refetch()} />
+      ) : visible.length === 0 ? (
+        <EmptyState
+          framed
+          icon={CalendarDays}
+          title={
+            selectedDay === today ? t('member.book.noneLeftTitle') : t('member.book.emptyTitle')
+          }
+          description={t('member.book.emptyBody')}
+        />
+      ) : (
+        <ul className="flex flex-col gap-2.5">
+          {visible.map((item) => (
+            <ClassRow
+              key={item.id}
+              item={item}
+              timeZone={timeZone}
+              now={now}
+              busy={book.isPending && book.variables === item.id}
+              onAction={onAction}
+            />
+          ))}
+        </ul>
+      )}
       <CancelBookingSheet
         open={cancelTarget !== null}
         onOpenChange={(open) => !open && setCancelTarget(null)}
         target={cancelTarget}
       />
-    </main>
+    </Page>
   );
 }

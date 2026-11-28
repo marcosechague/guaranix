@@ -25,11 +25,7 @@ export function TodayWodCard() {
       <Card className="flex flex-col gap-4">
         <Eyebrow>{t('member.home.todayWod')}</Eyebrow>
         <EmptyState
-          icon={
-            <span className="flex size-12 items-center justify-center rounded-pill bg-surface-sunken text-text-secondary">
-              <Hourglass aria-hidden="true" size={22} />
-            </span>
-          }
+          icon={Hourglass}
           title={t('member.home.wodPendingTitle')}
           description={t('member.home.wodPending')}
         />
@@ -42,7 +38,7 @@ export function TodayWodCard() {
   return (
     <Link
       to="/wod"
-      className="group block rounded-xl transition-transform duration-fast ease-out active:scale-[0.99]"
+      className="group block rounded-xl transition-transform duration-fast ease-out active:scale-99"
     >
       <Card as="article" className="flex flex-col gap-3 group-hover:border-text-secondary">
         <div className="flex items-center justify-between">

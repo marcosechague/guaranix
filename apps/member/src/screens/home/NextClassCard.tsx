@@ -84,8 +84,8 @@ export function NextClassCard() {
       ) : (
         <Skeleton className="h-1.5" />
       )}
-      <div className="grid grid-cols-[1fr_auto] gap-3">
-        <Button asChild className="bg-text text-background hover:bg-text-soft">
+      <div className="flex gap-3">
+        <Button asChild className="flex-1 bg-text text-background hover:bg-text-soft">
           <Link to="/wod">{t('member.home.seeWod')}</Link>
         </Button>
         <Button variant="secondary" onClick={() => setCancelOpen(true)}>

@@ -1,6 +1,6 @@
 import { formatTimeIn, t } from '@guaranix/shared';
 import type { ClassListItem } from '@guaranix/shared/api';
-import { Button, classNames, ProgressBar } from '@guaranix/ui';
+import { Button, classNames, ColorDot, ProgressBar } from '@guaranix/ui';
 import { Check, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 
@@ -87,11 +87,7 @@ export function ClassRow(props: ClassRowProps) {
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1.5">
         <span className="flex min-w-0 items-center gap-2 font-semibold">
-          <span
-            aria-hidden="true"
-            className="size-2 shrink-0 rounded-pill"
-            style={{ backgroundColor: item.programColor }}
-          />
+          <ColorDot color={item.programColor} />
           <span className="truncate">{item.programName}</span>
         </span>
         <div className="flex items-center gap-2">

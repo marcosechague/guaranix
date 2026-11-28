@@ -1,6 +1,15 @@
 import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
 import type { MemberPlan } from '@guaranix/shared/api';
-import { Avatar, Badge, type BadgeTone, Card, EmptyState, Eyebrow, Skeleton } from '@guaranix/ui';
+import {
+  Avatar,
+  Badge,
+  Page,
+  type BadgeTone,
+  Card,
+  EmptyState,
+  Eyebrow,
+  Skeleton,
+} from '@guaranix/ui';
 import { AccountSecurity, useSession } from '@guaranix/ui/auth';
 import { useMe, useMyPlans, usePlans } from '../../api/queries';
 import { useBoxClock } from '../../lib/use-box-clock';
@@ -82,7 +91,7 @@ export function ProfileScreen() {
   const { data: me } = useMe();
   const [first = '', ...rest] = session.user.fullName.split(' ');
   return (
-    <main className="flex flex-col gap-4 px-5 pt-7 pb-6">
+    <Page layout="mobile" className="gap-4">
       <header className="flex items-center gap-4">
         <Avatar
           firstName={me?.firstName ?? first}
@@ -100,6 +109,6 @@ export function ProfileScreen() {
       </header>
       <PlanCard />
       <AccountSecurity />
-    </main>
+    </Page>
   );
 }

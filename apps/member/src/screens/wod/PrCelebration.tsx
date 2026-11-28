@@ -30,11 +30,7 @@ export function PrCelebration({ show, onDone }: { show: boolean; onDone: () => v
             <motion.span
               key={piece}
               aria-hidden="true"
-              className="absolute top-1/2 left-1/2 size-2 rounded-sm"
-              style={{
-                backgroundColor:
-                  piece % 3 === 0 ? 'var(--gx-color-success)' : 'var(--gx-color-accent)',
-              }}
+              className={`absolute top-1/2 left-1/2 size-2 rounded-sm ${piece % 3 === 0 ? 'bg-success' : 'bg-accent'}`}
               initial={{ x: 0, y: 0, opacity: 1, rotate: 0 }}
               animate={{
                 x: Math.cos((piece / CONFETTI.length) * Math.PI * 2) * 140,
