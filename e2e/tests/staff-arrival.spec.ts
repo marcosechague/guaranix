@@ -1,11 +1,27 @@
-import type { CheckInPassView } from '@guaranix/shared';
+import type { CheckInPassView, CheckInPolicy } from '@guaranix/shared';
 import { devices, expect, test } from '@playwright/test';
-import { APPS } from '../support/apps';
+import { apiAs } from '../support/api';
+import { APPS, DEMO } from '../support/apps';
 import { fakeCamera } from '../support/fake-camera';
 import { t } from '../support/i18n';
 import { SIGNED_IN } from '../support/sessions';
 
 test.use({ storageState: SIGNED_IN.owner });
+
+// Turned on here, so the test does not depend on a database seeded before this mode existed.
+test.beforeAll(async () => {
+  const owner = await apiAs(DEMO.owner);
+  try {
+    const { policy } = await owner.get<{ policy: CheckInPolicy }>('/box/settings/check-in');
+    await owner.patch('/box/settings/check-in', {
+      ...policy,
+      checkInDeskEnabled: true,
+      checkInStaffEnabled: true,
+    });
+  } finally {
+    await owner.dispose();
+  }
+});
 
 test('staff show their own QR at the entrance and the owner sees who arrived', async ({
   page,
