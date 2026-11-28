@@ -3,7 +3,7 @@
  * Writes the JSON file `wrangler deploy --secrets-file` uploads to the API Worker.
  * The deploy workflow passes every secret and variable of the GitHub environment
  * as JSON (GITHUB_SECRETS, GITHUB_VARS); only the names below reach Cloudflare,
- * so CLOUDFLARE_API_TOKEN and DATABASE_URL never do.
+ * so CLOUDFLARE_API_TOKEN and the database URL never do.
  *
  * Usage: node scripts/deploy/write-secrets-file.mjs <output.json>
  * Prints names only, never values.

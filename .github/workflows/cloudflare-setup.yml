@@ -31,5 +31,5 @@ jobs:
           node-version-file: .nvmrc
       - name: R2 bucket, queues and Hyperdrive
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          PROD_DATABASE_URL: ${{ secrets.DATABASE_URL }}
         run: node scripts/deploy/setup-resources.mjs "$ENVIRONMENT"

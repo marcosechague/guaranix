@@ -3,6 +3,9 @@
  * Deploys production from your own computer, the same steps as
  * .github/workflows/deploy.yml, for when GitHub Actions cannot run.
  * Reads `.env.production` at the repo root (copy deploy/production.env.example).
+ * The production database is PROD_DATABASE_URL, never DATABASE_URL, so local
+ * tools (db:migrate, db:seed) can't reach production by picking up an exported
+ * variable. Only the migration and bootstrap steps get it, as DATABASE_URL.
  *
  * Usage:
  *   pnpm deploy:setup        once: R2 bucket, queues and Hyperdrive; prints HYPERDRIVE_ID
@@ -51,9 +54,16 @@ function loadEnvironment() {
     fail(`Falta ${ENV_FILE}. Copiá deploy/production.env.example y completalo.`);
   }
   process.loadEnvFile(ENV_FILE);
-  for (const name of ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'DATABASE_URL']) {
+  for (const name of ['CLOUDFLARE_API_TOKEN', 'CLOUDFLARE_ACCOUNT_ID', 'PROD_DATABASE_URL']) {
     if (!process.env[name]) fail(`Falta ${name} en ${ENV_FILE}.`);
   }
+  // A development DATABASE_URL must never reach a deploy step.
+  delete process.env.DATABASE_URL;
+}
+
+/** Environment for the steps that write to the production database, and only those. */
+function productionDatabaseEnv() {
+  return { ...process.env, DATABASE_URL: process.env.PROD_DATABASE_URL };
 }
 
 function setup() {
@@ -174,9 +184,9 @@ async function deploy() {
   console.log(`Dirección pública: ${origin}`);
 
   step('Migraciones');
-  run('pnpm', ['db:migrate']);
+  run('pnpm', ['db:migrate'], { env: productionDatabaseEnv() });
   step('Planes y superadmin');
-  run('pnpm', ['--filter', '@guaranix/db', 'db:bootstrap']);
+  run('pnpm', ['--filter', '@guaranix/db', 'db:bootstrap'], { env: productionDatabaseEnv() });
 
   step('API');
   deployApi(origin);

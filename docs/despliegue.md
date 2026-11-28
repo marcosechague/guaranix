@@ -82,7 +82,7 @@ Hace exactamente los mismos pasos que `deploy.yml` (migraciones, bootstrap, API,
 
 Requisitos: Node 22+, pnpm (`corepack enable`) y el repo clonado y actualizado.
 
-1. Una sola vez: `cp deploy/production.env.example .env.production` y completalo con los mismos nombres y valores de la tabla "Secretos y variables". Está en `.gitignore` y `pnpm check:secrets` impide commitearlo; aun así, tratalo como una contraseña.
+1. Una sola vez: `cp deploy/production.env.example .env.production` y completalo con los mismos nombres y valores de la tabla "Secretos y variables", salvo la base: acá se llama `PROD_DATABASE_URL` (ver "La URL de producción no se llama `DATABASE_URL`"). Está en `.gitignore` y `pnpm check:secrets` impide commitearlo; aun así, tratalo como una contraseña.
 2. Una sola vez: `pnpm install` y después `pnpm deploy:setup`. Crea el bucket, las colas y el Hyperdrive, y muestra el `HYPERDRIVE_ID`: copialo a `.env.production`.
 3. Cada vez que publiques:
    ```sh
@@ -91,7 +91,13 @@ Requisitos: Node 22+, pnpm (`corepack enable`) y el repo clonado y actualizado.
    ```
    Publica el commit en el que estás, y se niega si hay cambios sin commitear. Al terminar muestra los cuatro links.
 
-El script cambia `apps/api/wrangler.jsonc` solo mientras corre (para poner el `HYPERDRIVE_ID`) y lo deja como estaba, y el archivo temporal con los secretos se borra siempre, aunque algo falle. Tu `.env` de desarrollo no se mezcla: lo de `.env.production` tiene prioridad.
+El script cambia `apps/api/wrangler.jsonc` solo mientras corre (para poner el `HYPERDRIVE_ID`) y lo deja como estaba, y el archivo temporal con los secretos se borra siempre, aunque algo falle. Tu `.env` de desarrollo no se mezcla: lo de `.env.production` tiene prioridad, y el script borra cualquier `DATABASE_URL` antes de empezar.
+
+### La URL de producción no se llama `DATABASE_URL`
+
+`DATABASE_URL` es la base de desarrollo: la leen `pnpm db:migrate`, `db:seed`, `db:studio` y los tests. Si la URL de producción estuviera guardada con ese nombre en algún lugar que se exporta a todo (tu terminal, o las variables del entorno de Claude Code en la nube), cualquiera de esos comandos podría escribir en producción por error.
+
+Por eso, fuera de GitHub se llama **`PROD_DATABASE_URL`**: en `.env.production`, en tu terminal y en el entorno de la nube. `pnpm deploy:setup` y `pnpm deploy:production` la leen y se la pasan como `DATABASE_URL` solo a las migraciones y al bootstrap. En el environment `production` de GitHub sigue siendo el secreto `DATABASE_URL`, porque ahí solo lo ven los workflows de deploy.
 
 ### Volver atrás
 
@@ -134,7 +140,7 @@ En el repo, **Settings > Environments > New environment**: `production`. Ahí va
 
 ### 4. Recursos de Cloudflare
 
-Con `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` y `DATABASE_URL` ya cargados: **Actions > Cloudflare setup > Run workflow**, o desde tu compu `pnpm deploy:setup`. Al terminar muestra el `HYPERDRIVE_ID`: cargalo como variable del environment (y en `.env.production` si publicás desde tu compu).
+Con `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID` y la URL de la base ya cargados (`DATABASE_URL` en GitHub, `PROD_DATABASE_URL` en `.env.production`): **Actions > Cloudflare setup > Run workflow**, o desde tu compu `pnpm deploy:setup`. Al terminar muestra el `HYPERDRIVE_ID`: cargalo como variable del environment (y en `.env.production` si publicás desde tu compu).
 
 ### 5. Servicios externos
 
@@ -162,14 +168,14 @@ En el environment `production` de GitHub. Los **secretos** no se pueden volver a
 
 ### Del deploy
 
-| Nombre                  | Tipo     | Qué es                                                                                                              |
-| ----------------------- | -------- | ------------------------------------------------------------------------------------------------------------------- |
-| `CLOUDFLARE_API_TOKEN`  | secreto  | Token del paso 2                                                                                                    |
-| `CLOUDFLARE_ACCOUNT_ID` | variable | Id de la cuenta de Cloudflare                                                                                       |
-| `DATABASE_URL`          | secreto  | Connection string **directa** de Neon (sin `-pooler`), con `?sslmode=require`. La usan las migraciones y Hyperdrive |
-| `HYPERDRIVE_ID`         | variable | Lo muestra el workflow Cloudflare setup                                                                             |
-| `PLATFORM_ADMIN_EMAIL`  | variable | Tu email: el bootstrap lo deja como superadmin                                                                      |
-| `PUBLIC_URL`            | variable | Opcional. Solo con dominio propio (por ejemplo `https://app.guaranix.com.py`); sin ella se usa workers.dev          |
+| Nombre                  | Tipo     | Qué es                                                                                                                                                                              |
+| ----------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CLOUDFLARE_API_TOKEN`  | secreto  | Token del paso 2                                                                                                                                                                    |
+| `CLOUDFLARE_ACCOUNT_ID` | variable | Id de la cuenta de Cloudflare                                                                                                                                                       |
+| `DATABASE_URL`          | secreto  | Connection string **directa** de Neon (sin `-pooler`), con `?sslmode=require`. La usan las migraciones y Hyperdrive. En `.env.production` y en la nube se llama `PROD_DATABASE_URL` |
+| `HYPERDRIVE_ID`         | variable | Lo muestra el workflow Cloudflare setup                                                                                                                                             |
+| `PLATFORM_ADMIN_EMAIL`  | variable | Tu email: el bootstrap lo deja como superadmin                                                                                                                                      |
+| `PUBLIC_URL`            | variable | Opcional. Solo con dominio propio (por ejemplo `https://app.guaranix.com.py`); sin ella se usa workers.dev                                                                          |
 
 ### De la API (obligatorios: sin ellos el deploy falla)
 
@@ -217,4 +223,4 @@ Todos entran por la dirección pública, bajo `/api`:
 - **Error 1102 (Worker exceeded resource limits) al entrar o registrarse**: es el límite de CPU del plan gratis. Pasá a Workers Paid.
 - **Google dice `redirect_uri_mismatch`**: falta `<dirección>/api/auth/google/callback` en el cliente OAuth.
 - **El captcha no aparece o falla**: el hostname no está en el widget de Turnstile.
-- **Hyperdrive no conecta**: la `DATABASE_URL` es la "pooled" de Neon o cambió la contraseña. Con una contraseña nueva, editá el Hyperdrive en Cloudflare (**Hyperdrive > guaranix-production > Settings**) además del secreto de GitHub.
+- **Hyperdrive no conecta**: la `DATABASE_URL` es la "pooled" de Neon o cambió la contraseña. Con una contraseña nueva, editá el Hyperdrive en Cloudflare (**Hyperdrive > guaranix-production > Settings**) además del secreto de GitHub (y de `PROD_DATABASE_URL` donde la tengas).
