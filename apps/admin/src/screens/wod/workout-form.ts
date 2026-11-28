@@ -15,6 +15,9 @@ export interface ComponentFormValues {
   workSeconds: string;
   restSeconds: string;
   movementId: string;
+  /** Empty means the guided mode reads the steps from the description. */
+  guidedSteps: { quantity: string; name: string }[];
+  loadPercent: string;
 }
 
 export interface WorkoutFormValues {
@@ -36,6 +39,8 @@ export function blankComponent(kind: WorkoutComponentKind = 'metcon'): Component
     workSeconds: '',
     restSeconds: '',
     movementId: '',
+    guidedSteps: [],
+    loadPercent: '',
   };
 }
 
@@ -61,6 +66,8 @@ export function toFormValues(workout: Workout | undefined): WorkoutFormValues {
         workSeconds: text(component.workSeconds),
         restSeconds: text(component.restSeconds),
         movementId: component.movementId ?? '',
+        guidedSteps: component.guidedSteps ?? [],
+        loadPercent: text(component.loadPercent),
       })),
   };
 }
@@ -69,6 +76,14 @@ const integerOrNull = (value: string) => {
   const trimmed = value.trim();
   return trimmed === '' ? null : Number(trimmed);
 };
+
+/** Blank rows are dropped; no rows left means "read them from the description". */
+function guidedStepsInput(steps: ComponentFormValues['guidedSteps']) {
+  const filled = steps
+    .map((step) => ({ quantity: step.quantity.trim(), name: step.name.trim() }))
+    .filter((step) => step.name !== '');
+  return filled.length > 0 ? filled : null;
+}
 
 /** Builds the API payload; returns the schema's issues so the form can point at each field. */
 export function toWorkoutInput(
@@ -94,6 +109,8 @@ export function toWorkoutInput(
         workSeconds: integerOrNull(component.workSeconds),
         restSeconds: integerOrNull(component.restSeconds),
         movementId: component.movementId || null,
+        guidedSteps: guidedStepsInput(component.guidedSteps),
+        loadPercent: component.movementId ? integerOrNull(component.loadPercent) : null,
       };
     }),
   };
@@ -106,6 +123,8 @@ const FORM_FIELD: Record<string, keyof ComponentFormValues> = {
   intervalSeconds: 'intervalSeconds',
   workSeconds: 'workSeconds',
   restSeconds: 'restSeconds',
+  loadPercent: 'loadPercent',
+  movementId: 'movementId',
   description: 'description',
   title: 'title',
 };

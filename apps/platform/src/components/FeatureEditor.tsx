@@ -1,5 +1,5 @@
 import { t } from '@guaranix/shared';
-import { Button, FormMessage, TextField } from '@guaranix/ui';
+import { Button, Card, FormMessage, TextField } from '@guaranix/ui';
 import { errorText } from '@guaranix/ui/data';
 import type { ReactNode } from 'react';
 
@@ -31,7 +31,7 @@ export function FeatureEditor({
   onSave,
 }: FeatureEditorProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-border p-4">
+    <Card as="div" variant="nested">
       {children}
       <TextField
         label={limitLabel}
@@ -53,6 +53,6 @@ export function FeatureEditor({
       >
         {t('platform.features.save')}
       </Button>
-    </div>
+    </Card>
   );
 }
