@@ -72,6 +72,8 @@ Objetivo: **verse claramente más moderno y cuidado que CrossHero**, en celular 
 
 Las pantallas de referencia están en `docs/design/` (ver su `README.md`).
 
+Cada pantalla se arma con `Page` (layout `mobile`, `panel` o `centered`), `PageHeader` y `Card` de `packages/ui`, así las tres apps comparten anchos, márgenes y jerarquía.
+
 ### Identidad
 
 - Marca: **GuaraniX**. Asistente/mascota: **Brodi** (una pesa rusa con vincha, entrenada y simpática). Imagen en `packages/ui/src/assets/` (componente `<Brodi />`); original en `docs/brand/`.
@@ -171,3 +173,13 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 2. Construí por partes: esquema de datos → API con tests → UI.
 3. Reutilizá componentes de `packages/ui`; si falta uno, crealo ahí.
 4. Al terminar, corré lint, typecheck y tests (`pnpm lint && pnpm typecheck && pnpm test`).
+
+### Guardas automáticas
+
+Las reglas de diseño, reuso y seguridad de este archivo están automatizadas (detalle en `docs/decisions/0005`):
+
+- `pnpm lint` incluye las reglas `guaranix/*` (`packages/eslint-plugin`); `pnpm check:ui` busca código y estilos repetidos; `pnpm check:secrets` busca secretos.
+- Los hooks de `.claude/settings.json` corren esos chequeos después de cada edición y antes de terminar. Si te devuelven errores, arreglalos; no los saltees.
+- Cuando el hook de Stop lo pida, corré los agentes `ux-reviewer` y/o `security-reviewer` (`.claude/agents/`) y aplicá lo bloqueante.
+- Para ver una pantalla: `pnpm ui:screenshots <member|admin|platform|all>` (capturas en celular, tablet y escritorio).
+- Para levantar una excepción, sumá el archivo a la lista que corresponde en `eslint.config.js` o dejá el comentario con el motivo; que quede visible en el PR.

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Same checks as the Claude Code hooks, on the files being committed.
+# Installed by `pnpm install` (core.hooksPath). Skip once with `git commit --no-verify`.
+exec node "$(git rev-parse --show-toplevel)/.githooks/pre-commit.mjs"

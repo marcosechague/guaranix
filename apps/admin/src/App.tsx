@@ -1,4 +1,5 @@
 import { type BoxRole, type Session, t } from '@guaranix/shared';
+import { Page, PageHeader } from '@guaranix/ui';
 import { AccountSecurity, AuthGate, AuthProvider } from '@guaranix/ui/auth';
 import { API_URL } from './config';
 
@@ -14,13 +15,13 @@ function activeStaffBox(session: Session) {
 
 function NoStaffAccess() {
   return (
-    <main className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-5 px-5 py-8">
-      <header className="flex flex-col gap-2">
-        <h1 className="font-display text-2xl font-bold">{t('auth.noStaffAccess.title')}</h1>
-        <p className="text-text-secondary">{t('auth.noStaffAccess.subtitle')}</p>
-      </header>
+    <Page layout="centered">
+      <PageHeader
+        title={t('auth.noStaffAccess.title')}
+        subtitle={t('auth.noStaffAccess.subtitle')}
+      />
       <AccountSecurity />
-    </main>
+    </Page>
   );
 }
 
@@ -28,16 +29,17 @@ function Home({ session }: { session: Session }) {
   const box = activeStaffBox(session);
   if (!box) return <NoStaffAccess />;
   return (
-    <main className="mx-auto flex min-h-dvh max-w-6xl flex-col gap-6 px-6 py-8 md:px-8">
-      <header className="flex flex-col gap-2">
-        <span className="text-sm text-text-secondary">{box.boxName}</span>
-        <h1 className="font-display text-3xl font-bold">{t('admin.home.title')}</h1>
-        <p className="text-text-secondary">{t('admin.home.subtitle')}</p>
-      </header>
+    <Page layout="panel">
+      <PageHeader
+        size="large"
+        eyebrow={box.boxName}
+        title={t('admin.home.title')}
+        subtitle={t('admin.home.subtitle')}
+      />
       <div className="max-w-md">
         <AccountSecurity />
       </div>
-    </main>
+    </Page>
   );
 }
 
