@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 /**
- * Checks that the hostnames in deploy/environments.json (used to build the apps)
- * match the wrangler configs (routes, ALLOWED_ORIGINS, PUBLIC_API_URL). A
- * mismatch would deploy an app that calls the wrong API or a blocked origin.
+ * Checks the deploy wiring that a typo would break silently: the gateway's
+ * service binding names the API Worker, the API has no public address of its
+ * own, the URL vars the deploy fills with `--var` are declared, and the prefixes
+ * the gateway serves match the apps' build paths.
  *
  * Usage: node scripts/deploy/check-config.mjs
  */
@@ -12,55 +13,43 @@ import { fileURLToPath } from 'node:url';
 import { readJsonc } from './jsonc.mjs';
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '../../..');
-const ENVIRONMENTS = ['staging', 'production'];
-const APPS = ['member', 'admin', 'platform', 'api'];
-
-const urls = JSON.parse(readFileSync(join(ROOT, 'deploy/environments.json'), 'utf8'));
+const ENVIRONMENT = 'production';
+const URL_VARS = ['ALLOWED_ORIGINS', 'PUBLIC_API_URL', 'ADMIN_APP_URL', 'MEMBER_APP_URL'];
 const problems = [];
 
 function expectEqual(label, actual, expected) {
-  if (actual !== expected)
+  if (JSON.stringify(actual) !== JSON.stringify(expected)) {
     problems.push(
       `${label}: es ${JSON.stringify(actual)}, se esperaba ${JSON.stringify(expected)}`,
     );
+  }
 }
 
-for (const environment of ENVIRONMENTS) {
-  const appUrls = urls[environment];
-  if (!appUrls) {
-    problems.push(`deploy/environments.json no tiene "${environment}"`);
-    continue;
+const api = readJsonc(join(ROOT, 'apps/api/wrangler.jsonc')).env?.[ENVIRONMENT];
+const gateway = readJsonc(join(ROOT, 'apps/gateway/wrangler.jsonc')).env?.[ENVIRONMENT];
+if (!api) problems.push(`apps/api/wrangler.jsonc no tiene env.${ENVIRONMENT}`);
+if (!gateway) problems.push(`apps/gateway/wrangler.jsonc no tiene env.${ENVIRONMENT}`);
+
+if (api && gateway) {
+  expectEqual('API workers_dev', api.workers_dev, false);
+  expectEqual('API routes', api.routes ?? [], []);
+  expectEqual('API APP_ENV', api.vars?.APP_ENV, ENVIRONMENT);
+  for (const name of URL_VARS) {
+    if (!(name in (api.vars ?? {}))) problems.push(`API vars: falta ${name} (lo llena el deploy)`);
   }
-  for (const app of APPS) {
-    const config = readJsonc(join(ROOT, 'apps', app, 'wrangler.jsonc'));
-    const section = config.env?.[environment];
-    const where = `apps/${app}/wrangler.jsonc env.${environment}`;
-    if (!section) {
-      problems.push(`${where} no existe`);
-      continue;
-    }
-    const routes = section.routes ?? [];
-    expectEqual(
-      `${where} routes`,
-      routes.map((route) => route.pattern).join(','),
-      new URL(appUrls[app]).host,
-    );
-    if (!routes.every((route) => route.custom_domain === true))
-      problems.push(`${where}: las rutas tienen que ser custom_domain`);
-    expectEqual(`${where} workers_dev`, section.workers_dev, false);
-    if (app === 'api') {
-      const vars = section.vars ?? {};
-      expectEqual(`${where} APP_ENV`, vars.APP_ENV, environment);
-      expectEqual(`${where} PUBLIC_API_URL`, vars.PUBLIC_API_URL, appUrls.api);
-      expectEqual(`${where} ADMIN_APP_URL`, vars.ADMIN_APP_URL, appUrls.admin);
-      expectEqual(`${where} MEMBER_APP_URL`, vars.MEMBER_APP_URL, appUrls.member);
-      expectEqual(
-        `${where} ALLOWED_ORIGINS`,
-        vars.ALLOWED_ORIGINS,
-        [appUrls.member, appUrls.admin, appUrls.platform].join(','),
-      );
-    }
-  }
+  const binding = (gateway.services ?? []).find((service) => service.binding === 'API');
+  expectEqual('gateway → API (service binding)', binding?.service, api.name);
+  expectEqual('gateway run_worker_first', gateway.assets?.run_worker_first, ['/api/*']);
+  expectEqual('gateway not_found_handling', gateway.assets?.not_found_handling, 'none');
+}
+
+// The gateway's prefixes must match the paths the deploy builds admin and platform with.
+const routing = readFileSync(join(ROOT, 'apps/gateway/src/routing.ts'), 'utf8');
+const assemble = readFileSync(join(ROOT, 'scripts/deploy/assemble-site.mjs'), 'utf8');
+for (const prefix of ['panel', 'plataforma']) {
+  if (!routing.includes(`'/${prefix}'`))
+    problems.push(`apps/gateway/src/routing.ts no sirve /${prefix}`);
+  if (!assemble.includes(`'${prefix}'`)) problems.push(`assemble-site.mjs no copia /${prefix}`);
 }
 
 if (problems.length > 0) {
@@ -70,4 +59,4 @@ if (problems.length > 0) {
   );
   process.exit(1);
 }
-console.log('Configuración de despliegue consistente (staging y production).');
+console.log('Configuración de despliegue consistente.');

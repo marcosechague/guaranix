@@ -57,8 +57,8 @@ Para probar Turnstile, descomentá las claves de prueba en `apps/api/.dev.vars`.
 1. En [Google Cloud Console](https://console.cloud.google.com/), creá un proyecto (por ejemplo "GuaraniX").
 2. **APIs y servicios → Pantalla de consentimiento de OAuth**: tipo "Externo", nombre GuaraniX, email de soporte, y los alcances `openid`, `email` y `profile`. Mientras esté en modo prueba, agregá tu email como usuario de prueba.
 3. **Credenciales → Crear credenciales → ID de cliente de OAuth**, tipo "Aplicación web".
-4. **URIs de redireccionamiento autorizados**: `http://localhost:8787/auth/google/callback` para desarrollo y `https://<dominio-de-la-api>/auth/google/callback` para producción.
-5. Copiá el ID y el secreto a `apps/api/.dev.vars` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`). En staging y producción van en el environment de GitHub (ver `docs/despliegue.md`).
+4. **URIs de redireccionamiento autorizados**: `http://localhost:8787/auth/google/callback` para desarrollo y `https://<dirección-pública>/api/auth/google/callback` para producción.
+5. Copiá el ID y el secreto a `apps/api/.dev.vars` (`GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`). En producción van en el environment de GitHub (ver `docs/despliegue.md`).
 
 #### Producción
 
@@ -66,20 +66,7 @@ En staging y producción la API no arranca si falta alguna de estas: `AUTH_SECRE
 
 ## Despliegue
 
-Staging se publica solo cuando un cambio llega a `main` con CI en verde; producción, con un tag `v*`. Cloudflare (Workers, Hyperdrive, R2, Queues) y Neon, con los secretos en los environments de GitHub. Configuración inicial, secretos y cómo volver atrás: [`docs/despliegue.md`](docs/despliegue.md).
-
-### Base de datos
-
-| Comando                       | Qué hace                                                                 |
-| ----------------------------- | ------------------------------------------------------------------------ |
-| `pnpm db:up` / `pnpm db:down` | Prende o apaga Postgres (los datos se guardan en un volumen de Docker)   |
-| `pnpm db:reset`               | Borra la base local y la vuelve a crear vacía                            |
-| `pnpm db:generate`            | Genera una migración a partir de los cambios en `packages/db/src/schema` |
-| `pnpm db:migrate`             | Aplica las migraciones pendientes                                        |
-| `pnpm db:seed`                | Carga planes de GuaraniX, un admin y un box demo con alumnos y clases    |
-| `pnpm db:studio`              | Abre Drizzle Studio para mirar los datos                                 |
-
-Postgres de Docker escucha en el puerto `54329` (no en 5432), así no choca con otro Postgres que tengas instalado. Si lo cambiás, cambiá `POSTGRES_PORT` y el puerto de `DATABASE_URL` en `.env` y en `apps/api/.dev.vars`.
+Por ahora solo producción, en la dirección gratis de Cloudflare (`guaranix.<subdominio>.workers.dev`): las tres apps y la API en una sola dirección (`/`, `/panel/`, `/plataforma/`, `/api/`). Se publica con un tag `v*` o a mano desde Actions. Cloudflare (Workers, Hyperdrive, R2, Queues) y Neon, con los secretos en el environment `production` de GitHub. Configuración inicial, costos, secretos y cómo volver atrás: [`docs/despliegue.md`](docs/despliegue.md).
 
 ## Calidad
 
