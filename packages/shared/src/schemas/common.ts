@@ -22,6 +22,27 @@ export const phoneE164Schema = z.string().regex(/^\+[1-9]\d{7,14}$/, {
 // Trim before validating, so a pasted " Ana@Mail.com " is accepted and stored as ana@mail.com.
 export const emailSchema = z.string().trim().toLowerCase().max(254).pipe(z.email());
 
+const GOOGLE_MAIL_DOMAINS = new Set(['gmail.com', 'googlemail.com']);
+
+/**
+ * The form an account is stored and looked up by. Gmail ignores dots and
+ * "+tags" in the name, and Google may report either spelling, so
+ * `Marcos.Echague+box@googlemail.com` and `marcosechague@gmail.com` are one
+ * account. Other providers may treat those characters as significant.
+ */
+export function canonicalAccountEmail(email: string): string {
+  const lowered = email.trim().toLowerCase();
+  const at = lowered.lastIndexOf('@');
+  if (at < 1) return lowered;
+  const domain = lowered.slice(at + 1);
+  if (!GOOGLE_MAIL_DOMAINS.has(domain)) return lowered;
+  const name = lowered.slice(0, at).split('+')[0]?.replaceAll('.', '') ?? '';
+  return `${name}@gmail.com`;
+}
+
+/** An email that identifies an account (sign-up, login, box owner). */
+export const accountEmailSchema = emailSchema.transform(canonicalAccountEmail);
+
 /** Paraguayan cédula: digits only, no dots. */
 export const documentNumberSchema = z
   .string()

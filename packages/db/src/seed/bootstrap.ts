@@ -1,4 +1,5 @@
 import { sql } from 'drizzle-orm';
+import { canonicalAccountEmail } from '@guaranix/shared';
 import { platformPlans, users } from '../schema';
 import { withSystemScope, type SchemaDatabase } from '../scope';
 import { PLATFORM_PLAN_CATALOG } from './platform-catalog';
@@ -24,7 +25,8 @@ export async function bootstrapPlatform(
   database: SchemaDatabase,
   options: BootstrapOptions,
 ): Promise<BootstrapResult> {
-  const email = options.platformAdminEmail?.trim().toLowerCase() || undefined;
+  const typed = options.platformAdminEmail?.trim();
+  const email = typed ? canonicalAccountEmail(typed) : undefined;
   if (email && !EMAIL.test(email)) throw new TypeError('platformAdminEmail is not an email');
   return withSystemScope(database, async (transaction) => {
     const inserted = await transaction

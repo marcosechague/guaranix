@@ -113,6 +113,17 @@ describe('platform box owner', () => {
     expect(await same.json()).toEqual({ error: 'box_owner_unchanged' });
   });
 
+  it('matches the owner account by its Gmail mailbox, not its spelling', async () => {
+    const admin = await platformAdmin();
+    const box = await newBox(admin, `Lucia.Benitez${Date.now()}@gmail.com`);
+    expect(box.owner?.email).toMatch(/^luciabenitez\d+@gmail\.com$/);
+    const same = await admin.browser.put(`/platform/boxes/${box.id}/owner`, {
+      ownerEmail: (box.owner?.email ?? '').replace('lucia', 'lucia.').replace('@', '+x@'),
+      ownerName: 'Lucía',
+    });
+    expect(await same.json()).toEqual({ error: 'box_owner_unchanged' });
+  });
+
   it('raises a staff member to owner and takes the role from the old owner', async () => {
     const admin = await platformAdmin();
     const box = await newBox(admin, uniqueEmail('old-owner'));
