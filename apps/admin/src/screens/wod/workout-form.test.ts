@@ -82,4 +82,34 @@ describe('workout form', () => {
     expect(values.components.map((component) => component.kind)).toEqual(['warm_up', 'metcon']);
     expect(values.components[1]?.timeCapMinutes).toBe('10');
   });
+
+  it('drops blank guided steps and only keeps a load % with its movement', () => {
+    const movementId = '018f3c1e-7d2a-7c3b-9a1e-2b3c4d5e6f71';
+    const result = toWorkoutInput(
+      {
+        title: '',
+        coachNotes: '',
+        components: [
+          {
+            ...blankComponent(),
+            description: '21-15-9 Thrusters',
+            guidedSteps: [
+              { quantity: ' 21 ', name: ' Thrusters ' },
+              { quantity: '', name: '  ' },
+            ],
+            movementId,
+            loadPercent: '75',
+          },
+          { ...blankComponent(), description: '10 burpees', loadPercent: '60' },
+        ],
+      },
+      context,
+    );
+    expect(result.success).toBe(true);
+    expect(result.data?.components[0]).toMatchObject({
+      guidedSteps: [{ quantity: '21', name: 'Thrusters' }],
+      loadPercent: 75,
+    });
+    expect(result.data?.components[1]).toMatchObject({ guidedSteps: null, loadPercent: null });
+  });
 });

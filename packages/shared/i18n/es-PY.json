@@ -516,7 +516,23 @@
       "edit": "Editar WOD",
       "componentsHint": "Cada parte es un bloque: entrada en calor, fuerza, metcon…",
       "notPublished": "Los alumnos todavía no lo ven.",
-      "isPublished": "Publicado: los alumnos ya lo ven."
+      "isPublished": "Publicado: los alumnos ya lo ven.",
+      "roundsOptional": "Rondas (opcional)",
+      "loadMovement": "Movimiento para sugerir el peso",
+      "loadPercent": "Peso sugerido (% del 1RM)",
+      "guided": {
+        "title": "Modo guiado",
+        "fromDescription": "La app lee los pasos de la descripción, una línea por ejercicio. Si querés, ajustalos.",
+        "customHint": "El alumno va a ver estos pasos, en este orden, en el modo guiado.",
+        "edit": "Ajustar pasos",
+        "reset": "Leer de la descripción",
+        "quantity": "Cantidad",
+        "movement": "Ejercicio",
+        "addStep": "Agregar paso",
+        "removeStep": "Quitar paso",
+        "preview": "Pasos del modo guiado",
+        "noSteps": "No encontramos ejercicios en la descripción. Escribí uno por línea, por ejemplo \"21 Thrusters\", o ajustá los pasos."
+      }
     },
     "account": {
       "title": "Tu cuenta"
