@@ -14,3 +14,12 @@ La Fase 1 del PRD pide multi-sede: un panel, un alumno, pase entre sedes y repor
 - **Pase entre sedes.** `plan_locations` dice en qué sedes vale un plan; sin filas, vale en todas (igual que `plan_programs` con los programas).
 - **Sede habitual del alumno** (`members.home_location_id`, opcional) para reportes por sede. Vacía significa la sede por defecto.
 - **Cantidad de sedes.** El box puede tener `1 + boxes.extra_locations` sedes activas; el superadmin cambia `extra_locations` y eso se cobra al precio de sede adicional del plan de GuaraniX.
+
+## API
+
+- `/box/locations`: todos los roles listan (los alumnos solo ven las sedes abiertas); dueño y admin crean y editan. Se audita cada cambio.
+- Cerrar una sede: no se puede si es la principal (`default_location_required`) ni si tiene horarios activos (`location_has_schedules`). Mover la principal (`isDefault: true`) deja la anterior abierta.
+- Pasar de `1 + extra_locations` sedes abiertas da `location_limit_reached`, al crear o al reabrir.
+- Un horario nuevo va a la sede pedida (tiene que estar abierta) o a la principal. Las clases generadas toman la sede del horario.
+- `GET /box/classes?locationId=` filtra por sede.
+- Reservar revisa, después del programa, que el plan valga en la sede de la clase (`plan_excludes_location`).
