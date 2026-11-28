@@ -1,11 +1,11 @@
 import { eq } from 'drizzle-orm';
 import { createDatabase } from '../src/client.ts';
-import { readDatabaseUrl } from '../src/database-url.ts';
+import { readLocalDatabaseUrl } from '../src/database-url.ts';
 import { seedDemoBox, seedPlatform, seedShowcase } from '../src/seed/index.ts';
 import { boxes } from '../src/schema/index.ts';
 import { withSystemScope } from '../src/scope.ts';
 
-const database = createDatabase(readDatabaseUrl(process.env));
+const database = createDatabase(readLocalDatabaseUrl(process.env, 'The demo seed'));
 
 try {
   const existing = await withSystemScope(database, (transaction) =>
