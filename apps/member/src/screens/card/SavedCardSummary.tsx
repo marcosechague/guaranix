@@ -24,7 +24,7 @@ export function SavedCardSummary({
       <div className="flex items-center gap-3">
         <CreditCard aria-hidden="true" size={28} className="text-accent" />
         <div className="flex min-w-0 flex-1 flex-col">
-          <span className="font-display text-lg font-bold tabular-nums">
+          <span className="font-display text-lg font-bold whitespace-nowrap tabular-nums">
             {t('member.cards.masked', { brand: card.brand ?? '', last4: card.last4 ?? '····' })}
           </span>
           {card.expiresOn ? (
