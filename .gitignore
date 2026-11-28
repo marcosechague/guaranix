@@ -12,3 +12,8 @@ dev-dist/
 playwright-report/
 test-results/
 !.env.example
+
+# Claude Code hook state and screenshots
+.claude/.cache/
+.claude/screenshots/
+.claude/settings.local.json
