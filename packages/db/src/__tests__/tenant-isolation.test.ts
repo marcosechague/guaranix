@@ -73,6 +73,12 @@ beforeAll(async () => {
         summary: 'Semana tranquila.',
         figures: {},
       });
+      await transaction.insert(schema.staffArrivals).values({
+        boxId: box.boxId,
+        userId: box.ownerId,
+        arrivedOn: '2026-11-28',
+        arrivedAt: new Date('2026-11-28T10:00:00Z'),
+      });
     }
   });
 });
@@ -209,6 +215,7 @@ describe('tenant tables', () => {
         "programs",
         "result_fist_bumps",
         "saved_cards",
+        "staff_arrivals",
         "workout_components",
         "workout_results",
         "workouts",

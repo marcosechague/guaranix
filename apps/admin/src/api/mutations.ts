@@ -1,7 +1,7 @@
 import type { ClassSchedule, Member, MemberPlan, Plan, Workout } from '@guaranix/shared/api';
 import type {
   BookingPolicy,
-  CheckInResult,
+  EntranceResult,
   CreateMemberInput,
   CreatePlanInput,
   CreateWorkoutInput,
@@ -166,8 +166,12 @@ export function useCheckIn() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (pass: string) =>
-      (await api.post<{ result: CheckInResult }>('/box/check-ins', { pass })).result,
+      (await api.post<{ result: EntranceResult }>('/box/check-ins', { pass })).result,
     onSuccess: (result) => {
+      if (result.outcome === 'staff_arrived') {
+        void queryClient.invalidateQueries({ queryKey: queryKeys.staffArrivals });
+        return;
+      }
       if (result.outcome === 'denied') return;
       void queryClient.invalidateQueries({ queryKey: queryKeys.roster(result.class.id) });
       void queryClient.invalidateQueries({ queryKey: queryKeys.allClasses });

@@ -1,6 +1,6 @@
 # 0016 — Modos de asistencia configurables por box
 
-Fecha: 2026-11-28 · Estado: en construcción
+Fecha: 2026-11-28 · Estado: aceptada
 
 ## Contexto
 
@@ -30,3 +30,10 @@ Con el check-in con QR en la entrada (0014) quedó una duda: no todos los boxes 
 - La API rechaza con un motivo claro: `wall_qr_too_far` si está más lejos que el radio, `wall_qr_inaccurate` si la precisión del GPS es peor que el radio, `wall_qr_location_missing` si la sede no tiene ubicación, `check_in_mode_disabled` si el box no usa este modo y `wall_qr_invalid` si el código está mal. Después aplica las mismas reglas que la entrada, solo con clases de esa sede (`checkInMember`). "Una vez por clase" sale solo: la segunda vez responde que ya estaba presente.
 - Si el alumno no da permiso de ubicación o el GPS no alcanza, la pantalla lo explica y le dice que le avise al coach, que lo marca desde la lista.
 - Un celular con la ubicación falseada podría engañar al chequeo. Es un riesgo aceptado: alcanza para frenar la foto del cartel mandada por WhatsApp, y el coach ve la lista igual.
+
+## Llegada del staff (opcional)
+
+- Cuarto interruptor, `check_in_staff_enabled`, apagado por defecto. Solo funciona con la tablet de la entrada prendida (el QR se lee ahí), así que en Ajustes aparece debajo de ella y `checkInModes.staff` es falso si la entrada está apagada.
+- Coaches, recepción, administradores y el dueño abren "Mi QR de llegada" en el menú del panel (`/panel/mi-qr`, `GET /box/check-ins/staff-pass`). El QR es `gs1.…`, firmado igual que el del alumno (`gx1.…`) pero con otra versión, así uno no sirve como el otro. Vence a los 2 minutos.
+- La entrada lo lee con el mismo `POST /box/check-ins` y responde `outcome: "staff_arrived"`. Se guarda una fila por persona y día del box en `staff_arrivals` (la primera lectura; las siguientes muestran la misma hora). Quien ya no está activo en el box recibe `staff_inactive`.
+- El dueño y los administradores ven "Llegadas del staff hoy" en el inicio (`GET /box/check-ins/staff-arrivals?date=`). Las filas no se editan ni se borran desde la app.

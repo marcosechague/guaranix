@@ -28,9 +28,15 @@ describe('navItemsFor', () => {
   const paths = (items: readonly { to: string }[]) => items.map((item) => item.to);
 
   it('hides the entrance when the box turned it off, and only then', () => {
-    const on = { desk: true, coach: true, wallQr: false };
+    const on = { desk: true, coach: true, wallQr: false, staff: true };
     expect(paths(navItemsFor(on))).toEqual(paths(NAV_ITEMS));
     expect(paths(navItemsFor(undefined))).toEqual(paths(NAV_ITEMS));
     expect(paths(navItemsFor({ ...on, desk: false }))).not.toContain('/entrada');
+  });
+
+  it('shows "Mi QR de llegada" only with the staff mode on', () => {
+    const on = { desk: true, coach: true, wallQr: false, staff: true };
+    expect(paths(navItemsFor(on))).toContain('/mi-qr');
+    expect(paths(navItemsFor({ ...on, staff: false }))).not.toContain('/mi-qr');
   });
 });

@@ -24,6 +24,13 @@ export const router = createBrowserRouter(
       }),
     },
     {
+      // A coach's or receptionist's own QR, shown full screen at the entrance device.
+      path: '/mi-qr',
+      lazy: async () => ({
+        Component: (await import('./screens/staff-pass/StaffPassScreen')).StaffPassScreen,
+      }),
+    },
+    {
       path: '/',
       Component: AppShell,
       children: [

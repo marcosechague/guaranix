@@ -1,59 +1,27 @@
-import { formatDuration, t } from '@guaranix/shared';
-import { Card, FullScreenHeader, Page, QrCode, Skeleton, useWakeLock } from '@guaranix/ui';
-import { LoadError, useBoxClock, useNow } from '@guaranix/ui/data';
+import { t } from '@guaranix/shared';
+import { PassScreen, useBoxClock } from '@guaranix/ui/data';
 import { useSession } from '@guaranix/ui/auth';
 import { useNavigate } from 'react-router';
 import { useCheckInPass, useMe } from '../../api/queries';
 
-/** Seconds left on the pass, ticking once a second. */
-function useSecondsLeft(expiresAt: string | undefined) {
-  const now = useNow(1000);
-  if (!expiresAt) return null;
-  return Math.max(0, Math.round((new Date(expiresAt).getTime() - now) / 1000));
-}
-
-function PassBody() {
-  const pass = useCheckInPass();
-  const secondsLeft = useSecondsLeft(pass.data?.expiresAt);
-  if (pass.isPending) return <Skeleton className="aspect-square w-full rounded-lg" />;
-  if (pass.isError && !pass.data) {
-    return <LoadError error={pass.error} onRetry={() => void pass.refetch()} />;
-  }
-  if (!pass.data) return null;
-  return (
-    <>
-      <QrCode value={pass.data.pass} label={t('member.checkIn.qrLabel')} className="w-full" />
-      <p className="text-center text-sm text-text-secondary tabular-nums" aria-live="off">
-        {t('member.checkIn.renews', { time: formatDuration(secondsLeft ?? 0) })}
-      </p>
-    </>
-  );
-}
-
-/**
- * Full screen, no tab bar: the member hands the phone to the entrance
- * scanner, so the code is as big as the screen allows and the screen stays on.
- */
+/** The member's entry QR, shown to the scanner at the entrance. */
 export function CheckInPassScreen() {
   const navigate = useNavigate();
   const session = useSession();
   const { boxName } = useBoxClock();
   const { data: me } = useMe();
-  useWakeLock(true);
-  const name = me ? `${me.firstName} ${me.lastName}` : session.user.fullName;
+  const pass = useCheckInPass();
   return (
-    <Page layout="centered" className="items-stretch">
-      <FullScreenHeader
-        eyebrow={boxName ?? t('app.name')}
-        title={t('member.checkIn.title')}
-        closeLabel={t('member.checkIn.close')}
-        onClose={() => void navigate('/')}
-      />
-      <Card className="items-center">
-        <p className="text-center font-display text-2xl font-bold">{name}</p>
-        <PassBody />
-      </Card>
-      <p className="text-center text-text-soft">{t('member.checkIn.hint')}</p>
-    </Page>
+    <PassScreen
+      eyebrow={boxName ?? t('app.name')}
+      title={t('member.checkIn.title')}
+      closeLabel={t('member.checkIn.close')}
+      onClose={() => void navigate('/')}
+      name={me ? `${me.firstName} ${me.lastName}` : session.user.fullName}
+      hint={t('member.checkIn.hint')}
+      pass={pass}
+      qrLabel={t('member.checkIn.qrLabel')}
+      renewsLabel={(time) => t('member.checkIn.renews', { time })}
+    />
   );
 }

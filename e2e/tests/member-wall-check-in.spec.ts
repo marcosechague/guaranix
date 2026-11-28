@@ -1,5 +1,5 @@
 import type { Location } from '@guaranix/shared/api';
-import type { WallQrView } from '@guaranix/shared';
+import type { CheckInPolicy, WallQrView } from '@guaranix/shared';
 import { expect, test } from '@playwright/test';
 import { apiAs } from '../support/api';
 import { APPS, DEMO } from '../support/apps';
@@ -12,12 +12,22 @@ test.use({ storageState: SIGNED_IN.member });
 const AT_THE_BOX = { latitude: -25.2867, longitude: -57.647, accuracy: 15 };
 const AT_HOME = { latitude: -25.31, longitude: -57.6, accuracy: 15 };
 
+/**
+ * Turns the mode on and places the default location at the box, so the test
+ * does not depend on a database seeded before the wall QR existed.
+ */
 async function posterPath() {
   const owner = await apiAs(DEMO.owner);
   try {
+    const { policy } = await owner.get<{ policy: CheckInPolicy }>('/box/settings/check-in');
+    await owner.patch('/box/settings/check-in', { ...policy, checkInWallQrEnabled: true });
     const { locations } = await owner.get<{ locations: Location[] }>('/box/locations');
     const main = locations.find((location) => location.isDefault);
     if (!main) throw new Error('No default location');
+    await owner.patch(`/box/locations/${main.id}`, {
+      latitude: AT_THE_BOX.latitude,
+      longitude: AT_THE_BOX.longitude,
+    });
     const { poster } = await owner.get<{ poster: WallQrView }>(`/box/locations/${main.id}/wall-qr`);
     return new URL(poster.url).pathname;
   } finally {

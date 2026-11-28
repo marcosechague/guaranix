@@ -17,14 +17,26 @@ box.get('/current', BOX_ROLES, async (context) => {
       checkInDeskEnabled: boxes.checkInDeskEnabled,
       checkInCoachEnabled: boxes.checkInCoachEnabled,
       checkInWallQrEnabled: boxes.checkInWallQrEnabled,
+      checkInStaffEnabled: boxes.checkInStaffEnabled,
     })
     .from(boxes)
     .where(eq(boxes.id, context.var.auth.boxId));
   if (!profile) return context.json({ box: null, role: context.var.auth.role });
-  const { checkInDeskEnabled, checkInCoachEnabled, checkInWallQrEnabled, ...rest } = profile;
+  const {
+    checkInDeskEnabled,
+    checkInCoachEnabled,
+    checkInWallQrEnabled,
+    checkInStaffEnabled,
+    ...rest
+  } = profile;
   const box = {
     ...rest,
-    checkInModes: checkInModesOf({ checkInDeskEnabled, checkInCoachEnabled, checkInWallQrEnabled }),
+    checkInModes: checkInModesOf({
+      checkInDeskEnabled,
+      checkInCoachEnabled,
+      checkInWallQrEnabled,
+      checkInStaffEnabled,
+    }),
   };
   return context.json({ box, role: context.var.auth.role });
 });

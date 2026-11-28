@@ -6,6 +6,7 @@ import {
   LayoutDashboard,
   ScanLine,
   MessageCircleQuestion,
+  QrCode,
   Ticket,
   Users,
   Wallet,
@@ -33,6 +34,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { to: '/wod', label: t('admin.nav.wod'), icon: Dumbbell },
   { to: '/cobros', label: t('admin.nav.payments'), icon: Wallet, phoneTab: true },
   { to: '/planes', label: t('admin.nav.plans'), icon: Ticket },
+  { to: '/mi-qr', label: t('admin.nav.myQr'), icon: QrCode, checkInMode: 'staff' },
 ];
 
 /** Brodi shows the box's money, so only owners and administrators get the link. */

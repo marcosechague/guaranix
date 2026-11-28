@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { idSchema } from './common';
+import { calendarDateSchema, idSchema } from './common';
 import { latitudeSchema, longitudeSchema } from './location';
 
 /**
@@ -24,6 +24,9 @@ export const CHECK_IN_OPENS_MINUTES_BEFORE = 30;
 export const walkInSchema = z.object({ memberId: idSchema });
 
 export type WalkInInput = z.infer<typeof walkInSchema>;
+
+/** The box day whose staff arrivals to list. */
+export const staffArrivalsQuerySchema = z.object({ date: calendarDateSchema });
 
 /** What the member's phone sends after reading the poster on the wall: its code and where it is. */
 export const wallCheckInSchema = z.object({
@@ -81,6 +84,13 @@ export interface CheckInClass {
   startsAt: string;
 }
 
+/** A coach or front-desk person who scanned their own QR at the entrance. */
+export interface StaffArrivalView {
+  userId: string;
+  fullName: string;
+  arrivedAt: string;
+}
+
 /** What the entrance device shows after reading a QR. */
 export type CheckInResult =
   | {
@@ -98,3 +108,14 @@ export type CheckInResult =
       /** Overdue debt, when that is the reason. */
       owedGs: number | null;
     };
+
+/** A coach or front-desk person scanned their own QR at the entrance. */
+export interface StaffArrivalResult {
+  outcome: 'staff_arrived';
+  member: CheckInMember;
+  /** When they first arrived today; scanning again doesn't move it. */
+  arrivedAt: string;
+}
+
+/** Everything the entrance device can read: a member coming to class, or staff arriving. */
+export type EntranceResult = CheckInResult | StaffArrivalResult;

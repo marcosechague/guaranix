@@ -17,3 +17,4 @@ export * from './billing';
 export * from './card-payments';
 export * from './audit';
 export * from './notifications';
+export * from './staff-arrivals';

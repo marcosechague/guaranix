@@ -32,6 +32,16 @@ describe('checkInMessage', () => {
     expect(message.detail).toContain('₲ 250.000');
   });
 
+  it('greets staff and shows when they arrived', () => {
+    const message = checkInMessage(
+      { outcome: 'staff_arrived', member, arrivedAt: '2026-11-28T10:05:00Z' },
+      zone,
+    );
+    expect(message.tone).toBe('success');
+    expect(message.title).toContain(member.firstName);
+    expect(message.detail).toContain('07:05');
+  });
+
   it('has a message for every denial', () => {
     for (const reason of CHECK_IN_DENIALS) {
       const { detail } = checkInMessage(

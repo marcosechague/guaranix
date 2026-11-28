@@ -1,4 +1,4 @@
-import type { CheckInResult } from '@guaranix/shared';
+import type { EntranceResult } from '@guaranix/shared';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useCheckIn } from '../../api/mutations';
 
@@ -11,12 +11,12 @@ const RECENT_LIMIT = 8;
 export type DeskState =
   | { kind: 'waiting' }
   | { kind: 'checking' }
-  | { kind: 'result'; result: CheckInResult }
+  | { kind: 'result'; result: EntranceResult }
   | { kind: 'error'; error: unknown };
 
 export interface RecentEntry {
   at: number;
-  result: CheckInResult;
+  result: EntranceResult;
 }
 
 /** Turns camera reads into check-ins, one at a time, and keeps the last few on screen. */
