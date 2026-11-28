@@ -69,6 +69,27 @@ export function parseScore(scoreType: ScoreType, text: ScoreText): ScoreParse {
   }
 }
 
+/** What `parseResult` needs from the part being scored. */
+export interface ScoredPart {
+  scoreType: ScoreType;
+  movementId: string | null;
+}
+
+/** Parts based on a movement (but not scored by load) can also take the load used. */
+export function takesUsedLoad(part: ScoredPart): boolean {
+  return part.scoreType !== 'load' && part.scoreType !== 'none' && part.movementId !== null;
+}
+
+/** The score plus, when the part takes it, the optional load used (e.g. from the guided mode). */
+export function parseResult(part: ScoredPart, text: ScoreText): ScoreParse {
+  const parsed = parseScore(part.scoreType, text);
+  if (!parsed.ok || !takesUsedLoad(part) || text.load.trim() === '') return parsed;
+  const loadGrams = kilogramsToGrams(text.load);
+  return loadGrams === null
+    ? { ok: false, field: 'load' }
+    : { ok: true, score: { ...parsed.score, loadGrams } };
+}
+
 /** Fills the inputs back from a saved result, so editing starts from it. */
 export function scoreToText(score: ScoreValues): ScoreText {
   const value = score.reps ?? score.distanceMeters ?? score.calories ?? score.points;

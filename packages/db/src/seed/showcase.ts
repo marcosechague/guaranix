@@ -299,6 +299,10 @@ async function seedWhiteboard(
     .orderBy(asc(workoutComponents.position));
   const [strength, metcon] = components;
   if (!strength || !metcon) return;
+  const [thruster] = await transaction
+    .select({ id: movements.id })
+    .from(movements)
+    .where(eq(movements.name, 'Thruster'));
   await transaction
     .update(workoutComponents)
     .set({
@@ -314,6 +318,9 @@ async function seedWhiteboard(
       description:
         '21-15-9\nThrusters 43/30 kg\nPull-ups\n\nCierre: 400 m run\n\nEscalado: thrusters 30/20 kg y ring rows.',
       timeCapSeconds: 900,
+      // The guided mode suggests 75% of each member's Thruster 1RM.
+      movementId: thruster?.id ?? null,
+      loadPercent: thruster ? 75 : null,
     })
     .where(eq(workoutComponents.id, metcon.id));
 
@@ -349,7 +356,16 @@ async function seedRecords(transaction: ScopedTransaction, boxId: string, daniel
   const library = await transaction
     .select()
     .from(movements)
-    .where(inArray(movements.name, ['Back Squat', 'Deadlift', 'Clean', 'Snatch', 'Strict Press']));
+    .where(
+      inArray(movements.name, [
+        'Back Squat',
+        'Deadlift',
+        'Clean',
+        'Snatch',
+        'Strict Press',
+        'Thruster',
+      ]),
+    );
   const idOf = (name: string) => library.find((movement) => movement.name === name)?.id;
   const records = [
     ['Back Squat', 1, 125_000, -3],
@@ -357,6 +373,7 @@ async function seedRecords(transaction: ScopedTransaction, boxId: string, daniel
     ['Clean', 1, 92_500, -16],
     ['Snatch', 1, 70_000, -41],
     ['Strict Press', 3, 52_500, -64],
+    ['Thruster', 1, 40_000, -30],
   ] as const;
   await transaction.insert(personalRecords).values(
     records.flatMap(([name, repMax, loadGrams, daysAgo]) => {

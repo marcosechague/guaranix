@@ -6,17 +6,25 @@ import { errorText } from '@guaranix/ui/data';
 import { useState } from 'react';
 import { useLogResult } from '../../api/mutations';
 import { PrCelebration } from './PrCelebration';
-import { EMPTY_SCORE_TEXT, parseScore, type ScoreText, scoreToText } from './score-form';
+import {
+  EMPTY_SCORE_TEXT,
+  parseResult,
+  type ScoreText,
+  scoreToText,
+  takesUsedLoad,
+} from './score-form';
 
 export interface ResultCardProps {
   component: WorkoutComponent;
   ownEntry: LeaderboardEntry | undefined;
   /** What the timer measured; it wins over an older saved result. */
   fromTimer?: Partial<ScoreText> | undefined;
+  /** Called after a save, with whether it was a new personal record. */
+  onSaved?: ((isPersonalRecord: boolean) => void) | undefined;
 }
 
 /** One screen, one save: score, Rx or scaled, done. */
-export function ResultCard({ component, ownEntry, fromTimer }: ResultCardProps) {
+export function ResultCard({ component, ownEntry, fromTimer, onSaved }: ResultCardProps) {
   const [text, setText] = useState<ScoreText>(() => ({
     ...(ownEntry ? scoreToText(ownEntry) : EMPTY_SCORE_TEXT),
     ...fromTimer,
@@ -32,7 +40,7 @@ export function ResultCard({ component, ownEntry, fromTimer }: ResultCardProps) 
   };
 
   const save = () => {
-    const parsed = parseScore(component.scoreType, text);
+    const parsed = parseResult(component, text);
     if (!parsed.ok) {
       setInvalidField(parsed.field);
       return;
@@ -43,6 +51,7 @@ export function ResultCard({ component, ownEntry, fromTimer }: ResultCardProps) 
         onSuccess: ({ isPersonalRecord }) => {
           if (isPersonalRecord) setCelebrate(true);
           else toast.show(t('member.wod.saved'));
+          onSaved?.(isPersonalRecord);
         },
         onError: (error) => toast.show(errorText(error), 'error'),
       },
@@ -116,7 +125,19 @@ export function ResultCard({ component, ownEntry, fromTimer }: ResultCardProps) 
   return (
     <Card className="relative flex flex-col gap-4 overflow-hidden">
       <Eyebrow>{t('member.wod.yourResult')}</Eyebrow>
-      <div className="flex items-end gap-3">{fields}</div>
+      <div className="flex items-end gap-3">
+        {fields}
+        {takesUsedLoad(component) ? (
+          <ScoreField
+            label={t('member.wod.usedLoad')}
+            value={text.load}
+            onChange={set('load')}
+            placeholder="40"
+            inputMode="decimal"
+            invalid={invalidField === 'load'}
+          />
+        ) : null}
+      </div>
       {invalidField ? (
         <p role="alert" className="-mt-2 text-sm text-warning">
           {invalidField === 'time' ? t('member.wod.invalidTime') : t('member.wod.invalidNumber')}
