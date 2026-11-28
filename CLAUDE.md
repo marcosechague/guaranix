@@ -169,11 +169,12 @@ Contexto: en noviembre de 2026 cayó ueno Bank y con él uPay (ex Pagopar). **No
 
 ## Despliegue
 
-- Ambientes `staging` y `production` en el `env` de cada `wrangler.jsonc`; el nivel de arriba es desarrollo local. Las apps son Workers de archivos estáticos.
-- Staging se publica solo con CI en verde en `main`; producción con un tag `v*` (`.github/workflows/deploy-*.yml`). Cada deploy corre migraciones, `db:bootstrap`, API, apps y una prueba de humo.
-- Secretos solo en los environments de GitHub; el deploy los sube con `--secrets-file`. Un secreto nuevo de la API se suma en `apps/api/src/env.ts`, `scripts/deploy/write-secrets-file.mjs` y `docs/despliegue.md`.
+- Hoy solo hay **producción**, en la dirección gratis `guaranix.<subdominio>.workers.dev`. El Worker `apps/gateway` sirve las tres apps en una sola dirección (`/` alumno, `/panel/` box, `/plataforma/` superadmin) y pasa `/api/*` a la API por service binding; así comparten la cookie de sesión. La API no tiene dirección pública propia.
+- Producción sale con un tag `v*` o a mano (`.github/workflows/deploy-production.yml`); mergear a `main` no publica. Cada deploy corre migraciones, `db:bootstrap`, API, apps + gateway y una prueba de humo.
+- Las direcciones salen de `PUBLIC_URL` (o del subdominio workers.dev) y se pasan con `--var`; nunca escribas un dominio en el código. Un link entre apps usa `import.meta.env.BASE_URL` o las URLs de `config.ts`.
+- Secretos solo en el environment `production` de GitHub; el deploy los sube con `--secrets-file`. Un secreto nuevo de la API se suma en `apps/api/src/env.ts`, `scripts/deploy/write-secrets-file.mjs` y `docs/despliegue.md`.
 - Las migraciones tienen que dejar andando la versión anterior del código (se corren antes del deploy y no se revierten).
-- Los dominios están en `deploy/environments.json` y en los `wrangler.jsonc`; `pnpm check:deploy` revisa que coincidan. Runbook: `docs/despliegue.md`, decisión: `docs/decisions/0012`.
+- `pnpm check:deploy` revisa la configuración. Runbook: `docs/despliegue.md`, decisión: `docs/decisions/0012`.
 
 ---
 

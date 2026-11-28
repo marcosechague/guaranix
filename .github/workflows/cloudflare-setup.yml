@@ -11,7 +11,7 @@ on:
         description: Environment to set up
         required: true
         type: choice
-        options: [staging, production]
+        options: [production]
 
 permissions:
   contents: read

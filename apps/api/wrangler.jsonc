@@ -48,51 +48,23 @@
   // In Cloudflare the deploy workflow uploads them from the GitHub environment
   // (`scripts/deploy/write-secrets-file.mjs`, runbook in docs/despliegue.md).
   //
-  // Staging and production. Bindings, vars and routes are not inherited from the
-  // top level, so each environment lists them all. Hostnames must match
-  // deploy/environments.json (`pnpm check:deploy` compares them).
-  // HYPERDRIVE_ID is replaced by the deploy workflow with the GitHub variable of
-  // the same name, so the account's ids stay out of the repo.
+  // Production. Bindings, vars and triggers are not inherited from the top level,
+  // so the environment lists them all. HYPERDRIVE_ID is replaced by the deploy
+  // workflow with the GitHub variable of the same name.
+  //
+  // The API has no public address of its own: the `guaranix` gateway Worker
+  // (apps/gateway) serves the three apps and forwards `/api/*` here through a
+  // service binding, so apps and API share one origin and one session cookie.
+  // ALLOWED_ORIGINS, PUBLIC_API_URL, ADMIN_APP_URL and MEMBER_APP_URL depend on
+  // that origin and are passed by the deploy with `--var` (docs/despliegue.md).
+  // Public values that change per account (VAPID_PUBLIC_KEY, TELEGRAM_BOT_USERNAME,
+  // WHATSAPP_PHONE_NUMBER_ID, TURNSTILE_SITE_KEY, EMAIL_FROM) come from GitHub
+  // variables with the secrets.
   "env": {
-    "staging": {
-      "name": "guaranix-api-staging",
-      "workers_dev": false,
-      "routes": [{ "pattern": "api-staging.guaranix.com.py", "custom_domain": true }],
-      "triggers": {
-        "crons": ["0 6 * * *", "0 12 * * *", "30 12 * * *", "0 23 * * *", "*/10 * * * *"],
-      },
-      "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "HYPERDRIVE_ID" }],
-      "queues": {
-        "producers": [
-          { "binding": "NOTIFICATIONS_QUEUE", "queue": "guaranix-notifications-staging" },
-        ],
-        "consumers": [
-          {
-            "queue": "guaranix-notifications-staging",
-            "max_batch_size": 10,
-            "max_batch_timeout": 5,
-            "max_retries": 10,
-            "dead_letter_queue": "guaranix-notifications-staging-dlq",
-          },
-        ],
-      },
-      "r2_buckets": [{ "binding": "RECEIPTS", "bucket_name": "guaranix-receipts-staging" }],
-      // Public values that change per account (VAPID_PUBLIC_KEY, TELEGRAM_BOT_USERNAME,
-      // WHATSAPP_PHONE_NUMBER_ID, TURNSTILE_SITE_KEY, EMAIL_FROM) come from GitHub
-      // variables with the secrets, so they are not declared here.
-      "vars": {
-        "APP_ENV": "staging",
-        "ALLOWED_ORIGINS": "https://app-staging.guaranix.com.py,https://panel-staging.guaranix.com.py,https://plataforma-staging.guaranix.com.py",
-        "PUBLIC_API_URL": "https://api-staging.guaranix.com.py",
-        "ADMIN_APP_URL": "https://panel-staging.guaranix.com.py",
-        "MEMBER_APP_URL": "https://app-staging.guaranix.com.py",
-        "WHATSAPP_TEMPLATE_LANGUAGE": "es",
-      },
-    },
     "production": {
       "name": "guaranix-api-production",
       "workers_dev": false,
-      "routes": [{ "pattern": "api.guaranix.com.py", "custom_domain": true }],
+      "preview_urls": false,
       "triggers": {
         "crons": ["0 6 * * *", "0 12 * * *", "30 12 * * *", "0 23 * * *", "*/10 * * * *"],
       },
@@ -114,10 +86,12 @@
       "r2_buckets": [{ "binding": "RECEIPTS", "bucket_name": "guaranix-receipts-production" }],
       "vars": {
         "APP_ENV": "production",
-        "ALLOWED_ORIGINS": "https://app.guaranix.com.py,https://panel.guaranix.com.py,https://plataforma.guaranix.com.py",
-        "PUBLIC_API_URL": "https://api.guaranix.com.py",
-        "ADMIN_APP_URL": "https://panel.guaranix.com.py",
-        "MEMBER_APP_URL": "https://app.guaranix.com.py",
+        // Empty on purpose: the deploy fills them with `--var`. Left empty, the API
+        // allows no origin and refuses every write.
+        "ALLOWED_ORIGINS": "",
+        "PUBLIC_API_URL": "",
+        "ADMIN_APP_URL": "",
+        "MEMBER_APP_URL": "",
         "WHATSAPP_TEMPLATE_LANGUAGE": "es",
       },
     },

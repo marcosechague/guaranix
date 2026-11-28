@@ -1,31 +1,40 @@
 #!/usr/bin/env node
 /**
- * Writes `_headers` into an app's build so Cloudflare serves it with security
- * headers: a CSP that only lets the app talk to its own API, no framing
- * (clickjacking on the admin panel), and no referrer paths (reset links carry
- * a token). Hashes come from the built index.html, so the inline theme script
- * keeps working when it changes.
+ * Writes the security headers of the assembled site (apps/gateway/dist):
+ * `_headers`, which the asset store applies to the files it serves, and
+ * `security-headers.json`, which the gateway applies to the HTML it returns for
+ * client-side routes. A CSP that only allows this origin (the API is under
+ * `/api`) and Turnstile, no framing (clickjacking on the box panel), no
+ * referrer paths (reset links carry a token). Inline scripts are allowed by
+ * hash, read from each built index.html, so the theme script keeps working.
  *
- * Usage: node scripts/deploy/write-headers.mjs <dist dir> <api url>
+ * Usage: node scripts/deploy/write-headers.mjs <site dir>
  */
 import { createHash } from 'node:crypto';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-const [distDirectory, apiUrl] = process.argv.slice(2);
-if (!distDirectory || !apiUrl) {
-  console.error('Uso: node scripts/deploy/write-headers.mjs <dist> <url de la api>');
+const siteDirectory = process.argv[2];
+if (!siteDirectory) {
+  console.error('Uso: node scripts/deploy/write-headers.mjs <carpeta del sitio>');
   process.exit(2);
 }
 
 const TURNSTILE = 'https://challenges.cloudflare.com';
-const html = readFileSync(join(distDirectory, 'index.html'), 'utf8');
-const inlineScripts = [...html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)]
-  .map((match) => match[1] ?? '')
-  .filter((body) => body.trim() !== '');
-const hashes = inlineScripts.map(
-  (body) => `'sha256-${createHash('sha256').update(body).digest('base64')}'`,
-);
+const INDEX_FILES = ['index.html', 'panel/index.html', 'plataforma/index.html'];
+
+const hashes = new Set();
+for (const file of INDEX_FILES) {
+  const path = join(siteDirectory, file);
+  if (!existsSync(path)) continue;
+  const html = readFileSync(path, 'utf8');
+  for (const match of html.matchAll(/<script(?![^>]*\bsrc=)[^>]*>([\s\S]*?)<\/script>/g)) {
+    const body = match[1] ?? '';
+    if (body.trim() !== '') {
+      hashes.add(`'sha256-${createHash('sha256').update(body).digest('base64')}'`);
+    }
+  }
+}
 
 const policy = [
   "default-src 'self'",
@@ -35,7 +44,7 @@ const policy = [
   // Receipts and payment QRs are shown from blob: URLs fetched through the API.
   "img-src 'self' data: blob:",
   "font-src 'self'",
-  `connect-src 'self' ${new URL(apiUrl).origin}`,
+  "connect-src 'self'",
   `frame-src blob: ${TURNSTILE}`,
   "worker-src 'self'",
   "manifest-src 'self'",
@@ -45,14 +54,16 @@ const policy = [
   "frame-ancestors 'none'",
 ].join('; ');
 
-const headers = `/*
-  Content-Security-Policy: ${policy}
-  X-Frame-Options: DENY
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin
-  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
-  Strict-Transport-Security: max-age=31536000
-`;
+const headers = {
+  'Content-Security-Policy': policy,
+  'X-Frame-Options': 'DENY',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+  'Strict-Transport-Security': 'max-age=31536000',
+};
 
-writeFileSync(join(distDirectory, '_headers'), headers);
-console.log(`_headers en ${distDirectory} (${hashes.length} script(s) inline).`);
+const lines = Object.entries(headers).map(([name, value]) => `  ${name}: ${value}`);
+writeFileSync(join(siteDirectory, '_headers'), `/*\n${lines.join('\n')}\n`);
+writeFileSync(join(siteDirectory, 'security-headers.json'), JSON.stringify(headers));
+console.log(`Encabezados de seguridad en ${siteDirectory} (${hashes.size} script(s) inline).`);

@@ -1,4 +1,4 @@
-# 0012 — Despliegue en Cloudflare con staging y producción
+# 0012 — Despliegue en Cloudflare
 
 ## Contexto
 
@@ -22,3 +22,13 @@ La fase 0 andaba solo en local. Para el piloto con los primeros 3 a 5 boxes hace
 - Un secreto nuevo de la API se suma en `env.ts`, en `scripts/deploy/write-secrets-file.mjs` y en `docs/despliegue.md`.
 - Los deploys no borran secretos del Worker: sacar uno es un `wrangler secret delete` a mano.
 - Runbook completo en `docs/despliegue.md`.
+
+## Actualización: un solo ambiente y la dirección gratis de Cloudflare
+
+Para arrancar el piloto sin pagar dominio, Marcos decidió publicar solo **producción** y en `workers.dev`.
+
+- `workers.dev` es un sufijo público: dos Workers ahí son sitios distintos y la cookie `SameSite=Lax` no viaja entre ellos. Por eso un Worker **gateway** (`apps/gateway`) sirve las tres apps en una sola dirección (`/`, `/panel/`, `/plataforma/`) y pasa `/api/*` a la API por _service binding_. La API no tiene dirección pública propia.
+- Las direcciones que la API necesita (`ALLOWED_ORIGINS`, `PUBLIC_API_URL`, `ADMIN_APP_URL`, `MEMBER_APP_URL`) se calculan en el deploy a partir de `PUBLIC_URL` o del subdominio workers.dev de la cuenta, y se pasan con `--var`. Pasar a un dominio propio es cambiar una variable.
+- Los archivos los sirve el asset store sin correr el Worker; el gateway solo corre para `/api/*` y para las rutas de las apps.
+- Mergear a `main` ya no publica: producción sale con un tag `v*` o a mano. Staging se puede volver a sumar copiando `env.production`.
+- El service worker del alumno (scope `/`) ignora `/panel`, `/plataforma` y `/api` en la navegación offline.
