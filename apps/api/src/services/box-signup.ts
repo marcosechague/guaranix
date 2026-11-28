@@ -1,9 +1,10 @@
-import type { ScopedTransaction } from '@guaranix/db';
+import { enterBoxScope, type ScopedTransaction } from '@guaranix/db';
 import { auditLogs, platformPlans, sessions } from '@guaranix/db/schema';
 import {
   type BoxSignupInput,
   blockingIssues,
   boxSignupSchema,
+  calendarDateIn,
   reviewBoxSetup,
   type SetupIssue,
 } from '@guaranix/shared';
@@ -11,10 +12,13 @@ import { eq, inArray } from 'drizzle-orm';
 import { provisionBox } from './box-provisioning';
 import { unprocessable } from './errors';
 import { boxesOnPlan } from './platform-plans';
+import { generateClasses } from './schedules';
 
 /** Plans offered at self sign-up, best first: founders while there is room, then base. */
 const SIGNUP_PLAN_CODES = ['founders', 'base'];
 const TRIAL_DAYS = 30;
+/** Classes created up front, so members can book from day one (cron extends it later). */
+const FIRST_CLASS_DAYS = 14;
 
 export class SetupRejected extends Error {
   constructor(
@@ -95,6 +99,12 @@ export async function signUpBox(
       acceptedWarnings: issues.map((issue) => issue.code),
     },
   });
+  // Last, because from here on the transaction only sees the new box (RLS).
+  await enterBoxScope(transaction, { boxId: box.id, userId: caller.userId });
+  await generateClasses(
+    { transaction, auth: { boxId: box.id, userId: caller.userId, role: 'box_owner' }, now },
+    { from: calendarDateIn(box.timezone, now), days: FIRST_CLASS_DAYS },
+  );
   return {
     box: { id: box.id, name: box.name, slug: box.slug },
     platformPlan: { code: plan.code, name: plan.name, monthlyPriceGs: plan.monthlyPriceGs },

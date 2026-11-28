@@ -6,15 +6,29 @@ export interface TextFieldProps extends InputHTMLAttributes<HTMLInputElement> {
   hint?: string;
   error?: string | undefined;
   ref?: Ref<HTMLInputElement>;
+  /** E.g. `md:sr-only` on repeated rows, where a header row already names the column. */
+  labelClassName?: string | undefined;
 }
 
-export function TextField({ label, hint, error, className, id, ref, ...props }: TextFieldProps) {
+export function TextField({
+  label,
+  hint,
+  error,
+  className,
+  labelClassName,
+  id,
+  ref,
+  ...props
+}: TextFieldProps) {
   const generatedId = useId();
   const inputId = id ?? generatedId;
   const describedBy = error ? `${inputId}-error` : hint ? `${inputId}-hint` : undefined;
   return (
     <div className={classNames('flex flex-col gap-1.5', className)}>
-      <label htmlFor={inputId} className="text-sm font-medium text-text-soft">
+      <label
+        htmlFor={inputId}
+        className={classNames('text-sm font-medium text-text-soft', labelClassName)}
+      >
         {label}
       </label>
       <input
