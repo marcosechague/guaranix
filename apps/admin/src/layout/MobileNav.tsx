@@ -1,10 +1,9 @@
 import type { ReactNode } from 'react';
 import { t } from '@guaranix/shared';
-import { BottomBar, classNames } from '@guaranix/ui';
+import { BottomBar, BoxMark, classNames } from '@guaranix/ui';
 import { useBoxClock } from '@guaranix/ui/data';
 import { Settings, UserRound } from 'lucide-react';
 import { Link, NavLink } from 'react-router';
-import { BoxMark } from './BoxMark';
 import { NAV_ITEMS } from './nav-items';
 
 function TopBarLink({ to, label, children }: { to: string; label: string; children: ReactNode }) {

@@ -9,6 +9,7 @@ import {
   EmptyState,
   Eyebrow,
   Skeleton,
+  Columns,
 } from '@guaranix/ui';
 import { AccountSecurity, useSession } from '@guaranix/ui/auth';
 import { useMe, useMyPlans, usePlans } from '../../api/queries';
@@ -91,7 +92,7 @@ export function ProfileScreen() {
   const { data: me } = useMe();
   const [first = '', ...rest] = session.user.fullName.split(' ');
   return (
-    <Page layout="mobile" className="gap-4">
+    <Page layout="mobile">
       <header className="flex items-center gap-4">
         <Avatar
           firstName={me?.firstName ?? first}
@@ -107,8 +108,7 @@ export function ProfileScreen() {
           </span>
         </div>
       </header>
-      <PlanCard />
-      <AccountSecurity />
+      <Columns start={<PlanCard />} end={<AccountSecurity />} />
     </Page>
   );
 }

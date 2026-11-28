@@ -1,5 +1,8 @@
 export { Brodi } from './components/Brodi';
 export type { BrodiProps } from './components/Brodi';
+export { BoxMark } from './components/BoxMark';
+export { Columns } from './components/Columns';
+export type { ColumnsProps } from './components/Columns';
 export { Button } from './components/Button';
 export type { ButtonProps } from './components/Button';
 export { Card, Eyebrow } from './components/Card';
