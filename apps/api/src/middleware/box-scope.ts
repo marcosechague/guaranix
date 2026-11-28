@@ -73,6 +73,18 @@ const boxScope: MiddlewareHandler<BoxEnv> = async (context, next) => {
   );
 };
 
+/** Box routes that open their own short transactions (see `createBoxRouterWithoutTransaction`). */
+export interface BoxAuthEnv extends AppEnv {
+  Variables: AppEnv['Variables'] & { session: AuthenticatedSession; auth: BoxAuth };
+}
+
+const boxAuthOnly: MiddlewareHandler<BoxAuthEnv> = async (context, next) => {
+  const auth = await resolveBoxAuth(context.var.services.database(), context.var.session);
+  if ('error' in auth) return fail(context, 403, auth.error);
+  context.set('auth', auth);
+  return next();
+};
+
 type Roles = readonly [BoxRole, ...BoxRole[]];
 
 /** 403 unless the user's role in the active box is one of `roles`. */
@@ -100,5 +112,27 @@ export function createBoxRouter() {
       router.patch(path, authorize(roles), handler),
     delete: (path: string, roles: Roles, handler: Handler<BoxEnv>) =>
       router.delete(path, authorize(roles), handler),
+  };
+}
+
+/**
+ * Same session and role checks as `createBoxRouter`, but no request-wide
+ * transaction: for routes that wait on an external service (an AI provider can
+ * take a minute) and must not hold a database transaction open meanwhile. Their
+ * services open short `withBoxScope` transactions themselves.
+ */
+export function createBoxRouterWithoutTransaction() {
+  const router = new Hono<BoxAuthEnv>();
+  router.use('*', boxAuthOnly);
+  const allow =
+    (roles: Roles): MiddlewareHandler<BoxAuthEnv> =>
+    async (context, next) => {
+      if (!roles.includes(context.var.auth.role)) return fail(context, 403, 'forbidden');
+      return next();
+    };
+  return {
+    router,
+    post: (path: string, roles: Roles, handler: Handler<BoxAuthEnv>) =>
+      router.post(path, allow(roles), handler),
   };
 }

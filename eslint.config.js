@@ -41,6 +41,8 @@ const SYSTEM_SCOPE_FILES = [
   'apps/api/src/middleware/account-scope.ts',
   // Cron: lists the boxes to visit, then works inside each box's own scope.
   'apps/api/src/jobs/upcoming-classes.ts',
+  // AI import: reads the platform's provider key and fills in the tokens of the box's own use row.
+  'apps/api/src/services/ai-import.ts',
 ];
 
 export default tseslint.config(

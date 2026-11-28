@@ -78,7 +78,11 @@ function resolvePlan(
     requested.startsOn ?? (requested.endsOn ? addDays(requested.endsOn, -span) : null);
   const endsOn = requested.endsOn ?? (startsOn ? addDays(startsOn, span) : null);
   if (!startsOn || !endsOn) {
-    outcome.errors.push({ field: 'planEndsOn', code: 'plan_dates_missing' });
+    // An unreadable date already explains why; don't report it twice.
+    const dateUnreadable = outcome.errors.some(
+      (issue) => issue.field === 'planStartsOn' || issue.field === 'planEndsOn',
+    );
+    if (!dateUnreadable) outcome.errors.push({ field: 'planEndsOn', code: 'plan_dates_missing' });
     return null;
   }
   let classesRemaining = requested.classesRemaining;
@@ -154,6 +158,7 @@ function analyzeRow(
     ...outcome,
     member,
     existingMemberId,
+    requestedPlanName: normalized.plan?.planName ?? null,
     plan: plan ?? null,
     balance: balance ?? null,
   };

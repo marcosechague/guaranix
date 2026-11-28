@@ -7,3 +7,4 @@ export * from './format/scores';
 export * from './format/dates';
 export * from './onboarding';
 export * from './imports';
+export * from './timer/workout-timer';

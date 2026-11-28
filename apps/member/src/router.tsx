@@ -4,6 +4,11 @@ import { AppShell } from './layout/AppShell';
 // Each screen is its own chunk so the first load on 3G only brings the home.
 export const router = createBrowserRouter([
   {
+    // Full screen, without tab bar or side menu: nothing to tap by mistake mid-workout.
+    path: '/wod/timer/:componentId',
+    lazy: async () => ({ Component: (await import('./screens/timer/TimerScreen')).TimerScreen }),
+  },
+  {
     path: '/',
     Component: AppShell,
     children: [

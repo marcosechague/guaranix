@@ -11,13 +11,16 @@ import { EMPTY_SCORE_TEXT, parseScore, type ScoreText, scoreToText } from './sco
 export interface ResultCardProps {
   component: WorkoutComponent;
   ownEntry: LeaderboardEntry | undefined;
+  /** What the timer measured; it wins over an older saved result. */
+  fromTimer?: Partial<ScoreText> | undefined;
 }
 
 /** One screen, one save: score, Rx or scaled, done. */
-export function ResultCard({ component, ownEntry }: ResultCardProps) {
-  const [text, setText] = useState<ScoreText>(() =>
-    ownEntry ? scoreToText(ownEntry) : EMPTY_SCORE_TEXT,
-  );
+export function ResultCard({ component, ownEntry, fromTimer }: ResultCardProps) {
+  const [text, setText] = useState<ScoreText>(() => ({
+    ...(ownEntry ? scoreToText(ownEntry) : EMPTY_SCORE_TEXT),
+    ...fromTimer,
+  }));
   const [scaling, setScaling] = useState<Scaling>(ownEntry?.scaling ?? 'rx');
   const [invalidField, setInvalidField] = useState<keyof ScoreText | null>(null);
   const [celebrate, setCelebrate] = useState(false);

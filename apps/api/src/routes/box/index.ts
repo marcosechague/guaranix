@@ -3,14 +3,17 @@ import type { AppEnv } from '../../env';
 import { chargeRoutes, paymentRoutes, reportRoutes } from './billing';
 import { bookingRoutes, meRoutes } from './bookings';
 import { classRoutes, programRoutes, scheduleRoutes } from './classes';
+import { aiImportRoutes } from './ai-imports';
 import { importRoutes } from './imports';
 import { memberRoutes } from './members';
 import { memberPlanRoutes, planRoutes } from './plans';
 import { settingsRoutes } from './settings';
 import { componentRoutes, movementRoutes, resultRoutes, workoutRoutes } from './workouts';
 
-/** Box data under `/box/...`; every router runs inside the session's box scope. */
+/** Box data under `/box/...`; every router checks the session's box and role. */
 export function mountBoxRoutes(app: Hono<AppEnv>) {
+  // First: it has no request-wide transaction, and a later `/box` router would open one.
+  app.route('/box/ai-imports', aiImportRoutes);
   app.route('/box/members', memberRoutes);
   app.route('/box/plans', planRoutes);
   app.route('/box/member-plans', memberPlanRoutes);
