@@ -67,15 +67,13 @@
       "name": "guaranix-api-production",
       "workers_dev": false,
       "preview_urls": false,
+      // Workers Free allows 5 cron triggers per account and two other Workers already
+      // use 2, so production runs only the jobs that do something today. Restore
+      // "30 12 * * *" (card autopay, needs PAYMENTS_SECRETS_KEY), "*/10 * * * *"
+      // (notification sweeper, needs push/Telegram/WhatsApp) and "0 11 * * 1"
+      // (Brodi weekly, needs AI_SECRETS_KEY) when those are configured, on Workers Paid.
       "triggers": {
-        "crons": [
-          "0 6 * * *",
-          "0 12 * * *",
-          "30 12 * * *",
-          "0 23 * * *",
-          "*/10 * * * *",
-          "0 11 * * 1",
-        ],
+        "crons": ["0 6 * * *", "0 12 * * *", "0 23 * * *"],
       },
       "hyperdrive": [{ "binding": "HYPERDRIVE", "id": "HYPERDRIVE_ID" }],
       "queues": {
