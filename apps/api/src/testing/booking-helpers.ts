@@ -30,7 +30,12 @@ export function bookingWorld(fixture: ServiceFixture, box: TestBox) {
     return row.id;
   }
 
-  async function createClass(options: { startsAt: Date; capacity?: number; program?: string }) {
+  async function createClass(options: {
+    startsAt: Date;
+    capacity?: number;
+    program?: string;
+    locationId?: string;
+  }) {
     const program = await programId(options.program);
     const [classRow] = await fixture.system((transaction) =>
       transaction
@@ -38,6 +43,7 @@ export function bookingWorld(fixture: ServiceFixture, box: TestBox) {
         .values({
           boxId: box.boxId,
           programId: program,
+          locationId: options.locationId,
           startsAt: options.startsAt,
           endsAt: new Date(options.startsAt.getTime() + HOUR_MS),
           capacity: options.capacity ?? 10,

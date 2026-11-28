@@ -49,6 +49,7 @@ export async function createClassesFromSchedules(
         boxId: box.id,
         programId: schedule.programId,
         scheduleId: schedule.id,
+        locationId: schedule.locationId,
         coachUserId: schedule.coachUserId,
         startsAt,
         endsAt: new Date(startsAt.getTime() + schedule.durationMinutes * 60_000),

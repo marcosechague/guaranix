@@ -7,6 +7,7 @@ import { currentBox } from './box-calendar';
 import { MANAGER_ROLES, assertRole, type ServiceContext } from './context';
 import { notFound, unprocessable } from './errors';
 import { createClassesFromSchedules } from './class-generation';
+import { resolveLocationId } from './locations';
 import { getProgram } from './programs';
 
 export type ScheduleInput = z.output<typeof classScheduleSchema>;
@@ -36,9 +37,10 @@ export async function createSchedule(
   assertRole(context.auth.role, MANAGER_ROLES);
   await getProgram(context, input.programId);
   await assertCoach(context, input.coachUserId);
+  const locationId = await resolveLocationId(context, input.locationId);
   const [schedule] = await context.transaction
     .insert(classSchedules)
-    .values({ ...input, boxId: context.auth.boxId })
+    .values({ ...input, locationId, boxId: context.auth.boxId })
     .returning();
   if (!schedule) throw new Error('Schedule insert returned no row');
   await recordAudit(context, {

@@ -29,6 +29,8 @@ const durationMinutesSchema = z.number().int().min(15).max(240);
 export const classScheduleSchema = z
   .object({
     programId: idSchema,
+    /** Left out, the slot goes to the box's default location. */
+    locationId: idSchema.optional(),
     coachUserId: idSchema.nullable().default(null),
     weekday: weekdaySchema,
     startTime: localTimeSchema,
@@ -105,6 +107,8 @@ export const generateClassesSchema = z.object({
 export const listClassesQuerySchema = z.object({
   from: calendarDateSchema,
   to: calendarDateSchema,
+  /** Only classes at this location; left out, every location. */
+  locationId: idSchema.optional(),
 });
 
 export const updateClassSessionSchema = z

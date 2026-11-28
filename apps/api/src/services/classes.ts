@@ -25,7 +25,10 @@ const MAX_LISTING_DAYS = 31;
  * taken and, for members, their own booking, so the app can show a "Reservá"
  * or "Estás en lista de espera" button without another request.
  */
-export async function listClasses(context: ServiceContext, range: { from: string; to: string }) {
+export async function listClasses(
+  context: ServiceContext,
+  range: { from: string; to: string; locationId?: string | undefined },
+) {
   const days = daysBetween(range.from, range.to) + 1;
   if (days < 1 || days > MAX_LISTING_DAYS) throw unprocessable('date_range_invalid');
   const box = await currentBox(context);
@@ -37,6 +40,7 @@ export async function listClasses(context: ServiceContext, range: { from: string
       and(
         gte(classes.startsAt, zonedInstant(range.from, '00:00', box.timezone)),
         lt(classes.startsAt, zonedInstant(addDays(range.to, 1), '00:00', box.timezone)),
+        range.locationId ? eq(classes.locationId, range.locationId) : undefined,
       ),
     )
     .orderBy(asc(classes.startsAt));

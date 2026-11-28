@@ -6,6 +6,7 @@ import { diff, recordAudit } from './audit';
 import { conflict, forbidden, isUniqueViolation, notFound } from './errors';
 import { isStaff, type ServiceContext } from './context';
 import { definedFields } from './objects';
+import { assertLocationsExist } from './locations';
 
 export type MemberRow = typeof members.$inferSelect;
 
@@ -116,11 +117,16 @@ function translateUniqueViolation(error: unknown): never {
   throw error;
 }
 
+async function assertHomeLocation(context: ServiceContext, locationId: string | null | undefined) {
+  if (locationId) await assertLocationsExist(context, [locationId]);
+}
+
 export async function createMember(
   context: ServiceContext,
   input: CreateMemberInput,
 ): Promise<MemberRow> {
   if (!isStaff(context.auth.role)) throw forbidden();
+  await assertHomeLocation(context, input.homeLocationId);
   const [member] = await context.transaction
     .insert(members)
     .values({ ...input, boxId: context.auth.boxId })
@@ -144,6 +150,7 @@ export async function updateMember(
   const before = await getMember(context, memberId);
   const fields = definedFields(input);
   if (Object.keys(fields).length === 0) return before;
+  await assertHomeLocation(context, fields.homeLocationId);
   const [member] = await context.transaction
     .update(members)
     .set(fields)

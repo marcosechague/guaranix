@@ -1,5 +1,12 @@
 import { and, count, eq, gte, inArray, lt } from 'drizzle-orm';
-import { bookings, classes, memberPlans, planPauses, planPrograms } from '@guaranix/db/schema';
+import {
+  bookings,
+  classes,
+  memberPlans,
+  planLocations,
+  planPauses,
+  planPrograms,
+} from '@guaranix/db/schema';
 import type { BookingStatus } from '@guaranix/shared/domain';
 import { addDays, calendarDateIn, startOfWeek, zonedInstant } from '@guaranix/shared';
 import type { ServiceContext } from './context';
@@ -54,6 +61,15 @@ async function coversProgram(context: ServiceContext, planId: string, programId:
   return rows.length === 0 || rows.some((row) => row.programId === programId);
 }
 
+async function coversLocation(context: ServiceContext, planId: string, locationId: string) {
+  const rows = await context.transaction
+    .select({ locationId: planLocations.locationId })
+    .from(planLocations)
+    .where(eq(planLocations.planId, planId));
+  // No rows means the plan works at every location (the pass between locations).
+  return rows.length === 0 || rows.some((row) => row.locationId === locationId);
+}
+
 /** Unlimited and weekly plans first, so pack credits are kept; then whatever ends soonest. */
 function byPreference(first: MemberPlanRow, second: MemberPlanRow): number {
   const usesCredits = (plan: MemberPlanRow) => (plan.classesRemaining === null ? 0 : 1);
@@ -62,7 +78,7 @@ function byPreference(first: MemberPlanRow, second: MemberPlanRow): number {
 
 /**
  * Picks the member plan that pays for a class: valid on the class's local
- * date (pauses included), covering its program, with a credit or a weekly
+ * date (pauses included), covering its program and location, with a credit or a weekly
  * spot left. Throws the most specific reason when none qualifies.
  */
 export async function findPlanForClass(
@@ -104,8 +120,14 @@ export async function findPlanForClass(
   }
   if (covering.length === 0) throw unprocessable('plan_excludes_program');
 
+  const atLocation = [];
+  for (const plan of covering) {
+    if (await coversLocation(context, plan.planId, classRow.locationId)) atLocation.push(plan);
+  }
+  if (atLocation.length === 0) throw unprocessable('plan_excludes_location');
+
   let reason = 'no_credits_left';
-  for (const plan of covering.sort(byPreference)) {
+  for (const plan of atLocation.sort(byPreference)) {
     if (plan.classesRemaining !== null && plan.classesRemaining <= 0) continue;
     if (plan.classesPerWeek !== null) {
       const used = await weeklyUsage(context, plan.id, classDate, policy);

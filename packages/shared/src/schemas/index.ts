@@ -2,6 +2,7 @@ export * from './common';
 export * from './box';
 export * from './user';
 export * from './member';
+export * from './location';
 export * from './plan';
 export * from './schedule';
 export * from './workout';
