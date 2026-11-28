@@ -2,6 +2,7 @@ import type { SchemaDatabase } from '@guaranix/db';
 import type { EmailSender } from '@guaranix/messaging';
 import type { AiProviderFactory } from './services/ai-runtime';
 import type { CaptchaVerifier } from './integrations/captcha';
+import type { FileStorage } from './integrations/file-storage';
 import type { GoogleOAuth } from './integrations/google-oauth';
 
 export type AppEnvironment = 'development' | 'staging' | 'production';
@@ -18,6 +19,8 @@ export interface Bindings {
   DATABASE_URL?: string;
   /** Secret (`wrangler secret put`) for the password pepper, CSRF tokens and rate-limit keys. */
   AUTH_SECRET: string;
+  /** Private R2 bucket for payment receipts. `wrangler dev` simulates it locally. */
+  RECEIPTS: R2Bucket;
   // Integrations below are optional in development (login works without them)
   // and required everywhere else: see `readIntegrationConfig`.
   /** Public key the apps render the Turnstile widget with. */
@@ -40,6 +43,8 @@ export interface Bindings {
 export interface Services {
   database(): SchemaDatabase;
   emailSender: EmailSender;
+  /** Payment receipts (R2). */
+  files: FileStorage;
   /** Null when captcha is off (development without Turnstile keys). */
   captcha: CaptchaVerifier | null;
   /** Null when Google sign-in is off (development without Google keys). */

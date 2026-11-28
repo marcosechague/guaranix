@@ -30,24 +30,29 @@ function withQuery(path: string, query?: Query): string {
 
 /** JSON client for the box routes, with the session cookie and CSRF header. */
 export function createApiClient({ baseUrl, getCsrfToken, fetch: fetchImpl }: ApiClientOptions) {
-  async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+  async function send(method: string, path: string, body?: unknown): Promise<Response> {
     const headers: Record<string, string> = {};
-    if (body !== undefined) headers['content-type'] = 'application/json';
+    const file = body instanceof Blob;
+    if (body !== undefined) headers['content-type'] = file ? body.type : 'application/json';
     const csrfToken = getCsrfToken();
     if (method !== 'GET' && csrfToken) headers['x-csrf-token'] = csrfToken;
     const response = await (fetchImpl ?? fetch)(`${baseUrl}${path}`, {
       method,
       headers,
       credentials: 'include',
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }),
+      ...(body === undefined ? {} : { body: file ? body : JSON.stringify(body) }),
     });
-    const payload: unknown =
-      response.status === 204 ? null : await response.json().catch(() => null);
     if (!response.ok) {
+      const payload: unknown = await response.json().catch(() => null);
       const code = (payload as { error?: unknown } | null)?.error;
       throw new ApiError(typeof code === 'string' ? code : 'internal_error', response.status);
     }
-    return payload as T;
+    return response;
+  }
+
+  async function request<T>(method: string, path: string, body?: unknown): Promise<T> {
+    const response = await send(method, path, body);
+    return (response.status === 204 ? null : await response.json().catch(() => null)) as T;
   }
 
   return {
@@ -56,6 +61,10 @@ export function createApiClient({ baseUrl, getCsrfToken, fetch: fetchImpl }: Api
     put: <T>(path: string, body: unknown) => request<T>('PUT', path, body),
     patch: <T>(path: string, body: unknown) => request<T>('PATCH', path, body),
     delete: <T>(path: string) => request<T>('DELETE', path),
+    /** Sends a file as the raw body, with its own content type. */
+    upload: <T>(path: string, file: Blob) => request<T>('POST', path, file),
+    /** A private file (e.g. a receipt), fetched with the session cookie. */
+    blob: async (path: string) => (await send('GET', path)).blob(),
   };
 }
 

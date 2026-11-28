@@ -74,3 +74,53 @@ export function idParam(context: Context, name: string, entity: string): string 
   if (!result.success) throw new ServiceError(404, `${entity}_not_found`);
   return result.data;
 }
+
+/** A path parameter checked against a schema; anything else is a 404 for `entity`. */
+export function parseParam<Schema extends z.ZodType>(
+  context: Context,
+  name: string,
+  schema: Schema,
+  entity: string,
+): z.output<Schema> {
+  const result = schema.safeParse(context.req.param(name));
+  if (!result.success) throw new ServiceError(404, `${entity}_not_found`);
+  return result.data;
+}
+
+/**
+ * A raw file upload, read chunk by chunk and cut off as soon as it passes
+ * `maxBytes`, so an oversized body is never buffered whole, with or without a
+ * Content-Length. Services still check the real bytes.
+ */
+export async function readUpload(
+  context: Context,
+  maxBytes: number,
+  tooLargeCode: string,
+): Promise<ArrayBuffer> {
+  const tooLarge = () => new ServiceError(422, tooLargeCode);
+  const declared = context.req.header('content-length');
+  if (declared !== undefined && !/^\d+$/.test(declared)) throw invalidInput();
+  if (declared !== undefined && Number(declared) > maxBytes) throw tooLarge();
+  const body = context.req.raw.body;
+  if (!body) return new ArrayBuffer(0);
+  const reader = body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    total += value.byteLength;
+    if (total > maxBytes) {
+      await reader.cancel();
+      throw tooLarge();
+    }
+    chunks.push(value);
+  }
+  const bytes = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    bytes.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return bytes.buffer;
+}

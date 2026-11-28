@@ -54,3 +54,14 @@ export const dashboardQuerySchema = z.object({
   from: calendarDateSchema,
   to: calendarDateSchema,
 });
+
+/** Receipts are photos or PDFs of a transfer or QR payment. */
+export const RECEIPT_CONTENT_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'application/pdf',
+] as const;
+export type ReceiptContentType = (typeof RECEIPT_CONTENT_TYPES)[number];
+/** 5 MB: a phone photo fits; anything bigger is not a receipt. */
+export const RECEIPT_MAX_BYTES = 5 * 1024 * 1024;

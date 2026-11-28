@@ -1,28 +1,57 @@
 import { formatGuarani, formatShortDate, t } from '@guaranix/shared';
+import type { Payment } from '@guaranix/shared/api';
 import { Avatar, Button, Card, Skeleton, useToast } from '@guaranix/ui';
 import { errorText, LoadError, useBoxClock } from '@guaranix/ui/data';
 import { dateOfInstant } from '@guaranix/shared';
 import { useReviewPayment } from '../../api/mutations';
 import { usePaymentsToReview } from '../../api/queries';
+import { ReceiptText } from 'lucide-react';
+import { useState } from 'react';
 import { PaymentMethodBadge } from './PaymentMethodBadge';
+import { ReceiptSheet } from './ReceiptSheet';
 
 export function ReviewQueueCard() {
   const { timeZone } = useBoxClock();
   const queue = usePaymentsToReview();
   const review = useReviewPayment();
   const toast = useToast();
+  const [viewing, setViewing] = useState<Payment | null>(null);
 
   const decide = (paymentId: string, status: 'confirmed' | 'rejected') =>
     review.mutate(
       { paymentId, status },
       {
-        onSuccess: () =>
+        onSuccess: () => {
+          setViewing(null);
           toast.show(
             t(status === 'confirmed' ? 'admin.payments.confirmed' : 'admin.payments.rejected'),
-          ),
+          );
+        },
         onError: (error) => toast.show(errorText(error), 'error'),
       },
     );
+
+  const decisionButtons = (paymentId: string, name: string) => (
+    <>
+      <Button
+        variant="secondary"
+        className="flex-1 px-3 text-sm"
+        aria-label={t('admin.payments.rejectLabel', { name })}
+        disabled={review.isPending}
+        onClick={() => decide(paymentId, 'rejected')}
+      >
+        {t('admin.payments.reject')}
+      </Button>
+      <Button
+        className="flex-1 px-3 text-sm"
+        aria-label={t('admin.payments.confirmLabel', { name })}
+        disabled={review.isPending}
+        onClick={() => decide(paymentId, 'confirmed')}
+      >
+        {t('admin.payments.confirm')}
+      </Button>
+    </>
+  );
 
   return (
     <Card>
@@ -41,10 +70,7 @@ export function ReviewQueueCard() {
           {queue.data.map((payment) => {
             const name = `${payment.firstName} ${payment.lastName}`;
             return (
-              <li
-                key={payment.id}
-                className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-center"
-              >
+              <li key={payment.id} className="flex flex-col gap-3 py-3 first:pt-0 last:pb-0">
                 <span className="flex min-w-0 flex-1 items-center gap-3">
                   <Avatar firstName={payment.firstName} lastName={payment.lastName} size="sm" />
                   <span className="flex min-w-0 flex-1 flex-col">
@@ -62,29 +88,32 @@ export function ReviewQueueCard() {
                   </span>
                 </span>
                 <span className="flex gap-2">
-                  <Button
-                    variant="secondary"
-                    className="flex-1 px-3 text-sm"
-                    aria-label={t('admin.payments.rejectLabel', { name })}
-                    disabled={review.isPending}
-                    onClick={() => decide(payment.id, 'rejected')}
-                  >
-                    {t('admin.payments.reject')}
-                  </Button>
-                  <Button
-                    className="flex-1 px-3 text-sm"
-                    aria-label={t('admin.payments.confirmLabel', { name })}
-                    disabled={review.isPending}
-                    onClick={() => decide(payment.id, 'confirmed')}
-                  >
-                    {t('admin.payments.confirm')}
-                  </Button>
+                  {payment.receiptFileKey ? (
+                    <Button
+                      variant="secondary"
+                      className="shrink-0 px-3 text-sm"
+                      aria-label={t('admin.payments.viewReceiptLabel', { name })}
+                      onClick={() => setViewing(payment)}
+                    >
+                      <ReceiptText aria-hidden="true" size={18} />
+                      <span className="hidden sm:inline">{t('admin.payments.viewReceipt')}</span>
+                    </Button>
+                  ) : null}
+                  {decisionButtons(payment.id, name)}
                 </span>
               </li>
             );
           })}
         </ul>
       )}
+      {viewing?.receiptFileKey ? (
+        <ReceiptSheet
+          name={`${viewing.firstName} ${viewing.lastName}`}
+          fileKey={viewing.receiptFileKey}
+          onClose={() => setViewing(null)}
+          footer={decisionButtons(viewing.id, `${viewing.firstName} ${viewing.lastName}`)}
+        />
+      ) : null}
     </Card>
   );
 }

@@ -263,5 +263,7 @@ export interface Payment {
   status: PaymentStatus;
   paidAt: string;
   reference: string | null;
+  /** Private file in R2; open it through `/box/receipts/<key>`. */
+  receiptFileKey: string | null;
   notes: string | null;
 }

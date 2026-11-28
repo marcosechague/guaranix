@@ -7,6 +7,8 @@
   "observability": { "enabled": true },
   // 06:00 UTC is 03:00 in Asunción: classes for the next 2 weeks, before anyone books.
   "triggers": { "crons": ["0 6 * * *"] },
+  // Payment receipts. Private: only the API reads them, after checking the box and role.
+  "r2_buckets": [{ "binding": "RECEIPTS", "bucket_name": "guaranix-receipts" }],
   "vars": {
     "APP_ENV": "development",
     "ALLOWED_ORIGINS": "http://localhost:5173,http://localhost:5174,http://localhost:5175",

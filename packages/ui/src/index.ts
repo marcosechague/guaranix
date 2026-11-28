@@ -7,6 +7,8 @@ export { Button } from './components/Button';
 export type { ButtonProps } from './components/Button';
 export { Card, Eyebrow } from './components/Card';
 export type { CardProps } from './components/Card';
+export { FileField } from './components/FileField';
+export type { FileFieldProps } from './components/FileField';
 export { FormMessage } from './components/FormMessage';
 export { NavCollapseButton } from './components/NavCollapseButton';
 export type { NavCollapseButtonProps } from './components/NavCollapseButton';

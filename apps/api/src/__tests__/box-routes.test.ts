@@ -55,6 +55,9 @@ async function json<T>(response: Response): Promise<T> {
   return (await response.json()) as T;
 }
 
+/** The smallest bytes that sniff as a JPEG. */
+const JPEG = new Uint8Array([0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46]);
+
 const today = () => calendarDateIn('America/Asuncion', new Date());
 
 async function crossfitOf(boxId: string) {
@@ -292,6 +295,11 @@ describe('payments, debtors and dashboard', () => {
     );
     expect(debtors.debtors.find((row) => row.memberId === member.memberId)?.owedGs).toBe(250_000);
 
+    const upload = await member.browser.post('/box/receipts', JPEG, {
+      'content-type': 'image/jpeg',
+    });
+    expect(upload.status).toBe(201);
+    const { fileKey } = await json<{ fileKey: string }>(upload);
     const reported = await member.browser.post('/box/payments', {
       memberId: member.memberId,
       chargeId,
@@ -299,7 +307,7 @@ describe('payments, debtors and dashboard', () => {
       method: 'bank_transfer',
       paidAt: new Date().toISOString(),
       reference: 'ROUTE-1',
-      receiptFileKey: 'receipts/route.jpg',
+      receiptFileKey: fileKey,
     });
     expect(reported.status).toBe(201);
     const paymentId = (await json<{ payment: { id: string; status: string } }>(reported)).payment
@@ -323,6 +331,55 @@ describe('payments, debtors and dashboard', () => {
       (await reception.browser.get(`/box/reports/dashboard?from=${today()}&to=${today()}`)).status,
     ).toBe(403);
     expect((await coach.browser.get('/box/payments')).status).toBe(403);
+  });
+
+  it('receipts stay with their box, their uploader and the front desk', async () => {
+    const { reception, member, planless: other, coach } = as;
+    const upload = (who: SignedIn, bytes: Uint8Array, type = 'image/jpeg') =>
+      who.browser.post('/box/receipts', bytes, { 'content-type': type });
+
+    const stored = await upload(member, JPEG);
+    expect(stored.status).toBe(201);
+    const { fileKey } = await json<{ fileKey: string }>(stored);
+    expect(fileKey.startsWith(`boxes/${harness.boxA.boxId}/receipts/`)).toBe(true);
+
+    const own = await member.browser.get(`/box/receipts/${fileKey}`);
+    expect(own.status).toBe(200);
+    expect(own.headers.get('content-type')).toBe('image/jpeg');
+    expect(new Uint8Array(await own.arrayBuffer())).toEqual(JPEG);
+    expect((await reception.browser.get(`/box/receipts/${fileKey}`)).status).toBe(200);
+    expect((await other.browser.get(`/box/receipts/${fileKey}`)).status).toBe(404);
+    expect((await coach.browser.get(`/box/receipts/${fileKey}`)).status).toBe(403);
+    const outsider = await userWithRole('reception', harness.boxB.boxId);
+    expect((await outsider.browser.get(`/box/receipts/${fileKey}`)).status).toBe(404);
+
+    // The bytes decide the type, not the header: a page can't pass as a photo.
+    const page = new TextEncoder().encode('<html><script>alert(1)</script></html>');
+    expect(await json(await upload(member, page))).toEqual({ error: 'receipt_type' });
+    expect((await upload(coach, JPEG)).status).toBe(403);
+
+    // No Content-Length (a streamed body): the read stops once it passes the limit.
+    let pulled = 0;
+    const endless = new ReadableStream<Uint8Array>({
+      pull(controller) {
+        pulled += 1;
+        controller.enqueue(pulled === 1 ? JPEG : new Uint8Array(1024 * 1024));
+      },
+    });
+    const streamed = await member.browser.post('/box/receipts', endless, {
+      'content-type': 'image/jpeg',
+    });
+    expect(await json(streamed)).toEqual({ error: 'receipt_too_large' });
+    expect(pulled).toBeLessThan(10);
+
+    const stolen = await other.browser.post('/box/payments', {
+      memberId: other.memberId,
+      amountGs: 10_000,
+      method: 'qr',
+      paidAt: new Date().toISOString(),
+      receiptFileKey: fileKey,
+    });
+    expect(await json(stolen)).toEqual({ error: 'receipt_not_found' });
   });
 
   it('the owner previews an import and commits it once', async () => {

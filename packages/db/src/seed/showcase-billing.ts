@@ -61,7 +61,8 @@ export async function seedShowcaseBilling(
             status: 'pending_review',
             paidAt: morningOf(localDate(-1)),
             reference: `OP-${String(483_920 + index * 17)}`,
-            receiptFileKey: `receipts/demo-${index}.jpg`,
+            // A placeholder receipt for these keys is stored by `demo:receipts` (apps/api).
+            receiptFileKey: `boxes/${boxId}/receipts/seed/demo-${index}.png`,
           },
         ];
       case 'paid':
