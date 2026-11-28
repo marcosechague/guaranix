@@ -20,11 +20,11 @@ export const queryKeys = {
   leaderboard: (componentId: string) => ['leaderboard', componentId] as const,
 };
 
-const OFFLINE_ROOTS = new Set(['box', 'programs', 'workouts', 'classes']);
+const OFFLINE_ROOTS = new Set(['box', 'programs', 'movements', 'workouts', 'classes']);
 
 /**
- * What the app keeps on the phone for offline use: the box, today's WOD,
- * classes and own bookings and plans. Never the member profile (medical
+ * What the app keeps on the phone for offline use: the box, today's WOD and
+ * the movement names it uses, classes and own bookings and plans. Never the member profile (medical
  * notes, ID number), records or other members' results.
  */
 export function keepOffline(queryKey: QueryKey): boolean {

@@ -7,10 +7,10 @@ import {
   timerSnapshot,
 } from '@guaranix/shared';
 import type { WorkoutComponent } from '@guaranix/shared/api';
-import { Badge, IconButton, ProgressBar, useWakeLock } from '@guaranix/ui';
-import { Volume2, VolumeX, X } from 'lucide-react';
+import { ProgressBar, useWakeLock } from '@guaranix/ui';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { WorkoutFullScreen } from '../../layout/WorkoutFullScreen';
 import { timerChips } from '../../lib/workout-summary';
 import { RoundCounter } from './RoundCounter';
 import { TimerControls } from './TimerControls';
@@ -58,104 +58,81 @@ export function TimerRunner({ component, plan }: TimerRunnerProps) {
   };
 
   return (
-    <div data-theme="dark" className="min-h-dvh bg-background text-text">
-      <main className="mx-auto flex min-h-dvh w-full max-w-3xl flex-col gap-6 px-5 pt-5 pb-8 md:px-8">
-        <header className="flex items-center gap-3">
-          <IconButton label={t('member.timer.close')} onClick={() => void navigate('/wod')}>
-            <X aria-hidden="true" size={20} />
-          </IconButton>
-          <div className="min-w-0 flex-1">
-            <h1 className="truncate font-display text-lg font-bold">
-              {component.title ?? t(`workout.kinds.${component.kind}`)}
-            </h1>
-            <div className="flex flex-wrap gap-1.5">
-              {timerChips(component).map((chip) => (
-                <Badge key={chip} tone="outline">
-                  {chip}
-                </Badge>
-              ))}
-            </div>
-          </div>
-          <IconButton
-            label={sound ? t('member.timer.mute') : t('member.timer.unmute')}
-            onClick={() => setSound((current) => !current)}
-          >
-            {sound ? (
-              <Volume2 aria-hidden="true" size={20} />
-            ) : (
-              <VolumeX aria-hidden="true" size={20} />
-            )}
-          </IconButton>
-        </header>
-
-        <section
-          aria-live="off"
-          className="flex flex-1 flex-col items-center justify-center gap-3 text-center"
+    <WorkoutFullScreen
+      title={component.title ?? t(`workout.kinds.${component.kind}`)}
+      badges={timerChips(component)}
+      closeLabel={t('member.timer.close')}
+      onClose={() => void navigate('/wod')}
+      sound={sound}
+      onToggleSound={() => setSound((current) => !current)}
+    >
+      <section
+        aria-live="off"
+        className="flex flex-1 flex-col items-center justify-center gap-3 text-center"
+      >
+        <p
+          className={`text-sm font-semibold tracking-widest uppercase md:text-base ${
+            status === 'running' ? phaseTone[snapshot.phase] : 'text-text-secondary'
+          }`}
         >
-          <p
-            className={`text-sm font-semibold tracking-widest uppercase md:text-base ${
-              status === 'running' ? phaseTone[snapshot.phase] : 'text-text-secondary'
-            }`}
-          >
-            {phaseLabel(status, snapshot)}
+          {phaseLabel(status, snapshot)}
+        </p>
+        <p
+          role="timer"
+          className={`font-display text-clock font-bold tabular-nums ${
+            isCountdown ? 'text-text-secondary' : snapshot.phase === 'rest' ? 'text-success' : ''
+          }`}
+        >
+          {isCountdown ? snapshot.clockSeconds : formatDuration(snapshot.clockSeconds)}
+        </p>
+        {snapshot.totalRounds !== null ? (
+          <p className="font-display text-2xl font-semibold text-text-soft md:text-3xl">
+            {t('member.timer.round', { round: snapshot.round, total: snapshot.totalRounds })}
           </p>
-          <p
-            role="timer"
-            className={`font-display text-clock font-bold tabular-nums ${
-              isCountdown ? 'text-text-secondary' : snapshot.phase === 'rest' ? 'text-success' : ''
-            }`}
-          >
-            {isCountdown ? snapshot.clockSeconds : formatDuration(snapshot.clockSeconds)}
-          </p>
-          {snapshot.totalRounds !== null ? (
-            <p className="font-display text-2xl font-semibold text-text-soft md:text-3xl">
-              {t('member.timer.round', { round: snapshot.round, total: snapshot.totalRounds })}
-            </p>
-          ) : null}
-          {snapshot.progress !== null ? (
-            <ProgressBar
-              label={t('member.timer.progress')}
-              value={Math.round(snapshot.progress * 100)}
-              max={100}
-              tone={snapshot.phase === 'rest' ? 'success' : 'accent'}
-              className="mt-2 w-full max-w-md"
-            />
-          ) : null}
-        </section>
+        ) : null}
+        {snapshot.progress !== null ? (
+          <ProgressBar
+            label={t('member.timer.progress')}
+            value={Math.round(snapshot.progress * 100)}
+            max={100}
+            tone={snapshot.phase === 'rest' ? 'success' : 'accent'}
+            className="mt-2 w-full max-w-md"
+          />
+        ) : null}
+      </section>
 
-        {status === 'finished' ? (
-          <TimerFinished
-            component={component}
-            plan={plan}
-            snapshot={snapshot}
-            rounds={rounds}
+      {status === 'finished' ? (
+        <TimerFinished
+          component={component}
+          plan={plan}
+          snapshot={snapshot}
+          rounds={rounds}
+          onReset={() => {
+            setRounds(0);
+            timer.reset();
+          }}
+        />
+      ) : (
+        <div className="flex flex-col gap-3">
+          {plan.type === 'amrap' ? (
+            <RoundCounter rounds={rounds} onChange={setRounds} disabled={status === 'idle'} />
+          ) : null}
+          <TimerControls
+            status={status}
+            canFinish={plan.type === 'for_time'}
+            onStart={start}
+            onPause={timer.pause}
+            onFinish={timer.finish}
             onReset={() => {
               setRounds(0);
               timer.reset();
             }}
           />
-        ) : (
-          <div className="flex flex-col gap-3">
-            {plan.type === 'amrap' ? (
-              <RoundCounter rounds={rounds} onChange={setRounds} disabled={status === 'idle'} />
-            ) : null}
-            <TimerControls
-              status={status}
-              canFinish={plan.type === 'for_time'}
-              onStart={start}
-              onPause={timer.pause}
-              onFinish={timer.finish}
-              onReset={() => {
-                setRounds(0);
-                timer.reset();
-              }}
-            />
-            {status === 'idle' ? (
-              <p className="text-center text-sm text-text-secondary">{t('member.timer.hint')}</p>
-            ) : null}
-          </div>
-        )}
-      </main>
-    </div>
+          {status === 'idle' ? (
+            <p className="text-center text-sm text-text-secondary">{t('member.timer.hint')}</p>
+          ) : null}
+        </div>
+      )}
+    </WorkoutFullScreen>
   );
 }
