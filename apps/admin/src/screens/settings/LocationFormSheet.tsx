@@ -2,6 +2,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { t } from '@guaranix/shared';
 import type { Location } from '@guaranix/shared/api';
 import {
+  CitySelectField,
   FormMessage,
   Sheet,
   SheetFormActions,
@@ -99,10 +100,20 @@ export function LocationFormSheet({ location, onClose }: LocationFormSheetProps)
           {...form.register('address')}
         />
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField
-            label={t('locations.city')}
-            error={invalid('city')}
-            {...form.register('city')}
+          <Controller
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <CitySelectField
+                label={t('locations.city')}
+                error={invalid('city')}
+                name={field.name}
+                value={field.value}
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                ref={field.ref}
+              />
+            )}
           />
           <TextField
             label={t('locations.phone')}

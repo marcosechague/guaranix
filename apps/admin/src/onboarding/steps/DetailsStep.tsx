@@ -1,5 +1,5 @@
 import { t } from '@guaranix/shared';
-import { Card, ChipGroup, TextField } from '@guaranix/ui';
+import { Card, ChipGroup, CitySelectField, TextField } from '@guaranix/ui';
 import { BOOKING_WINDOWS, bookingWindowText, isBookingWindow } from '../booking-window';
 import type { DetailsProblems, SignupDraft } from '../signup-draft';
 
@@ -24,9 +24,8 @@ export function DetailsStep({ draft, problems, onChange }: DetailsStepProps) {
           onChange={(event) => onChange({ name: event.target.value })}
         />
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextField
+          <CitySelectField
             label={t('onboarding.details.city')}
-            autoComplete="address-level2"
             value={draft.city}
             error={problems.city}
             onChange={(event) => onChange({ city: event.target.value })}

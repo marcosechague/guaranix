@@ -4,6 +4,8 @@
     "tagline": "Gestión para boxes y entrenamiento"
   },
   "common": {
+    "chooseCity": "Elegí la ciudad",
+    "otherCity": "Otra: {city}",
     "loading": "Cargando…",
     "retry": "Reintentar",
     "or": "o",
